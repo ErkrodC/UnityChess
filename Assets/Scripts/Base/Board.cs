@@ -1,23 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using ChessRefactor.Pieces;
+using System.Linq;
+using System.Text;
 
-
-namespace ChessRefactor.Base
+namespace UnityChess.Base
 {
-    public enum Side
-    {
-        Black,
-        White
-    }
-    public enum ModeType
-    {
-        PvP,
-        PvA,
-        AvA
-    }
-
     public class Board
     {
         public List<BasePiece> BoardPosition { get; set; }
@@ -48,20 +35,20 @@ namespace ChessRefactor.Base
         {
             int i;
             //Will start by setting all squares as invalid, then change to other Piecetypes as necessary
-            for (i=0; i<120; i++)
+            for (i = 0; i < 120; i++)
             {
                 this.BoardPosition[i] = InvalidPiece;
             }
 
             //Row 2/Rank 7 and Row 7/Rank 2, both rows of pawns
-            for (i=31; i<39; i++)
+            for (i = 31; i < 39; i++)
             {
                 this.BoardPosition[i] = new Pawn(new Square(i), PieceType.BlackPawn);
-                this.BoardPosition[i + 50] = new Pawn(new Square(i+50), PieceType.WhitePawn);
+                this.BoardPosition[i + 50] = new Pawn(new Square(i + 50), PieceType.WhitePawn);
             }
 
             //Rows 3-6/Ranks 6-3, empty inbetween squares
-            for (i=41; i<79; i++)
+            for (i = 41; i < 79; i++)
             {
                 this.BoardPosition[i] = EmptyPiece;
             }
@@ -101,81 +88,6 @@ namespace ChessRefactor.Base
             {
                 if (BP.Type != PieceType.Invalid && BP.Type != PieceType.Empty) { ((Piece)BP).Update(this); }
             }
-        }
-    }
-
-    public class Square
-    {
-        public int Rank { get; set; }
-        public int File { get; set; }
-
-        public Square(int rank, int file)
-        {
-            this.Rank = rank;
-            this.File = file;
-        }
-
-        public Square (int oneDimensionalIndex)
-        {
-            this.File = oneDimensionalIndex % 10;
-            this.Rank = 9 - ((oneDimensionalIndex - this.File) / 10 - 1);
-        }
-
-        public static int squareAsIndex(Square square)
-        {
-            return ((10 - square.Rank) * 10) + square.File;
-        }
-    }
-
-    public class BoardList
-    {
-        private LinkedList<LinkedListNode<Board>> BList;
-
-        public BoardList(int turn)
-        {
-            this.BList = new LinkedList<LinkedListNode<Board>>();
-        }
-
-        public void AddLastBoard(Board board) { this.BList.AddLast(new LinkedListNode<Board>(new Board(board))); }
-        public void AddLastBoard(LinkedListNode<Board> BoardListNode) { this.BList.AddLast(BoardListNode); }
-    }
-
-    public class Movement
-    {
-        public Square End { get; set; }
-        public Piece Piece { get; set; }
-
-        public Movement(Square end, Piece piece)
-        {
-            this.End = end;
-            this.Piece = piece;
-        }
-    }
-
-    public class Game
-    {
-        public Side CurrentTurn { get; set; }
-        public int TurnCount { get; set; }
-        public ModeType Mode { get; set; }
-        public BoardList BList;
-        public List<Movement> PreviousMoves;
-        public static LinkedListNode<Board> CurrentBoardNode = new LinkedListNode<Board>(new Board());
-
-        public Game(ModeType mode)
-        {
-            this.CurrentTurn = Side.White;
-            this.TurnCount = 0;
-            this.Mode = mode;
-            this.BList = new BoardList(this.TurnCount);
-            this.BList.AddLastBoard(CurrentBoardNode);
-            this.PreviousMoves = new List<Movement>();
-        }
-
-        public void ExecuteMoveAndAddToBList(Movement move)
-        {
-            this.BList.AddLastBoard(new LinkedListNode<Board>(new Board(CurrentBoardNode.Value, move)));
-            this.TurnCount++;
-            this.PreviousMoves[TurnCount] = move;
         }
     }
 }
