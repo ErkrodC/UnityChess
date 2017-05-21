@@ -1,4 +1,4 @@
-﻿using UnityChess.Base;
+﻿using System;
 
 namespace UnityChess.AI
 {
