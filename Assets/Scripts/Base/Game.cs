@@ -5,20 +5,20 @@ namespace UnityChess
 {
     public class Game
     {
-        //use static here? Idea is to create a new game instance
         public LinkedListNode<Board> CurrentBoardNode { get; set; }
         public Side CurrentTurn { get; set; }
         public int TurnCount { get; set; }
         public ModeType Mode { get; set; }
         public BoardList BList { get; set; }
-        public List<Movement> PreviousMoves;
+        public List<Movement> PreviousMoves { get; set; }
 
         public Game(ModeType mode)
         {
             this.CurrentTurn = Side.White;
             this.TurnCount = 0;
             this.Mode = mode;
-            this.BList = new BoardList(this.TurnCount);
+            this.BList = new BoardList();
+            this.CurrentBoardNode = new LinkedListNode<Board>(new Board());
             this.BList.AddLastBoard(CurrentBoardNode);
             this.PreviousMoves = new List<Movement>();
         }

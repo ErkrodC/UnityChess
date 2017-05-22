@@ -7,7 +7,7 @@ namespace UnityChess
     {
         private LinkedList<LinkedListNode<Board>> BList;
 
-        public BoardList(int turn)
+        public BoardList()
         {
             this.BList = new LinkedList<LinkedListNode<Board>>();
         }
