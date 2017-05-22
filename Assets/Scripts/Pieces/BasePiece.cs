@@ -7,5 +7,7 @@ namespace UnityChess
         public PieceType Type { get; set; }
 
         public BasePiece() { }
+
+        public abstract BasePiece Clone();
     }
 }

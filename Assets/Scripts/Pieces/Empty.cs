@@ -6,5 +6,10 @@ namespace UnityChess
     public class Empty : BasePiece
     {
         public Empty() { this.Type = PieceType.Empty; }
+
+        public override BasePiece Clone()
+        {
+            return this;
+        }
     }
 }

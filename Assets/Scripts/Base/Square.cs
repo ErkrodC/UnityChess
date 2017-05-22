@@ -13,6 +13,12 @@ namespace UnityChess
             this.File = file;
         }
 
+        public Square(Square squareCopy)
+        {
+            this.Rank = squareCopy.Rank;
+            this.File = squareCopy.File;
+        }
+
         public Square(int oneDimensionalIndex)
         {
             this.File = oneDimensionalIndex % 10;

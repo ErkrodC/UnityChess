@@ -14,19 +14,41 @@ namespace UnityChess
         {
             this.BoardPosition = new List<BasePiece>(120);
             this.SetStartingPosition();
+            this.UpdateAllPiecesValidMoves();
         }
 
         //used for copying a board
         public Board(Board board)
         {
-            this.BoardPosition = new List<BasePiece>(board.BoardPosition);
+            this.SetBlankBoard();
+
+            //creates deep copy (makes copy of each piece and deep copy of their respective ValidMoves lists) of board (list of BasePiece's)
+            //this may be a memory hog since each Board has a list of Piece's, and each piece has a list of Movement's
+            //avg number turns/Board's per game should be around ~80. usual max number of pieces per board is 32
+            for (int i=0; i<120; i++)
+            {
+                if (board.BoardPosition[i].Type != PieceType.Invalid && board.BoardPosition[i].Type != PieceType.Empty)
+                {
+                    //clone is a deep copy for BasePiece derivatives, see specific piece class...
+                    this.BoardPosition[i] = board.BoardPosition[i].Clone();
+                }
+            }
         }
 
-        //used after a move is made and board (BoardEntry) is to be added to a BoardList
-        public Board(Board board, Movement move)
+        public void SetBlankBoard()
         {
-            this.BoardPosition = new List<BasePiece>(board.BoardPosition);
-            this.MovePiece(move);
+            int i;
+            //Will start by setting all squares as invalid, then change to other Piecetypes as necessary
+            for (i = 0; i < 120; i++)
+            {
+                this.BoardPosition[i] = InvalidPiece;
+            }
+
+            //empty board squares
+            for (i = 21; i < 99; i++)
+            {
+                this.BoardPosition[i] = EmptyPiece;
+            }
         }
 
         public void SetStartingPosition()
@@ -80,11 +102,13 @@ namespace UnityChess
             //update piece
             move.Piece.HasMoved = true;
             move.Piece.Position = move.End;
+        }
 
-            //update possible moves list for every piece on board
+        public void UpdateAllPiecesValidMoves()
+        {
             foreach (BasePiece BP in this.BoardPosition)
             {
-                if (BP.Type != PieceType.Invalid && BP.Type != PieceType.Empty) { ((Piece)BP).Update(this); }
+                if (BP.Type != PieceType.Invalid && BP.Type != PieceType.Empty) { ((Piece)BP).UpdateValidMoves(this); }
             }
         }
     }

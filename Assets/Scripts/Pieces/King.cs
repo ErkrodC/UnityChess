@@ -4,11 +4,17 @@ namespace UnityChess
 {
     public class King : Piece
     {
-        public override void GetValidMoves(Board board)
+        public override void UpdateValidMoves(Board board)
         {
-            throw new NotImplementedException();
+            ValidMoves.Clear();
         }
 
         public King(Square startingPosition, PieceType type) : base(startingPosition, type) { }
+        public King(King kingCopy) : base(kingCopy) { }
+
+        public override BasePiece Clone()
+        {
+            return new King(this);
+        }
     }
 }

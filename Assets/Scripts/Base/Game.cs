@@ -29,12 +29,17 @@ namespace UnityChess
             //validate move is legal
             //if (!isLegal(move)) return; //call to gui method which notifies user made invalid move
 
-            //add new board to history of boards (linked list)
-            this.BList.AddLastBoard(new LinkedListNode<Board>(new Board(CurrentBoardNode.Value, move)));
+            //create new copy of previous current board, and execute the move on it
+            this.CurrentBoardNode = new LinkedListNode<Board>(new Board(CurrentBoardNode.Value));
+            this.CurrentBoardNode.Value.MovePiece(move);
+            this.CurrentBoardNode.Value.UpdateAllPiecesValidMoves();
 
-            //increment turn count, save move is history of moves
-            this.TurnCount++;
+            //add new current board to history of boards(linked list)
+            this.BList.AddLastBoard(CurrentBoardNode);
+
+            //save move is history of moves, increment turn count
             this.PreviousMoves[TurnCount] = move;
+            this.TurnCount++;
 
             //switch sides (toggle CurrentTurn)
             CurrentTurn = CurrentTurn == Side.White ? Side.Black : Side.White;

@@ -6,5 +6,10 @@ namespace UnityChess
     public class Invalid : BasePiece
     {
         public Invalid() { this.Type = PieceType.Invalid; }
+
+        public override BasePiece Clone()
+        {
+            return this;
+        }
     }
 }
