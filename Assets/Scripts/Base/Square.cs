@@ -25,9 +25,43 @@ namespace UnityChess
             this.Rank = 9 - ((oneDimensionalIndex - this.File) / 10 - 1);
         }
 
+        public bool IsValid()
+        {
+            return ((1 <= File && File <= 8) && (1 <= Rank && Rank <= 8));
+        }
+
+        public bool OccupiedByPiece(Board board)
+        {
+            PieceType type = board.BoardPosition[squareAsIndex(this)].Type;
+            return (type != PieceType.Invalid && type != PieceType.Empty);
+        }
+
+
+
         public static int squareAsIndex(Square square)
         {
             return ((10 - square.Rank) * 10) + square.File;
+        }
+
+        // override object.Equals
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            Square square = obj as Square;
+            return (Rank == square.Rank && File == square.File);
+        }
+
+        // override object.GetHashCode
+        public override int GetHashCode()
+        {
+            int hash = 13;
+            hash = (hash * 7) + Rank.GetHashCode();
+            hash = (hash * 7) + File.GetHashCode();
+            return hash;
         }
     }
 }
