@@ -8,14 +8,14 @@ namespace UnityChess
         public Side Side { get; set; }
         public Square Position { get; set; }
         public bool HasMoved { get; set; }
-        public List<Square> ValidMoves { get; set; }
+        public List<Movement> ValidMoves { get; set; }
 
         public Piece(Square startPosition, Side side)
         {
             this.Side = side;
             this.HasMoved = false;
             this.Position = startPosition;
-            this.ValidMoves = new List<Square>();
+            this.ValidMoves = new List<Movement>();
         }
 
         public Piece(Piece pieceCopy)
@@ -24,11 +24,11 @@ namespace UnityChess
             this.HasMoved = pieceCopy.HasMoved;
             this.Position = new Square(pieceCopy.Position);
             //deep copy of valid moves list
-            this.ValidMoves = pieceCopy.ValidMoves.ConvertAll<Square>(square => new Square(pieceCopy.Position));
+            this.ValidMoves = pieceCopy.ValidMoves.ConvertAll<Movement>(move => new Movement(new Square(pieceCopy.Position), this));
         }
 
         public abstract Piece Clone();
 
-        public abstract void UpdateValidMoves(Board board);
+        public abstract void UpdateValidMoves(LinkedList<Board> boardList);
     }
 }

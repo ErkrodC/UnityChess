@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace UnityChess
 {
     public class King : Piece
     {
-        public override void UpdateValidMoves(Board board)
+        public override void UpdateValidMoves(LinkedList<Board> boardList)
         {
             ValidMoves.Clear();
         }
