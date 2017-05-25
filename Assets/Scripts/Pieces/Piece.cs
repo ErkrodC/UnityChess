@@ -9,19 +9,17 @@ namespace UnityChess
         public bool HasMoved { get; set; }
         public List<Square> ValidMoves;
 
-        public Piece(Square startPosition, PieceType type)
+        public Piece(Square startPosition, PieceType type) : base(type)
         {
             this.HasMoved = false;
             this.Position = startPosition;
-            this.Type = type;
             this.ValidMoves = new List<Square>();
         }
 
-        public Piece(Piece pieceCopy)
+        public Piece(Piece pieceCopy) : base(pieceCopy.Type)
         {
             this.HasMoved = pieceCopy.HasMoved;
-            this.Position = pieceCopy.Position;
-            this.Type = pieceCopy.Type;
+            this.Position = new Square(pieceCopy.Position);
             //deep copy of valid moves list
             this.ValidMoves = pieceCopy.ValidMoves.ConvertAll<Square>(square => new Square(pieceCopy.Position));
         }

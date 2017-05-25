@@ -5,7 +5,7 @@ namespace UnityChess
     //empty is used to describe a valid square on the board without a piece on it
     public class Empty : BasePiece
     {
-        public Empty() { this.Type = PieceType.Empty; }
+        public Empty() : base(PieceType.Empty) { }
 
         public override BasePiece Clone()
         {

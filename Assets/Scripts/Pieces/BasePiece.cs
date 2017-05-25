@@ -6,7 +6,7 @@ namespace UnityChess
     {
         public PieceType Type { get; set; }
 
-        public BasePiece() { }
+        public BasePiece(PieceType type) { this.Type = type; }
 
         public abstract BasePiece Clone();
     }
