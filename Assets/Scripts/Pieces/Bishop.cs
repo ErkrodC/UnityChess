@@ -9,10 +9,10 @@ namespace UnityChess
             ValidMoves.Clear();
         }
 
-        public Bishop(Square startingPosition, PieceType type) : base(startingPosition, type) { }
+        public Bishop(Square startingPosition, Side side) : base(startingPosition, side) { }
         public Bishop(Bishop bishopCopy) : base(bishopCopy) { }
 
-        public override BasePiece Clone()
+        public override Piece Clone()
         {
             return new Bishop(this);
         }

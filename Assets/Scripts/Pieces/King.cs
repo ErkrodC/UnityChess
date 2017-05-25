@@ -9,10 +9,10 @@ namespace UnityChess
             ValidMoves.Clear();
         }
 
-        public King(Square startingPosition) : base(startingPosition, type) { }
+        public King(Square startingPosition, Side side) : base(startingPosition, side) { }
         public King(King kingCopy) : base(kingCopy) { }
 
-        public override BasePiece Clone()
+        public override Piece Clone()
         {
             return new King(this);
         }

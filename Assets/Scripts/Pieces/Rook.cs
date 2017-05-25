@@ -9,10 +9,10 @@ namespace UnityChess
             ValidMoves.Clear();
         }
 
-        public Rook(Square startingPosition, PieceType type) : base(startingPosition, type) { }
+        public Rook(Square startingPosition, Side side) : base(startingPosition, side) { }
         public Rook(Rook rookCopy) : base(rookCopy) { }
 
-        public override BasePiece Clone()
+        public override Piece Clone()
         {
             return new Rook(this);
         }
