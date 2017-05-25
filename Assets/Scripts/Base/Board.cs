@@ -8,6 +8,22 @@ namespace UnityChess
         public static EmptyPiece EmptyPiece = new EmptyPiece();
         public static InvalidPiece InvalidPiece = new InvalidPiece();
 
+        /*
+        Boards will be represented as a 10x12 grid in a one dimensional list.
+        The 8x8 chessboard is in the center.
+
+               0   1  2  3  ...  7  8   9
+              10  11 12 13  ... 17 18   19
+                |---------------------|
+              20| 21 22 23 ...        | 29
+              30| 31 32 33 ...        | 39
+               .|          .          | .
+               .|            .        | .
+               .|              .   98 | 99
+                |---------------------|
+             100  101 102 ... 107 108  109
+             110  111 112 ... 117 118  119
+        */
         public List<Object> BoardPosition { get; set; }
 
         //used for initial board
@@ -15,7 +31,6 @@ namespace UnityChess
         {
             BoardPosition = new List<Object>(120);
             SetStartingPosition();
-            UpdateAllPiecesValidMoves();
         }
 
         //used for copying a board
@@ -102,14 +117,6 @@ namespace UnityChess
             move.Piece.Position = move.End;
 
             if (move is SpecialMove) { (move as SpecialMove).HandleAssociatedPiece(this); }
-        }
-
-        public void UpdateAllPiecesValidMoves()
-        {
-            foreach (Object obj in BoardPosition)
-            {
-                if (obj is Piece) { (obj as Piece).UpdateValidMoves(this); }
-            }
         }
     }
 }
