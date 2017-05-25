@@ -30,7 +30,7 @@ namespace UnityChess
             return ((1 <= File && File <= 8) && (1 <= Rank && Rank <= 8));
         }
 
-        public bool OccupiedByPiece(Board board)
+        public bool IsOccupied(Board board)
         {
             Object obj = board.BoardPosition[SquareAsIndex(this)];
             return (obj is Piece);
