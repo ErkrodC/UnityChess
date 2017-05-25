@@ -32,13 +32,11 @@ namespace UnityChess
 
         public bool OccupiedByPiece(Board board)
         {
-            PieceType type = board.BoardPosition[squareAsIndex(this)].Type;
-            return (type != PieceType.Invalid && type != PieceType.Empty);
+            Object obj = board.BoardPosition[SquareAsIndex(this)];
+            return (obj is Piece);
         }
 
-
-
-        public static int squareAsIndex(Square square)
+        public static int SquareAsIndex(Square square)
         {
             return ((10 - square.Rank) * 10) + square.File;
         }

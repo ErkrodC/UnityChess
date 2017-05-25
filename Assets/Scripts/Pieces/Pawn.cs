@@ -9,10 +9,10 @@ namespace UnityChess
             ValidMoves.Clear();
         }
 
-        public Pawn(Square startingPosition, PieceType type) : base(startingPosition, type) { }
+        public Pawn(Square startingPosition, Side side) : base(startingPosition, side) { }
         public Pawn(Pawn pawnCopy) : base(pawnCopy) { }
 
-        public override BasePiece Clone()
+        public override Piece Clone()
         {
             return new Pawn(this);
         }
