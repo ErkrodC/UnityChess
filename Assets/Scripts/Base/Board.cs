@@ -10,18 +10,18 @@ namespace UnityChess
 
         /*
         Boards will be represented as a 10x12 grid in a one dimensional list.
-        The 8x8 chessboard is in the center.
+        The 8x8 chessboard is in the center, viewed from above with white on the side closer to index 0.
 
                0   1  2  3  ...  7  8   9
-              10  11 12 13  ... 17 18   19
-                |---------------------|
-              20| 21 22 23 ...        | 29
-              30| 31 32 33 ...        | 39
-               .|          .          | .
-               .|            .        | .
-               .|              .   98 | 99
-                |---------------------|
-             100  101 102 ... 107 108  109
+              10  11 12 13  ... 17 18   19                                  Compass:           (0, -1)
+                |---------------------|               file    (1,1)                             White
+              20| 21 22 23 ...        | 29      <------------             (1,-1) White-Kingside   |     White-Queenside (-1,-1)
+              30| 31 32 33 ...        | 39                  | R                                \  |  /
+               .|          .          | .                   | a       (1,0) Kingside--------------*------------------Queenside (-1, 0)
+               .|            .        | .                   | n                                /  |  \
+               .|              .   98 | 99                  | k            (1,1) Black-Kingside   |     Black-Queenside (-1,1)
+                |---------------------|                     V                                   Black
+             100  101 102 ... 107 108  109                                                      (0,1)
              110  111 112 ... 117 118  119
         */
         public List<Object> BoardPosition { get; set; }

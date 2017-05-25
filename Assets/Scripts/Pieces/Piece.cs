@@ -30,5 +30,27 @@ namespace UnityChess
         public abstract Piece Clone();
 
         public abstract void UpdateValidMoves(LinkedList<Board> boardList);
+
+        // override object.Equals
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            Piece piece = obj as Piece;
+            return (Side == piece.Side && HasMoved == piece.HasMoved && Position == piece.Position);
+        }
+
+        // override object.GetHashCode
+        public override int GetHashCode()
+        {
+            int hash = 13;
+            hash = (hash * 7) + Side.GetHashCode();
+            hash = (hash * 7) + Position.GetHashCode();
+            hash = (hash * 7) + HasMoved.GetHashCode();
+            return hash;
+        }
     }
 }
