@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UnityChess.AI
+namespace UnityChess
 {
     public class Rules
     {
