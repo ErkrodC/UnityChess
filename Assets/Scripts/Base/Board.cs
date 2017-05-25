@@ -95,20 +95,20 @@ namespace UnityChess
 
         public void MovePiece(Movement move)
         {
-            //update board
             this.BoardPosition[Square.squareAsIndex(move.Piece.Position)] = EmptyPiece;
             this.BoardPosition[Square.squareAsIndex(move.End)] = move.Piece;
 
-            //update piece
             move.Piece.HasMoved = true;
             move.Piece.Position = move.End;
+
+            if (move is SpecialMove) { (move as SpecialMove).HandleAssociatedPiece(this); }
         }
 
         public void UpdateAllPiecesValidMoves()
         {
             foreach (BasePiece BP in this.BoardPosition)
             {
-                if (BP.Type != PieceType.Invalid && BP.Type != PieceType.Empty) { ((Piece)BP).UpdateValidMoves(this); }
+                if (BP is Piece) { (BP as Piece).UpdateValidMoves(this); }
             }
         }
     }
