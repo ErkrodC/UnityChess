@@ -25,6 +25,18 @@ namespace UnityChess
             this.Rank = 9 - ((oneDimensionalIndex - this.File) / 10 - 1);
         }
 
+        public void AddVector(int file, int rank)
+        {
+            this.Rank += rank;
+            this.File += file;
+        }
+
+        public void CopyPosition(Square square)
+        {
+            this.Rank = square.Rank;
+            this.File = square.File;
+        }
+
         public bool IsValid()
         {
             return ((1 <= File && File <= 8) && (1 <= Rank && Rank <= 8));
