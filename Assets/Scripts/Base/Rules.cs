@@ -42,8 +42,7 @@ namespace UnityChess
             testBoard.MovePiece(move);
             testBList.AddLast(testBoard);
 
-
-            Game.UpdateAllPiecesValidMoves(testBList);
+            Game.UpdateAllPiecesValidMoves(testBList, turn);
 
             return !IsPlayerInCheck(testBoard, turn);
         }
