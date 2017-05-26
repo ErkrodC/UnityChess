@@ -7,7 +7,7 @@ namespace UnityChess
 {
     class EnPassantMove : SpecialMove
     {
-        public EnPassantMove(Square end, Piece piece, Piece associatedPiece) : base(end, piece, associatedPiece) { }
+        public EnPassantMove(Square end, Piece piece, Piece capturedPawn) : base(end, piece, capturedPawn) { }
 
         public override void HandleAssociatedPiece(Board board)
         {
