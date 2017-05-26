@@ -13,6 +13,12 @@ namespace UnityChess
             this.Piece = piece;
         }
 
+        public Movement(int file, int rank, Piece piece)
+        {
+            this.End = new Square(file, rank);
+            this.Piece = piece;
+        }
+
         public Movement(Movement moveCopy)
         {
             this.End = new Square(moveCopy.End);
