@@ -5,7 +5,7 @@ namespace UnityChess
 {
     public class Rook : Piece
     {
-        public override void UpdateValidMoves(LinkedList<Board> boardList)
+        public override void UpdateValidMoves(LinkedList<Board> boardList, Side turn)
         {
             ValidMoves.Clear();
         }

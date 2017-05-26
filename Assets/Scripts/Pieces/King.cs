@@ -5,7 +5,7 @@ namespace UnityChess
 {
     public class King : Piece
     {
-        public override void UpdateValidMoves(LinkedList<Board> boardList)
+        public override void UpdateValidMoves(LinkedList<Board> boardList, Side turn)
         {
             ValidMoves.Clear();
 
@@ -33,13 +33,23 @@ namespace UnityChess
             //check for kingside castling move
             Square inBtwnSquare1 = new Square(this.Position.File + 1, this.Position.Rank);
             Square inBtwnSquare2 = new Square(this.Position.File + 2, this.Position.Rank);
-            Object potentialRook = board.BoardPosition[Square.RankFileAsIndex(this.Position.File + 3, this.Position.Rank)];
-            if (potentialRook is Rook && !this.HasMoved)
+            Square potentialRookSquare = new Square(this.Position.File + 3, this.Position.Rank);
+            if (!this.HasMoved && inBtwnSquare1.IsValid() && inBtwnSquare2.IsValid() && potentialRookSquare.IsValid())
             {
-                Piece rook = potentialRook as Rook;
-                if (!rook.HasMoved && !inBtwnSquare1.IsOccupied(board) && !inBtwnSquare2.IsOccupied(board))
+                Object potentialRook = board.BoardPosition[potentialRookSquare.AsIndex()];
+                Rook rook = potentialRook is Rook ? potentialRook as Rook : null;
+                if (rook != null)
                 {
-                    ValidMoves.Add(new CastlingMove(new Square(inBtwnSquare2), this, rook));
+                    if (!rook.HasMoved && rook.Side == turn && !inBtwnSquare1.IsOccupied(board) && !inBtwnSquare2.IsOccupied(board))
+                    {
+                        Movement checkMove1 = new Movement(inBtwnSquare1, this);
+                        Movement checkMove2 = new Movement(inBtwnSquare2, this);
+                        if (!Rules.DoesMoveCauseCheck(board, checkMove1, turn) && !Rules.DoesMoveCauseCheck(board, checkMove2, turn) &&
+                            Rules.DoesMoveRemoveCheck(boardList, checkMove1, turn) && Rules.DoesMoveRemoveCheck(boardList, checkMove2, turn))
+                        {
+                            ValidMoves.Add(new CastlingMove(new Square(inBtwnSquare2), this, rook));
+                        }
+                    }
                 }
             }
 
@@ -47,13 +57,24 @@ namespace UnityChess
             inBtwnSquare1 = new Square(this.Position.File - 1, this.Position.Rank);
             inBtwnSquare2 = new Square(this.Position.File - 2, this.Position.Rank);
             Square inBtwnSquare3 = new Square(this.Position.File - 3, this.Position.Rank);
-            potentialRook = board.BoardPosition[Square.RankFileAsIndex(this.Position.File - 4, this.Position.Rank)];
-            if (potentialRook is Rook && !this.HasMoved)
+            potentialRookSquare.SetPosition(this.Position.File - 4, this.Position.Rank);
+            if (!this.HasMoved && inBtwnSquare1.IsValid() && inBtwnSquare2.IsValid() && inBtwnSquare3.IsValid() && potentialRookSquare.IsValid())
             {
-                Piece rook = potentialRook as Rook;
-                if (!rook.HasMoved && !inBtwnSquare1.IsOccupied(board) && !inBtwnSquare2.IsOccupied(board) && !inBtwnSquare3.IsOccupied(board))
+                Object potentialRook = board.BoardPosition[potentialRookSquare.AsIndex()];
+                Rook rook = potentialRook is Rook ? potentialRook as Rook : null;
+                if (rook != null)
                 {
-                    ValidMoves.Add(new CastlingMove(new Square(inBtwnSquare2), this, rook));
+                    if (!rook.HasMoved && rook.Side == turn && !inBtwnSquare1.IsOccupied(board) && !inBtwnSquare2.IsOccupied(board) && !inBtwnSquare3.IsOccupied(board))
+                    {
+                        Movement checkMove1 = new Movement(inBtwnSquare1, this);
+                        Movement checkMove2 = new Movement(inBtwnSquare2, this);
+                        Movement checkMove3 = new Movement(inBtwnSquare3, this);
+                        if (!Rules.DoesMoveCauseCheck(board, checkMove1, turn) && !Rules.DoesMoveCauseCheck(board, checkMove2, turn) && !Rules.DoesMoveCauseCheck(board, checkMove3, turn) &&
+                            Rules.DoesMoveRemoveCheck(boardList, checkMove1, turn) && Rules.DoesMoveRemoveCheck(boardList, checkMove2, turn) && Rules.DoesMoveRemoveCheck(boardList, checkMove3, turn))
+                        {
+                            ValidMoves.Add(new CastlingMove(new Square(inBtwnSquare2), this, rook));
+                        }
+                    }
                 }
             }
         }
