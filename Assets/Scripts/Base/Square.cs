@@ -4,10 +4,10 @@ namespace UnityChess
 {
     public class Square
     {
-        public int Rank { get; set; }
         public int File { get; set; }
+        public int Rank { get; set; }
 
-        public Square(int rank, int file)
+        public Square(int file, int rank)
         {
             this.Rank = rank;
             this.File = file;
@@ -15,8 +15,8 @@ namespace UnityChess
 
         public Square(Square squareCopy)
         {
-            this.Rank = squareCopy.Rank;
             this.File = squareCopy.File;
+            this.Rank = squareCopy.Rank;
         }
 
         public Square(int oneDimensionalIndex)
@@ -51,6 +51,11 @@ namespace UnityChess
         public static int SquareAsIndex(Square square)
         {
             return ((10 - square.Rank) * 10) + square.File;
+        }
+
+        public static int RankFileAsIndex(int file, int rank)
+        {
+            return ((10 - rank) * 10) + file;
         }
 
         // override object.Equals

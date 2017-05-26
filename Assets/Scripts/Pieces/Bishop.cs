@@ -15,6 +15,7 @@ namespace UnityChess
             Square testSquare = new Square(this.Position);
             testSquare.AddVector(-1, -1);
             Movement testMove = new Movement(testSquare, this);
+
             while(testSquare.IsValid() && !testSquare.IsOccupied(board) && Rules.DoesMoveCauseCheck(board, testMove, this.Side) && !Rules.DoesMoveCauseCheck(board, testMove, this.Side))
             {
                 //creates a snapshot of the move and adds to ValidMoves. does not assign testSquare or testMove to any members of newly created Movement (and subsequent Square)
