@@ -9,8 +9,8 @@ namespace UnityChess
 
         public Square(int file, int rank)
         {
-            this.Rank = rank;
             this.File = file;
+            this.Rank = rank;
         }
 
         public Square(Square squareCopy)
@@ -27,14 +27,20 @@ namespace UnityChess
 
         public void AddVector(int file, int rank)
         {
-            this.Rank += rank;
             this.File += file;
+            this.Rank += rank;
         }
 
         public void CopyPosition(Square square)
         {
-            this.Rank = square.Rank;
             this.File = square.File;
+            this.Rank = square.Rank;
+        }
+
+        public void SetPosition(int file, int rank)
+        {
+            this.File = file;
+            this.Rank = rank;
         }
 
         public bool IsValid()
@@ -44,13 +50,13 @@ namespace UnityChess
 
         public bool IsOccupied(Board board)
         {
-            Object obj = board.BoardPosition[SquareAsIndex(this)];
+            Object obj = board.BoardPosition[this.AsIndex()];
             return (obj is Piece);
         }
 
-        public static int SquareAsIndex(Square square)
+        public int AsIndex()
         {
-            return ((10 - square.Rank) * 10) + square.File;
+            return ((10 - this.Rank) * 10) + this.File;
         }
 
         public static int RankFileAsIndex(int file, int rank)

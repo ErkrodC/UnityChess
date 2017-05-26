@@ -20,7 +20,7 @@ namespace UnityChess
             this.BoardList.AddLast(new Board());
             this.PreviousMoves = new List<Movement>();
 
-            UpdateAllPiecesValidMoves(this.BoardList);
+            UpdateAllPiecesValidMoves(this.BoardList, Side.White);
         }
 
         //adds a new instance of a Board that represents the board achieved my making a certain move.
@@ -34,7 +34,7 @@ namespace UnityChess
             CurrentBoard.MovePiece(move);
 
             //this needs to be here since en passant's legality depends on past moves, therefore requiring BoardList
-            UpdateAllPiecesValidMoves(BoardList);
+            UpdateAllPiecesValidMoves(BoardList, CurrentTurn);
 
             //add new current board to history of boards(linked list)
             this.BoardList.AddLast(CurrentBoard);
@@ -47,12 +47,12 @@ namespace UnityChess
             CurrentTurn = CurrentTurn == Side.White ? Side.Black : Side.White;
         }
 
-        public static void UpdateAllPiecesValidMoves(LinkedList<Board> boardList)
+        public static void UpdateAllPiecesValidMoves(LinkedList<Board> boardList, Side turn)
         {
             Board currentBoard = boardList.Last.Value;
             foreach (Object obj in currentBoard.BoardPosition)
             {
-                if (obj is Piece) { (obj as Piece).UpdateValidMoves(boardList); }
+                if (obj is Piece) { (obj as Piece).UpdateValidMoves(boardList, turn); }
             }
         }
     }

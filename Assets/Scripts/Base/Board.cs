@@ -45,7 +45,7 @@ namespace UnityChess
             {
                 if (obj is Piece)
                 {
-                    BoardPosition[Square.SquareAsIndex((obj as Piece).Position)] = (obj as Piece).Clone();
+                    BoardPosition[(obj as Piece).Position.AsIndex()] = (obj as Piece).Clone();
                 }
             }
         }
@@ -110,8 +110,8 @@ namespace UnityChess
 
         public void MovePiece(Movement move)
         {
-            this.BoardPosition[Square.SquareAsIndex(move.Piece.Position)] = EmptyPiece;
-            this.BoardPosition[Square.SquareAsIndex(move.End)] = move.Piece;
+            this.BoardPosition[move.Piece.Position.AsIndex()] = EmptyPiece;
+            this.BoardPosition[move.End.AsIndex()] = move.Piece;
 
             move.Piece.HasMoved = true;
             move.Piece.Position = move.End;
