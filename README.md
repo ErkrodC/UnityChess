@@ -9,7 +9,7 @@ Be sure to follow this [branching strategy](https://docs.google.com/document/d/1
 If you wish to contribute, it is recommended you have the following resources:
 
 * [Unity 5.5.2](https://unity3d.com/get-unity/download/archive) - A free to download game engine.
-* [Visual Studio](https://www.visualstudio.com/downloads/) - The de-facto IDE for C# (amongst other languages)
+* [Visual Studio](https://www.visualstudio.com/downloads/) - THE IDE for C# (amongst other languages)
 * [Gitkraken](https://www.gitkraken.com/download) - A graphical tool that makes it easy to rebase and view branch histories
 
 ### Installation
