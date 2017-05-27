@@ -5,13 +5,14 @@ namespace UnityChess
 {
     public class Pawn : Piece
     {
+        public Pawn(Square startingPosition, Side side) : base(startingPosition, side) { }
+
+        private Pawn(Pawn pawnCopy) : base(pawnCopy) { }
+
         public override void UpdateValidMoves(LinkedList<Board> boardList, Side turn)
         {
             ValidMoves.Clear();
         }
-
-        public Pawn(Square startingPosition, Side side) : base(startingPosition, side) { }
-        public Pawn(Pawn pawnCopy) : base(pawnCopy) { }
 
         public override Piece Clone()
         {
