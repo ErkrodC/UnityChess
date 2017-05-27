@@ -5,6 +5,10 @@ namespace UnityChess
 {
     public class King : Piece
     {
+        public King(Square startingPosition, Side side) : base(startingPosition, side) { }
+
+        private King(King kingCopy) : base(kingCopy) { }
+
         public override void UpdateValidMoves(LinkedList<Board> boardList, Side turn)
         {
             ValidMoves.Clear();
@@ -23,7 +27,7 @@ namespace UnityChess
 
                     testSquare.CopyPosition(this.Position);
                     testSquare.AddVector(i, j);
-                    if (testSquare.IsValid() && !testSquare.IsOccupied(board) && Rules.DoesMoveCauseCheck(board, testMove, this.Side) && !Rules.DoesMoveCauseCheck(board, testMove, this.Side))
+                    if (testSquare.IsValid() && !testSquare.IsOccupied(board) && !Rules.DoesMoveCauseCheck(board, testMove, turn) && Rules.DoesMoveRemoveCheck(boardList, testMove, turn))
                     {
                         ValidMoves.Add(new Movement(testMove));
                     }
@@ -78,9 +82,6 @@ namespace UnityChess
                 }
             }
         }
-
-        public King(Square startingPosition, Side side) : base(startingPosition, side) { }
-        public King(King kingCopy) : base(kingCopy) { }
 
         public override Piece Clone()
         {

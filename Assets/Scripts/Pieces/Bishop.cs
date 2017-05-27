@@ -5,6 +5,10 @@ namespace UnityChess
 {
     public class Bishop : Piece
     {
+        public Bishop(Square startingPosition, Side side) : base(startingPosition, side) { }
+
+        private Bishop(Bishop bishopCopy) : base(bishopCopy) { }
+
         public override void UpdateValidMoves(LinkedList<Board> boardList, Side turn)
         {
             ValidMoves.Clear();
@@ -50,9 +54,6 @@ namespace UnityChess
                 testSquare.AddVector(-1, 1);
             }
         }
-
-        public Bishop(Square startingPosition, Side side) : base(startingPosition, side) { }
-        public Bishop(Bishop bishopCopy) : base(bishopCopy) { }
 
         public override Piece Clone()
         {
