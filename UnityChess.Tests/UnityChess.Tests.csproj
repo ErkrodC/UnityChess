@@ -55,13 +55,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UnityChess.csproj">
-      <Project>{77EA9E90-60DB-BA1F-9D8D-FC102ADD5659}</Project>
-      <Name>UnityChess</Name>
-    </ProjectReference>
+    <Folder Include="Assets\Scripts\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\Scripts\" />
+    <ProjectReference Include="..\Assembly-CSharp.csproj">
+      <Project>{77ea9e90-60db-ba1f-9d8d-fc102add5659}</Project>
+      <Name>Assembly-CSharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
