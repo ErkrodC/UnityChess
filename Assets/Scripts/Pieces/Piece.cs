@@ -3,7 +3,10 @@ using System.Collections.Generic;
 
 namespace UnityChess
 {
-    public abstract class Piece
+    /// <summary>
+    /// Base class for any chess piece.
+    /// </summary>
+    public abstract class Piece : BasePiece
     {
         public Side Side { get; set; }
         public Square Position { get; set; }

@@ -2,27 +2,39 @@
 
 namespace UnityChess
 {
+    /// <summary>
+    /// Representation of a move, namely a piece and its end square.
+    /// </summary>
     public class Movement
     {
         public Square End { get; set; }
         public Piece Piece { get; set; }
 
+        /// <summary>
+        /// Creates a new Movement.
+        /// </summary>
+        /// <param name="end">Square which the piece will land on.</param>
+        /// <param name="piece">Piece being moved.</param>
         public Movement(Square end, Piece piece)
         {
             this.End = end;
             this.Piece = piece;
         }
 
-        public Movement(int file, int rank, Piece piece)
+        //Used to improve readability
+        internal Movement(int file, int rank, Piece piece)
         {
             this.End = new Square(file, rank);
             this.Piece = piece;
         }
 
-        public Movement(Movement moveCopy)
+        /// <summary>
+        /// Copy constructor.
+        /// </summary>
+        internal Movement(Movement move)
         {
-            this.End = new Square(moveCopy.End);
-            this.Piece = moveCopy.Piece;
+            this.End = new Square(move.End);
+            this.Piece = move.Piece;
         }
 
         // override object.Equals

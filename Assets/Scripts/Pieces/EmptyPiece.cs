@@ -1,9 +1,9 @@
-﻿using System;
-
-namespace UnityChess
+﻿namespace UnityChess
 {
-    //empty is used to describe a valid square on the board without a piece on it
-    public class EmptyPiece
+    /// <summary>
+    /// Representation of a valid, unoccupied square on the board.
+    /// </summary>
+    public class EmptyPiece : BasePiece
     {
         public EmptyPiece() { }
     }

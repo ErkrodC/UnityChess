@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace UnityChess
 {
+    /// <summary>
+    /// A 120-length, 1-D representation of a chessboard.
+    /// </summary>
     public class Board
     {
         public static EmptyPiece EmptyPiece = new EmptyPiece();
@@ -24,16 +29,20 @@ namespace UnityChess
              100  101 102 ... 107 108  109                                                      (0,1)
              110  111 112 ... 117 118  119
         */
-        public List<Object> BoardPosition { get; set; }
+        public List<BasePiece> BoardPosition { get; set; }
 
-        //used for initial board
+        /// <summary>
+        /// Creates a Board with initial chess game position.
+        /// </summary>
         public Board()
         {
-            BoardPosition = new List<Object>(120);
-            SetStartingPosition();
+            this.BoardPosition = new List<BasePiece>(Enumerable.Range(0, 120).Select(i => (BasePiece)null));
+            this.SetStartingPosition();
         }
 
-        //used for copying a board
+        /// <summary>
+        ///  Creates a deep copy of the passed Board.
+        /// </summary>
         public Board(Board board)
         {
             this.SetBlankBoard();
@@ -41,15 +50,20 @@ namespace UnityChess
             //creates deep copy (makes copy of each piece and deep copy of their respective ValidMoves lists) of board (list of BasePiece's)
             //this may be a memory hog since each Board has a list of Piece's, and each piece has a list of Movement's
             //avg number turns/Board's per game should be around ~80. usual max number of pieces per board is 32
-            foreach (Object obj in BoardPosition)
+            // TODO optimize this method
+            foreach (BasePiece BP in BoardPosition)
             {
-                if (obj is Piece)
+                if (BP is Piece)
                 {
-                    BoardPosition[(obj as Piece).Position.AsIndex()] = (obj as Piece).Clone();
+                    Piece piece = BP as Piece;
+                    BoardPosition[piece.Position.AsIndex()] = piece.Clone();
                 }
             }
         }
 
+        /// <summary>
+        /// Used to remove all pieces from the board.
+        /// </summary>
         public void SetBlankBoard()
         {
             int i;
@@ -66,24 +80,27 @@ namespace UnityChess
             }
         }
 
+        /// <summary>
+        /// Used to reset the Board to initial chess game position.
+        /// </summary>
         public void SetStartingPosition()
         {
-            int i;
+
             //Will start by setting all squares as invalid, then change to other Piecetypes as necessary
-            for (i = 0; i < 120; i++)
+            for (int i = 0; i < 120; i++)
             {
                 this.BoardPosition[i] = InvalidPiece;
             }
 
             //Row 2/Rank 7 and Row 7/Rank 2, both rows of pawns
-            for (i = 31; i < 39; i++)
+            for (int i = 31; i < 39; i++)
             {
                 this.BoardPosition[i] = new Pawn(new Square(i), Side.Black);
                 this.BoardPosition[i + 50] = new Pawn(new Square(i + 50), Side.White);
             }
 
             //Rows 3-6/Ranks 6-3, empty inbetween squares
-            for (i = 41; i < 79; i++)
+            for (int i = 41; i < 79; i++)
             {
                 this.BoardPosition[i] = EmptyPiece;
             }
@@ -108,6 +125,9 @@ namespace UnityChess
             this.BoardPosition[98] = new Rook(new Square(98), Side.White);
         }
 
+        /// <summary>
+        /// Used to execute a move.
+        /// </summary>
         public void MovePiece(Movement move)
         {
             this.BoardPosition[move.Piece.Position.AsIndex()] = EmptyPiece;
