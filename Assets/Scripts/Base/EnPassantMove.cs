@@ -25,6 +25,10 @@ namespace UnityChess
         public override void HandleAssociatedPiece(Board board)
         {
             board.BoardPosition[AssociatedPiece.Position.AsIndex()] = Board.EmptyPiece;
+
+            //may be unnecessary since GC will/should destroy pieces removed from the board. Mostly here for safety.
+            Piece.HasMoved = true;
+            Piece.Position = null;
         }
     }
 }

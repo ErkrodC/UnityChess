@@ -19,7 +19,7 @@ namespace UnityChess.CastlingMoveTests
         [Test()]
         [TestCase(6, 8)] //Kingside castle
         [TestCase(4, 1)] //Queenside castle
-        public void HandleAssociatedPiece_CastlingMove_RookFileIsExpected(int expected, int rookStartingFile)
+        public void HandleAssociatedPiece_CastlingMove_RookMovedAsExpected(int expected, int rookStartingFile)
         {
             Rook rook = new Rook(new Square(rookStartingFile, 1), Side.White);
             board.BoardPosition[rook.Position.AsIndex()] = rook;
@@ -27,7 +27,11 @@ namespace UnityChess.CastlingMoveTests
 
             mcm.HandleAssociatedPiece(board);
 
-            Assert.AreEqual(expected, rook.Position.File);
+            Assert.Multiple(() =>
+            {
+                Assert.True(rook.HasMoved);
+                Assert.AreEqual(expected, rook.Position.File);
+            });
         }
     }
 
