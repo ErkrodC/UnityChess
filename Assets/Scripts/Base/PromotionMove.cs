@@ -10,43 +10,47 @@ namespace UnityChess
         /// <summary>
         /// Creates a new PromotionMove instance; inherits from SpecialMove.
         /// </summary>
-        /// <param name="end">Square on which the pawn is promoting.</param>
-        /// <param name="pawn">Pawn which is being promoted.</param>
-        /// <param name="bishop">Bishop instance that the pawn is promoting to.</param>
-        public PromotionMove(Square end, Pawn pawn, Bishop bishop) : base(end, pawn, bishop) { }
+        /// <param name="end">Square which the promoting pawn is landing on.</param>
+        /// <param name="pawn">The promoting pawn.</param>
+        /// <param name="election">The piece to promote the promoting pawn to.</param>
+        public PromotionMove(Square end, Pawn pawn, ElectedPiece election) : base(end, pawn, ParseElection(election, end, pawn.Side)) { }
+
+        private static Piece ParseElection(ElectedPiece election, Square end, Side side)
+        {
+            switch (election)
+            {
+                case ElectedPiece.Knight:
+                    Knight knight = new Knight(end, side);
+                    knight.HasMoved = true;
+                    knight.Position = end;
+                    return knight;
+                case ElectedPiece.Bishop:
+                    Bishop bishop = new Bishop(end, side);
+                    bishop.HasMoved = true;
+                    bishop.Position = end;
+                    return bishop;
+                case ElectedPiece.Rook:
+                    Rook rook = new Rook(end, side);
+                    rook.HasMoved = true;
+                    rook.Position = end;
+                    return rook;
+                case ElectedPiece.Queen:
+                    Queen queen = new Queen(end, side);
+                    queen.HasMoved = true;
+                    queen.Position = end;
+                    return queen;
+                default:
+                    return null;
+            }
+        }
 
         /// <summary>
-        /// Creates a new PromotionMove instance; inherits from SpecialMove.
-        /// </summary>
-        /// <param name="end">Square on which the pawn is promoting.</param>
-        /// <param name="pawn">Pawn which is being promoted.</param>
-        /// <param name="knight">Knight instance that the pawn is promoting to.</param>
-        public PromotionMove(Square end, Pawn pawn, Knight knight) : base(end, pawn, knight) { }
-
-        /// <summary>
-        /// Creates a new PromotionMove instance; inherits from SpecialMove.
-        /// </summary>
-        /// <param name="end">Square on which the pawn is promoting.</param>
-        /// <param name="pawn">Pawn which is being promoted.</param>
-        /// <param name="queen">Queen instance that the pawn is promoting to.</param>
-        public PromotionMove(Square end, Pawn pawn, Queen queen) : base(end, pawn, queen) { }
-
-        /// <summary>
-        /// Creates a new PromotionMove instance; inherits from SpecialMove.
-        /// </summary>
-        /// <param name="end">Square on which the pawn is promoting.</param>
-        /// <param name="pawn">Pawn which is being promoted.</param>
-        /// <param name="rook">Rook instance that the pawn is promoting to.</param>
-        public PromotionMove(Square end, Pawn pawn, Rook rook) : base(end, pawn, rook) { } 
-
-        /// <summary>
-        /// Handles replacing the promoting pawn with the elected piece.
+        /// Handles replacing the promoting pawn with the elected promotion piece.
         /// </summary>
         /// <param name="board">Board on which the move is being made.</param>
         public override void HandleAssociatedPiece(Board board)
         {
-            // TODO implement method
-            throw new NotImplementedException();
+            board.BoardPosition[End.AsIndex()] = AssociatedPiece;
         }
     }
 }
