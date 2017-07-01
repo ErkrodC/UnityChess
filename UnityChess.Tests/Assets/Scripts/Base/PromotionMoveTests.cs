@@ -29,7 +29,7 @@ namespace UnityChess.PromotionMoveTests
 
             mpm.HandleAssociatedPiece(board);
 
-            Assert.AreEqual($"UnityChess.{ election.ToString() }", board.BoardPosition[expectedPosition.AsIndex()].GetType().ToString());
+            Assert.AreEqual($"UnityChess.{ election.ToString() }", board.BasePieceList[expectedPosition.AsIndex()].GetType().ToString());
         }
     }
 

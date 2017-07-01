@@ -40,7 +40,7 @@ namespace UnityChess
             Square potentialRookSquare = new Square(this.Position.File + 3, this.Position.Rank);
             if (!this.HasMoved && inBtwnSquare1.IsValid() && inBtwnSquare2.IsValid() && potentialRookSquare.IsValid())
             {
-                Object potentialRook = board.BoardPosition[potentialRookSquare.AsIndex()];
+                Object potentialRook = board.BasePieceList[potentialRookSquare.AsIndex()];
                 Rook rook = potentialRook is Rook ? potentialRook as Rook : null;
                 if (rook != null)
                 {
@@ -63,7 +63,7 @@ namespace UnityChess
             potentialRookSquare.SetPosition(this.Position.File - 4, this.Position.Rank);
             if (!this.HasMoved && inBtwnSquare1.IsValid() && inBtwnSquare2.IsValid() && inBtwnSquare3.IsValid() && potentialRookSquare.IsValid())
             {
-                Object potentialRook = board.BoardPosition[potentialRookSquare.AsIndex()];
+                Object potentialRook = board.BasePieceList[potentialRookSquare.AsIndex()];
                 Rook rook = potentialRook is Rook ? potentialRook as Rook : null;
                 if (rook != null)
                 {
@@ -91,7 +91,7 @@ namespace UnityChess
         /// </summary>
         public bool AmInCheck(Board board)
         {
-            foreach (BasePiece basePiece in board.BoardPosition)
+            foreach (BasePiece basePiece in board.BasePieceList)
             {
                 if (basePiece is Piece)
                 {

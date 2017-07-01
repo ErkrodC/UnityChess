@@ -65,7 +65,7 @@ namespace UnityChess
 
         internal bool IsOccupied(Board board)
         {
-            Object obj = board.BoardPosition[this.AsIndex()];
+            Object obj = board.BasePieceList[this.AsIndex()];
             return (obj is Piece);
         }
 

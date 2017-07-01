@@ -20,12 +20,12 @@ namespace UnityChess.EnPassantMoveTests
         public void HandleAssociatedPiece_EnPassantMove_AssocPawnIsRemoved()
         {
             Pawn pawn = new Pawn(new Square(1, 2), Side.White);
-            board.BoardPosition[pawn.Position.AsIndex()] = pawn;
+            board.BasePieceList[pawn.Position.AsIndex()] = pawn;
             MockEnPassantMove mepm = new MockEnPassantMove(pawn);
 
             mepm.HandleAssociatedPiece(board);
 
-            Assert.AreNotEqual(board.BoardPosition[pawn.Position.AsIndex()], pawn);
+            Assert.AreNotEqual(board.BasePieceList[pawn.Position.AsIndex()], pawn);
         }
     }
 
