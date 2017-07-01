@@ -6,6 +6,7 @@ using System;
 namespace UnityChess.BoardTests
 {
     [TestFixture()]
+    [Author("Eric Rodriguez")]
     public class BoardTests
     {
         internal static Board board;

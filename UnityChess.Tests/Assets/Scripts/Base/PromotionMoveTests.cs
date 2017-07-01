@@ -5,6 +5,7 @@ using UnityChess;
 namespace UnityChess.PromotionMoveTests
 {
     [TestFixture()]
+    [Author("Eric Rodriguez")]
     public class PromotionMoveTests
     {
         Board board;
