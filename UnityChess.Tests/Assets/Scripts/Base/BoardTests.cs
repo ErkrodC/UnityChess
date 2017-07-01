@@ -34,8 +34,8 @@ namespace UnityChess.BoardTests
             board.MovePiece(move);
 
             Assert.Multiple(() => {
-                Assert.AreEqual(board.BoardPosition[expectedPositionAsIndex], pawn);
-                Assert.AreEqual(board.BoardPosition[initialPositionAsIndex], Board.EmptyPiece);
+                Assert.AreEqual(board.BasePieceList[expectedPositionAsIndex], pawn);
+                Assert.AreEqual(board.BasePieceList[initialPositionAsIndex], Board.EmptyPiece);
                 Assert.AreEqual(expectedFile, pawn.Position.File);
                 Assert.AreEqual(expectedRank, pawn.Position.Rank);
                 Assert.True(pawn.HasMoved);

@@ -46,7 +46,7 @@ namespace UnityChess.GameTests
 
             for (int i = 0; i < numberOfPieces; i++)
             {
-                board.BoardPosition[i + 21] = mockPiece.Object;
+                board.BasePieceList[i + 21] = mockPiece.Object;
             }
         }
     }

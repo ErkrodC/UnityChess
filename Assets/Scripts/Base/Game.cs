@@ -64,7 +64,7 @@ namespace UnityChess
         public static void UpdateAllPiecesValidMoves(LinkedList<Board> boardList, Side turn)
         {
             Board currentBoard = boardList.Last.Value;
-            foreach (BasePiece BP in currentBoard.BoardPosition)
+            foreach (BasePiece BP in currentBoard.BasePieceList)
             {
                 if (BP is Piece) { (BP as Piece).UpdateValidMoves(boardList, turn); }
             }

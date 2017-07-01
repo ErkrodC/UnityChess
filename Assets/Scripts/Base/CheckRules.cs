@@ -38,7 +38,7 @@ namespace UnityChess
         {
             int sumOfValidMoves = 0;
 
-            foreach (Piece p in board.BoardPosition.OfType<Piece>().ToList().FindAll(p => p.Side == side))
+            foreach (Piece p in board.BasePieceList.OfType<Piece>().ToList().FindAll(p => p.Side == side))
             {
                 sumOfValidMoves += p.ValidMoves.Count;
             }
@@ -103,7 +103,7 @@ namespace UnityChess
 
         private static void initKings(Board board, out King whiteKing, out King blackKing)
         {
-            List<King> kings = board.BoardPosition.FindAll(bp => bp is King).ConvertAll<King>(bp => bp as King);
+            List<King> kings = board.BasePieceList.FindAll(bp => bp is King).ConvertAll<King>(bp => bp as King);
             whiteKing = kings.Find(k => k.Side == Side.White);
             blackKing = kings.Find(k => k.Side == Side.Black);
         }
