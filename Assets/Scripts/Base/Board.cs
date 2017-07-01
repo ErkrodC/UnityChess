@@ -51,13 +51,9 @@ namespace UnityChess
             //this may be a memory hog since each Board has a list of Piece's, and each piece has a list of Movement's
             //avg number turns/Board's per game should be around ~80. usual max number of pieces per board is 32
             // TODO optimize this method
-            foreach (BasePiece BP in BoardPosition)
+            foreach (Piece piece in BoardPosition.OfType<Piece>())
             {
-                if (BP is Piece)
-                {
-                    Piece piece = BP as Piece;
-                    BoardPosition[piece.Position.AsIndex()] = piece.Clone();
-                }
+                BoardPosition[piece.Position.AsIndex()] = piece.Clone();
             }
         }
 
@@ -66,17 +62,22 @@ namespace UnityChess
         /// </summary>
         public void SetBlankBoard()
         {
-            int i;
-            //Will start by setting all squares as invalid, then change to other Piecetypes as necessary
-            for (i = 0; i < 120; i++)
+            for (int i = 1; i <= 8; i++)
+                for (int j = 1; j <= 8; j++)
+                {
+                    BoardPosition[Square.RankFileAsIndex(i, j)] = EmptyPiece;
+                }
+
+            for (int i = 0; i <= 19; i++)
             {
-                this.BoardPosition[i] = InvalidPiece;
+                BoardPosition[i] = InvalidPiece;
+                BoardPosition[i + 100] = InvalidPiece;
             }
 
-            //empty board squares
-            for (i = 21; i < 99; i++)
+            for (int i = 20; i <= 90; i += 10)
             {
-                this.BoardPosition[i] = EmptyPiece;
+                BoardPosition[i] = InvalidPiece;
+                BoardPosition[i + 9] = InvalidPiece;
             }
         }
 
@@ -86,23 +87,13 @@ namespace UnityChess
         public void SetStartingPosition()
         {
 
-            //Will start by setting all squares as invalid, then change to other Piecetypes as necessary
-            for (int i = 0; i < 120; i++)
-            {
-                this.BoardPosition[i] = InvalidPiece;
-            }
+            SetBlankBoard();
 
             //Row 2/Rank 7 and Row 7/Rank 2, both rows of pawns
-            for (int i = 31; i < 39; i++)
+            for (int i = 31; i <= 38; i++)
             {
                 this.BoardPosition[i] = new Pawn(new Square(i), Side.Black);
                 this.BoardPosition[i + 50] = new Pawn(new Square(i + 50), Side.White);
-            }
-
-            //Rows 3-6/Ranks 6-3, empty inbetween squares
-            for (int i = 41; i < 79; i++)
-            {
-                this.BoardPosition[i] = EmptyPiece;
             }
 
             //Rows 1 & 8/Ranks 8 & 1, back rows for both players
