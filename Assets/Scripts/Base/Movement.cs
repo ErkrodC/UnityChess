@@ -37,6 +37,18 @@ namespace UnityChess
             this.Piece = move.Piece;
         }
 
+        /// <summary>
+        /// Checks whether a move is legal on a given board/turn.
+        /// </summary>
+        /// <param name="turn">Side of the player whose turn it currently is.</param>
+        public bool IsLegal(Side turn)
+        {
+            if (Piece.Side != turn) { return false; }
+            return Piece.ValidMoves.Contains(this);
+
+            // TODO method may be wrong if .Contains uses ref equality. If so, need to use .Exists w/ lambda exp to check if a move with the fields of the passed move exists in the list
+        }
+
         // override object.Equals
         public override bool Equals(object obj)
         {

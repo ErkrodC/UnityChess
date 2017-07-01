@@ -33,6 +33,7 @@ namespace UnityChess
             this.PreviousMoves = new List<Movement>();
 
             UpdateAllPiecesValidMoves(this.BoardList, Side.White);
+            CheckRules.KingsInitialized = false;
         }
 
         /// <summary>
@@ -41,9 +42,10 @@ namespace UnityChess
         /// <param name="move"></param>
         public void ExecuteTurn(Movement move)
         {
-            // TODO finish implementing
-            //validate move is legal
-            //if (!isLegal(move)) return; //call to gui method which notifies user made invalid move
+            // NOTE may be safe to assume move being passed is a legal move since it should be getting grabbed from a Piece's ValidMoves list
+            if (!move.IsLegal(CurrentTurn)) return;
+            // PSEUDOCODE call to gui method which notifies user made invalid move
+            
 
             //create new copy of previous current board, and execute the move on it
             Board resultingBoard = new Board(BoardList.Last.Value);
