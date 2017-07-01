@@ -4,6 +4,7 @@ using UnityChess;
 namespace UnityChess.EnPassantMoveTests
 {
     [TestFixture()]
+    [Author("Eric Rodriguez")]
     public class EnPassantMoveTests
     {
         Board board;

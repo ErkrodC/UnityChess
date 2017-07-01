@@ -7,6 +7,7 @@ using System;
 namespace UnityChess.GameTests
 {
     [TestFixture()]
+    [Author("Eric Rodriguez")]
     public class GameTests
     {
         Board board;

@@ -5,6 +5,7 @@ using System;
 namespace UnityChess.CastlingMoveTests
 {
     [TestFixture()]
+    [Author("Eric Rodriguez")]
     public class CastlingMoveTests
     {
         Board board;
