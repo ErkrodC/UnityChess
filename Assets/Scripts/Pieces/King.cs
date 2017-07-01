@@ -87,5 +87,37 @@ namespace UnityChess
         {
             return new King(this);
         }
+
+        /// <summary>
+        /// Checks whether this King instance is under threat of check.
+        /// </summary>
+        public bool AmInCheck(Board board)
+        {
+            foreach (BasePiece basePiece in board.BoardPosition)
+            {
+                if (basePiece is Piece)
+                {
+                    Piece piece = basePiece as Piece;
+                    if (piece.Side != this.Side)
+                    {
+                        if (IsPieceCheckingMe(board, piece)) { return true; }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsPieceCheckingMe(Board board, Piece piece)
+        {
+            if (piece.Side == this.Side) { return false; }
+
+            foreach (Movement move in piece.ValidMoves)
+            {
+                if (move.End.Equals(this.Position)) { return true; }
+            }
+
+            return false;
+        }
     }
 }
