@@ -20,7 +20,7 @@ namespace UnityChess
             testSquare.AddVector(-1, -1);
             Movement testMove = new Movement(testSquare, this);
 
-            while(testSquare.IsValid() && !testSquare.IsOccupied(board) && Rules.DoesMoveCauseCheck(board, testMove, this.Side) && !Rules.DoesMoveCauseCheck(board, testMove, this.Side))
+            while(testSquare.IsValid() && !testSquare.IsOccupied(board) && CheckRules.ObeysCheckRules(board, testMove, turn))
             {
                 //creates a snapshot of the move and adds to ValidMoves. does not assign testSquare or testMove to any members of newly created Movement (and subsequent Square)
                 ValidMoves.Add(new Movement(testMove));
@@ -30,7 +30,7 @@ namespace UnityChess
             //white-kingside direction
             testSquare.CopyPosition(this.Position);
             testSquare.AddVector(1, -1);
-            while (testSquare.IsValid() && !testSquare.IsOccupied(board) && Rules.DoesMoveCauseCheck(board, testMove, this.Side) && !Rules.DoesMoveCauseCheck(board, testMove, this.Side))
+            while (testSquare.IsValid() && !testSquare.IsOccupied(board) && CheckRules.ObeysCheckRules(board, testMove, turn))
             {
                 ValidMoves.Add(new Movement(testMove));
                 testSquare.AddVector(1, -1);
@@ -39,7 +39,7 @@ namespace UnityChess
             //black-kingside direction
             testSquare.CopyPosition(this.Position);
             testSquare.AddVector(1, 1);
-            while (testSquare.IsValid() && !testSquare.IsOccupied(board) && Rules.DoesMoveCauseCheck(board, testMove, this.Side) && !Rules.DoesMoveCauseCheck(board, testMove, this.Side))
+            while (testSquare.IsValid() && !testSquare.IsOccupied(board) && CheckRules.ObeysCheckRules(board, testMove, turn))
             {
                 ValidMoves.Add(new Movement(testMove));
                 testSquare.AddVector(1, 1);
@@ -48,7 +48,7 @@ namespace UnityChess
             //black-queenside direction
             testSquare.CopyPosition(this.Position);
             testSquare.AddVector(-1, 1);
-            while (testSquare.IsValid() && !testSquare.IsOccupied(board) && Rules.DoesMoveCauseCheck(board, testMove, this.Side) && !Rules.DoesMoveCauseCheck(board, testMove, this.Side))
+            while (testSquare.IsValid() && !testSquare.IsOccupied(board) && CheckRules.ObeysCheckRules(board, testMove, turn))
             {
                 ValidMoves.Add(new Movement(testMove));
                 testSquare.AddVector(-1, 1);

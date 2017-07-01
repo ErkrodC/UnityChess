@@ -39,12 +39,14 @@ namespace UnityChess
         /// <summary>
         /// Executes passed move and switches sides; also adds move to history.
         /// </summary>
-        /// <param name="move"></param>
         public void ExecuteTurn(Movement move)
         {
             // NOTE may be safe to assume move being passed is a legal move since it should be getting grabbed from a Piece's ValidMoves list
-            if (!move.IsLegal(CurrentTurn)) return;
-            // PSEUDOCODE call to gui method which notifies user made invalid move
+            if (!move.IsLegal(CurrentTurn))
+            {
+                // PSEUDO call to gui method which notifies user made invalid move
+                return;
+            }
             
 
             //create new copy of previous current board, and execute the move on it
