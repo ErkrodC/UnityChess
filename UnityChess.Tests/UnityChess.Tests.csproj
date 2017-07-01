@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Base\BoardTests.cs" />
     <Compile Include="Assets\Scripts\Base\CastlingMoveTests.cs" />
+    <Compile Include="Assets\Scripts\Base\CheckRulesTests.cs" />
     <Compile Include="Assets\Scripts\Base\EnPassantMoveTests.cs" />
     <Compile Include="Assets\Scripts\Base\GameTests.cs" />
     <Compile Include="Assets\Scripts\Base\PromotionMoveTests.cs" />
