@@ -12,7 +12,7 @@ UnityChess\.Tests/bin/Debug*
 ExportedObj/
 *.csproj
 *.unityproj
-*.sln
+# *.sln
 *.suo
 *.tmp
 *.user
