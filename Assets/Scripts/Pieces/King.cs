@@ -27,7 +27,7 @@ namespace UnityChess
 
                     testSquare.CopyPosition(this.Position);
                     testSquare.AddVector(i, j);
-                    if (testSquare.IsValid() && !testSquare.IsOccupied(board) && !Rules.DoesMoveCauseCheck(board, testMove, turn) && Rules.DoesMoveRemoveCheck(board, testMove, turn))
+                    if (testSquare.IsValid() && !testSquare.IsOccupied(board) && CheckRules.ObeysCheckRules(board, testMove, turn))
                     {
                         ValidMoves.Add(new Movement(testMove));
                     }
@@ -48,8 +48,7 @@ namespace UnityChess
                     {
                         Movement checkMove1 = new Movement(inBtwnSquare1, this);
                         Movement checkMove2 = new Movement(inBtwnSquare2, this);
-                        if (!Rules.DoesMoveCauseCheck(board, checkMove1, turn) && !Rules.DoesMoveCauseCheck(board, checkMove2, turn) &&
-                            Rules.DoesMoveRemoveCheck(board, checkMove1, turn) && Rules.DoesMoveRemoveCheck(board, checkMove2, turn))
+                        if (CheckRules.ObeysCheckRules(board, checkMove2, turn) && CheckRules.ObeysCheckRules(board, checkMove1, turn))
                         {
                             ValidMoves.Add(new CastlingMove(new Square(inBtwnSquare2), this, rook));
                         }
@@ -73,8 +72,7 @@ namespace UnityChess
                         Movement checkMove1 = new Movement(inBtwnSquare1, this);
                         Movement checkMove2 = new Movement(inBtwnSquare2, this);
                         Movement checkMove3 = new Movement(inBtwnSquare3, this);
-                        if (!Rules.DoesMoveCauseCheck(board, checkMove1, turn) && !Rules.DoesMoveCauseCheck(board, checkMove2, turn) && !Rules.DoesMoveCauseCheck(board, checkMove3, turn) &&
-                            Rules.DoesMoveRemoveCheck(board, checkMove1, turn) && Rules.DoesMoveRemoveCheck(board, checkMove2, turn) && Rules.DoesMoveRemoveCheck(board, checkMove3, turn))
+                        if (CheckRules.ObeysCheckRules(board, checkMove1, turn) && CheckRules.ObeysCheckRules(board, checkMove2, turn) && CheckRules.ObeysCheckRules(board, checkMove3, turn))
                         {
                             ValidMoves.Add(new CastlingMove(new Square(inBtwnSquare2), this, rook));
                         }
