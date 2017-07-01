@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace UnityChess
 {
@@ -17,31 +18,12 @@ namespace UnityChess
 
         private static Piece ParseElection(ElectedPiece election, Square end, Side side)
         {
-            switch (election)
-            {
-                case ElectedPiece.Knight:
-                    Knight knight = new Knight(end, side);
-                    knight.HasMoved = true;
-                    knight.Position = end;
-                    return knight;
-                case ElectedPiece.Bishop:
-                    Bishop bishop = new Bishop(end, side);
-                    bishop.HasMoved = true;
-                    bishop.Position = end;
-                    return bishop;
-                case ElectedPiece.Rook:
-                    Rook rook = new Rook(end, side);
-                    rook.HasMoved = true;
-                    rook.Position = end;
-                    return rook;
-                case ElectedPiece.Queen:
-                    Queen queen = new Queen(end, side);
-                    queen.HasMoved = true;
-                    queen.Position = end;
-                    return queen;
-                default:
-                    return null;
-            }
+            Type pieceType = Type.GetType(string.Format("UnityChess.{0}", election.ToString()));
+
+            Piece piece = (Piece)pieceType.GetConstructor(new Type[] { typeof(Square), typeof(Side) }).Invoke(new Object[] { end, side });
+            piece.HasMoved = true;
+            piece.Position = end;
+            return piece;
         }
 
         /// <summary>
