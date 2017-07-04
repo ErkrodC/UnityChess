@@ -14,26 +14,8 @@ namespace UnityChess
             ValidMoves.Clear();
 
             Board board = boardList.Last.Value;
-            Square testSquare = new Square(this.Position);
-            Movement testMove = new Movement(testSquare, this);
-            
-            //check squares surrounding king
-            for (int i = -1; i<=1; i++)
-            {
-                for (int j=-1; j<=1; j++)
-                {
-                    //skip square that king is on
-                    if (i == 0 && j == 0) { continue; }
 
-                    testSquare.CopyPosition(this.Position);
-                    testSquare.AddVector(i, j);
-                    if (testSquare.IsValid() && !testSquare.IsOccupiedByFriendly(board, turn) && CheckRules.ObeysCheckRules(board, testMove, turn))
-                    {
-                        ValidMoves.Add(new Movement(testMove));
-                    }
-                }
-            }
-
+            CheckSurroundingSquares(board, turn);
             CheckCastlingMoves(board, turn);
         }
 
@@ -72,6 +54,26 @@ namespace UnityChess
             }
 
             return false;
+        }
+
+        private void CheckSurroundingSquares(Board board, Side turn)
+        {
+            Square testSquare = new Square(this.Position);
+            Movement testMove = new Movement(testSquare, this);
+
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if (i == 0 && j == 0) { continue; }
+
+                    testSquare.CopyPosition(this.Position);
+                    testSquare.AddVector(i, j);
+                    if (testSquare.IsValid() && !testSquare.IsOccupiedByFriendly(board, turn) && CheckRules.ObeysCheckRules(board, testMove, turn))
+                    {
+                        ValidMoves.Add(new Movement(testMove));
+                    }
+                }
+            }
         }
 
         private void CheckCastlingMoves(Board board, Side turn)
