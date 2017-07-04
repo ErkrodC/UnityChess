@@ -13,13 +13,18 @@ namespace UnityChess
         {
             ValidMoves.Clear();
 
-            //search for open/valid/legal squares along white-queenside direction starting from current position.
-            //Stop when reached a occupied/invalid square
             Board board = boardList.Last.Value;
+
+            CheckDiagonalDirections(board, turn);
+        }
+
+        private void CheckDiagonalDirections(Board board, Side turn)
+        {
             Square testSquare = new Square(this.Position);
             Movement testMove = new Movement(testSquare, this);
 
-            foreach (int i in new int[] { -1, 1 }) {
+            foreach (int i in new int[] { -1, 1 })
+            {
                 foreach (int j in new int[] { -1, 1 })
                 {
                     testSquare.CopyPosition(this.Position);

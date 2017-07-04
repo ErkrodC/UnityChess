@@ -15,15 +15,21 @@ namespace UnityChess
 
             Board board = boardList.Last.Value;
 
-            for (int file = -2; file <= 2; file++)
-            {
-                if (file == 0) { continue; }
+            CheckKnightCircleSquares(board, turn);
+        }
 
-                int complement = Math.Abs(file) == 1 ? 2 : 1;
-                for (int rank = -1 * complement; rank <= complement; rank += 2 * complement)
+        private void CheckKnightCircleSquares(Board board, Side turn)
+        {
+            Square testSqaure = new Square(this.Position);
+            Movement testMove = new Movement(testSqaure, this);
+
+            for (int i = -2; i <= 2; i++)
+            {
+                if (i == 0) { continue; }
+                foreach (int j in (Math.Abs(i) == 2 ? new int[] {-1, 1 } : new int[] {-2, 2 } ))
                 {
-                    Square testSqaure = new Square(file, rank);
-                    Movement testMove = new Movement(testSqaure, this);
+                    testSqaure.CopyPosition(this.Position);
+                    testSqaure.AddVector(i, j);
 
                     if (testSqaure.IsValid() && !testSqaure.IsOccupiedByFriendly(board, turn) && CheckRules.ObeysCheckRules(board, testMove, turn))
                     {
