@@ -9,11 +9,9 @@ namespace UnityChess
 
         private Bishop(Bishop bishopCopy) : base(bishopCopy) { }
 
-        public override void UpdateValidMoves(LinkedList<Board> boardList, Side turn)
+        public override void UpdateValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn)
         {
             ValidMoves.Clear();
-
-            Board board = boardList.Last.Value;
 
             CheckDiagonalDirections(board, turn);
         }

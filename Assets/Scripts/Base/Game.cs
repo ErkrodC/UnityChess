@@ -12,7 +12,7 @@ namespace UnityChess
         public int TurnCount { get; set; }
         public Mode Mode { get; set; }
         public LinkedList<Board> BoardList { get; set; }
-        public List<Movement> PreviousMoves { get; set; }
+        public LinkedList<Movement> PreviousMoves { get; set; }
 
         /// <summary>
         /// Creates a new human versus human Game instance.
@@ -30,9 +30,9 @@ namespace UnityChess
             this.Mode = mode;
             this.BoardList = new LinkedList<Board>();
             this.BoardList.AddLast(new Board());
-            this.PreviousMoves = new List<Movement>();
+            this.PreviousMoves = new LinkedList<Movement>();
 
-            UpdateAllPiecesValidMoves(this.BoardList, Side.White);
+            UpdateAllPiecesValidMoves(this.BoardList.Last.Value, this.PreviousMoves, Side.White);
             CheckRules.KingsInitialized = false;
         }
 
@@ -54,19 +54,18 @@ namespace UnityChess
             resultingBoard.MovePiece(move);
 
             this.BoardList.AddLast(resultingBoard);
-            this.PreviousMoves.Add(move);
-            UpdateAllPiecesValidMoves(BoardList, CurrentTurn);
+            this.PreviousMoves.AddLast(move);
+            UpdateAllPiecesValidMoves(resultingBoard, PreviousMoves, CurrentTurn);
 
             TurnCount++;
             CurrentTurn = CurrentTurn == Side.White ? Side.Black : Side.White;
         }
 
-        public static void UpdateAllPiecesValidMoves(LinkedList<Board> boardList, Side turn)
+        public static void UpdateAllPiecesValidMoves(Board board, LinkedList<Movement> moveList, Side turn)
         {
-            Board currentBoard = boardList.Last.Value;
-            foreach (BasePiece BP in currentBoard.BasePieceList)
+            foreach (Piece piece in board.BasePieceList.FindAll(bp => bp is Piece))
             {
-                if (BP is Piece) { (BP as Piece).UpdateValidMoves(boardList, turn); }
+                piece.UpdateValidMoves(board, moveList, turn);
             }
         }
     }
