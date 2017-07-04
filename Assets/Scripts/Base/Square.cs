@@ -65,8 +65,14 @@ namespace UnityChess
 
         internal bool IsOccupied(Board board)
         {
-            Object obj = board.BasePieceList[this.AsIndex()];
-            return (obj is Piece);
+            BasePiece BP = board.BasePieceList[this.AsIndex()];
+            return (BP is Piece);
+        }
+
+        internal bool IsOccupiedByFriendly(Board board, Side side)
+        {
+            BasePiece BP = board.BasePieceList[this.AsIndex()];
+            return (BP is Piece ? (BP as Piece).Side == side : false );
         }
 
         /// <summary>
@@ -75,12 +81,12 @@ namespace UnityChess
         /// <returns></returns>
         public int AsIndex()
         {
-            return ((10 - this.Rank) * 10) + this.File;
+            return (Rank + 1) * 10 + (9 - File);
         }
 
         public static int RankFileAsIndex(int file, int rank)
         {
-            return ((10 - rank) * 10) + file;
+            return (rank + 1) * 10 + (9 - file);
         }
 
         // override object.Equals

@@ -129,5 +129,7 @@ namespace UnityChess
 
             if (move is SpecialMove) { (move as SpecialMove).HandleAssociatedPiece(this); }
         }
+
+        // NOTE add methods to handle adding/removing pieces from board?
     }
 }
