@@ -9,11 +9,9 @@ namespace UnityChess
 
         private Rook(Rook rookCopy) : base(rookCopy) { }
 
-        public override void UpdateValidMoves(LinkedList<Board> boardList, Side turn)
+        public override void UpdateValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn)
         {
             ValidMoves.Clear();
-
-            Board board = boardList.Last.Value;
 
             CheckCardinalDirections(board, turn);
         }

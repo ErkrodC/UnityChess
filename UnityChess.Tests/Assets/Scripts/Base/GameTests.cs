@@ -11,7 +11,7 @@ namespace UnityChess.GameTests
     public class GameTests
     {
         Board board;
-        LinkedList<Board> dummyBList;
+        LinkedList<Movement> dummyPreviousMoves;
 
         [SetUp()]
         public void Init()
@@ -19,9 +19,7 @@ namespace UnityChess.GameTests
             board = new Board();
             board.SetBlankBoard();
 
-            dummyBList = new LinkedList<Board>();
-
-            dummyBList.AddLast(board);
+            dummyPreviousMoves = new LinkedList<Movement>();
         }
 
         [Test()]
@@ -35,9 +33,9 @@ namespace UnityChess.GameTests
             Mock<MockPiece> mockPiece = new Mock<MockPiece>();
             PopulateBoard(board, numberOfPieces, mockPiece);
 
-            Game.UpdateAllPiecesValidMoves(dummyBList, Side.White);
+            Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, Side.White);
 
-            mockPiece.Verify(piece => piece.UpdateValidMoves(dummyBList, Side.White), Times.Exactly(numberOfPieces));
+            mockPiece.Verify(piece => piece.UpdateValidMoves(board, dummyPreviousMoves, Side.White), Times.Exactly(numberOfPieces));
         }
 
         public void PopulateBoard(Board board, int numberOfPieces, Mock<MockPiece> mockPiece)
@@ -60,7 +58,7 @@ namespace UnityChess.GameTests
             return this;
         }
 
-        public override void UpdateValidMoves(LinkedList<Board> boardList, Side turn)
+        public override void UpdateValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn)
         {
             return;
         }
