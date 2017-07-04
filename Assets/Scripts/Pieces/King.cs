@@ -27,58 +27,14 @@ namespace UnityChess
 
                     testSquare.CopyPosition(this.Position);
                     testSquare.AddVector(i, j);
-                    if (testSquare.IsValid() && !testSquare.IsOccupied(board) && CheckRules.ObeysCheckRules(board, testMove, turn))
+                    if (testSquare.IsValid() && !testSquare.IsOccupiedByFriendly(board, turn) && CheckRules.ObeysCheckRules(board, testMove, turn))
                     {
                         ValidMoves.Add(new Movement(testMove));
                     }
                 }
             }
 
-            //check for kingside castling move
-            Square inBtwnSquare1 = new Square(this.Position.File + 1, this.Position.Rank);
-            Square inBtwnSquare2 = new Square(this.Position.File + 2, this.Position.Rank);
-            Square potentialRookSquare = new Square(this.Position.File + 3, this.Position.Rank);
-            if (!this.HasMoved && inBtwnSquare1.IsValid() && inBtwnSquare2.IsValid() && potentialRookSquare.IsValid())
-            {
-                Object potentialRook = board.BasePieceList[potentialRookSquare.AsIndex()];
-                Rook rook = potentialRook is Rook ? potentialRook as Rook : null;
-                if (rook != null)
-                {
-                    if (!rook.HasMoved && rook.Side == turn && !inBtwnSquare1.IsOccupied(board) && !inBtwnSquare2.IsOccupied(board))
-                    {
-                        Movement checkMove1 = new Movement(inBtwnSquare1, this);
-                        Movement checkMove2 = new Movement(inBtwnSquare2, this);
-                        if (CheckRules.ObeysCheckRules(board, checkMove2, turn) && CheckRules.ObeysCheckRules(board, checkMove1, turn))
-                        {
-                            ValidMoves.Add(new CastlingMove(new Square(inBtwnSquare2), this, rook));
-                        }
-                    }
-                }
-            }
-
-            //check for queenside castling move
-            inBtwnSquare1 = new Square(this.Position.File - 1, this.Position.Rank);
-            inBtwnSquare2 = new Square(this.Position.File - 2, this.Position.Rank);
-            Square inBtwnSquare3 = new Square(this.Position.File - 3, this.Position.Rank);
-            potentialRookSquare.SetPosition(this.Position.File - 4, this.Position.Rank);
-            if (!this.HasMoved && inBtwnSquare1.IsValid() && inBtwnSquare2.IsValid() && inBtwnSquare3.IsValid() && potentialRookSquare.IsValid())
-            {
-                Object potentialRook = board.BasePieceList[potentialRookSquare.AsIndex()];
-                Rook rook = potentialRook is Rook ? potentialRook as Rook : null;
-                if (rook != null)
-                {
-                    if (!rook.HasMoved && rook.Side == turn && !inBtwnSquare1.IsOccupied(board) && !inBtwnSquare2.IsOccupied(board) && !inBtwnSquare3.IsOccupied(board))
-                    {
-                        Movement checkMove1 = new Movement(inBtwnSquare1, this);
-                        Movement checkMove2 = new Movement(inBtwnSquare2, this);
-                        Movement checkMove3 = new Movement(inBtwnSquare3, this);
-                        if (CheckRules.ObeysCheckRules(board, checkMove1, turn) && CheckRules.ObeysCheckRules(board, checkMove2, turn) && CheckRules.ObeysCheckRules(board, checkMove3, turn))
-                        {
-                            ValidMoves.Add(new CastlingMove(new Square(inBtwnSquare2), this, rook));
-                        }
-                    }
-                }
-            }
+            CheckCastlingMoves(board, turn);
         }
 
         public override Piece Clone()
@@ -116,6 +72,50 @@ namespace UnityChess
             }
 
             return false;
+        }
+
+        private void CheckCastlingMoves(Board board, Side turn)
+        {
+            if (!this.HasMoved)
+            {
+                bool kingSideCheck = true;
+                List<Square> inBtwnSquares = new List<Square>();
+                List<Movement> inBtwnMoves = new List<Movement>();
+                List<BasePiece> cornerPieces = new List<BasePiece>
+                {
+                    //kingside corner square
+                    board.BasePieceList[Square.RankFileAsIndex(this.Position.File + 3, this.Position.Rank)],
+                    //queenside corner square
+                    board.BasePieceList[Square.RankFileAsIndex(this.Position.File - 4, this.Position.Rank)]
+                };
+
+                foreach (Rook rook in cornerPieces.FindAll(bp => bp is Rook).ConvertAll<Rook>(bp => bp as Rook))
+                {                    
+                    if (!rook.HasMoved && rook.Side == this.Side)
+                    {
+                        inBtwnSquares.Add(new Square(this.Position.File + 1 * (kingSideCheck ? 1 : -1), this.Position.Rank));
+                        inBtwnSquares.Add(new Square(this.Position.File + 2 * (kingSideCheck ? 1 : -1), this.Position.Rank));
+                        if (!kingSideCheck) { inBtwnSquares.Add(new Square(this.Position.File - 3, this.Position.Rank)); }
+
+                        if (!inBtwnSquares[0].IsOccupied(board) && !inBtwnSquares[1].IsOccupied(board) && (kingSideCheck ? true : !inBtwnSquares[2].IsOccupied(board)))
+                        {
+                            inBtwnMoves.Add(new Movement(inBtwnSquares[0], this));
+                            inBtwnMoves.Add(new Movement(inBtwnSquares[1], this));
+
+                            if (CheckRules.ObeysCheckRules(board, inBtwnMoves[0], turn) && CheckRules.ObeysCheckRules(board, inBtwnMoves[1], turn))
+                            {
+                                ValidMoves.Add(new CastlingMove(new Square(inBtwnSquares[1]), this, rook));
+                            }
+
+                            inBtwnMoves.Clear();
+                        }
+
+                        inBtwnSquares.Clear();
+                    }
+
+                    kingSideCheck = false;
+                }
+            }
         }
     }
 }

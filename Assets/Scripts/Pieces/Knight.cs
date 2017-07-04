@@ -25,7 +25,7 @@ namespace UnityChess
                     Square testSqaure = new Square(file, rank);
                     Movement testMove = new Movement(testSqaure, this);
 
-                    if (testSqaure.IsValid() && !testSqaure.IsOccupied(board) && CheckRules.ObeysCheckRules(board, testMove, turn))
+                    if (testSqaure.IsValid() && !testSqaure.IsOccupiedByFriendly(board, turn) && CheckRules.ObeysCheckRules(board, testMove, turn))
                     {
                         ValidMoves.Add(new Movement(testMove));
                     }
