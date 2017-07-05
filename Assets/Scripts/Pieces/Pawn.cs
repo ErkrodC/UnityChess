@@ -28,7 +28,7 @@ namespace UnityChess
             {
                 if (this.Position.Rank == (this.Side == Side.White ? 7 : 2))
                 {
-                    // TODO call to gui method which gets user promotion piece choice
+                    // PSEUDO call to gui method which gets user promotion piece choice
                     // ElectedPiece userElection = GUI.getElectionChoice();
 
                     //for now will default to Queen election
@@ -65,7 +65,7 @@ namespace UnityChess
                 {
                     if (this.Position.Rank == (this.Side == Side.White ? 7 : 2))
                     {
-                        // TODO call to gui method which gets user promotion piece choice
+                        // PSEUDO call to gui method which gets user promotion piece choice
                         // ElectedPiece userElection = GUI.getElectionChoice();
 
                         //for now will default to Queen election

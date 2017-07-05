@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace UnityChess
@@ -66,7 +67,7 @@ namespace UnityChess
 
                     testSquare.CopyPosition(this.Position);
                     testSquare.AddVector(i, j);
-                    if (testSquare.IsValid() && !testSquare.IsOccupiedByFriendly(board, turn) && CheckRules.ObeysCheckRules(board, testMove, turn))
+                    if (testSquare.IsValid() && !testSquare.IsOccupiedByFriendly(board, this.Side) && CheckRules.ObeysCheckRules(board, testMove, turn))
                     {
                         ValidMoves.Add(new Movement(testMove));
                     }
@@ -89,7 +90,7 @@ namespace UnityChess
                     board.BasePieceList[Square.RankFileAsIndex(this.Position.File - 4, this.Position.Rank)]
                 };
 
-                foreach (Rook rook in cornerPieces.FindAll(bp => bp is Rook).ConvertAll<Rook>(bp => bp as Rook))
+                foreach (Rook rook in cornerPieces.OfType<Rook>())
                 {                    
                     if (!rook.HasMoved && rook.Side == this.Side)
                     {
