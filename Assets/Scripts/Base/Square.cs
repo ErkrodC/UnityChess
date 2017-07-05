@@ -33,7 +33,7 @@ namespace UnityChess
         public Square(int oneDimensionalIndex)
         {
             this.File = oneDimensionalIndex % 10;
-            this.Rank = 9 - ((oneDimensionalIndex - this.File) / 10 - 1);
+            this.Rank = (oneDimensionalIndex - this.File) / 10 - 1;
         }
 
         internal void AddVector(int file, int rank)
@@ -84,12 +84,12 @@ namespace UnityChess
         /// <returns></returns>
         public int AsIndex()
         {
-            return (Rank + 1) * 10 + (9 - File);
+            return RankFileAsIndex(File, Rank);
         }
 
         public static int RankFileAsIndex(int file, int rank)
         {
-            return (rank + 1) * 10 + (9 - file);
+            return (rank + 1) * 10 + file;
         }
 
         // override object.Equals
