@@ -33,7 +33,7 @@ namespace UnityChess
                     {
                         if (testSquare.IsOccupied(board))
                         {
-                            if (!testSquare.IsOccupiedByFriendly(board, turn) && CheckRules.ObeysCheckRules(board, testMove, turn))
+                            if (!testSquare.IsOccupiedByFriendly(board, this.Side) && CheckRules.ObeysCheckRules(board, testMove, turn))
                             {
                                 ValidMoves.Add(new Movement(testMove));
                             }

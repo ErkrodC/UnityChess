@@ -23,6 +23,7 @@ namespace UnityChess.CheckRulesTests
             Rook whiteRook1 = new Rook(new Square(8, 8), Side.White);
             Rook whiteRook2 = new Rook(new Square(8, 7), Side.White);
             King blackKing = new King(new Square(1, 8), Side.Black);
+            King whiteKing = new King(new Square(1, 1), Side.White);
             board.BasePieceList[whiteRook1.Position.AsIndex()] = whiteRook1;
             board.BasePieceList[whiteRook2.Position.AsIndex()] = whiteRook2;
             board.BasePieceList[blackKing.Position.AsIndex()] = blackKing;

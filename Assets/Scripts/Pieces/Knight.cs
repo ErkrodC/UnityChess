@@ -29,7 +29,7 @@ namespace UnityChess
                     testSquare.CopyPosition(this.Position);
                     testSquare.AddVector(i, j);
 
-                    if (testSquare.IsValid() && !testSquare.IsOccupiedByFriendly(board, turn) && CheckRules.ObeysCheckRules(board, testMove, turn))
+                    if (testSquare.IsValid() && !testSquare.IsOccupiedByFriendly(board, this.Side) && CheckRules.ObeysCheckRules(board, testMove, turn))
                     {
                         ValidMoves.Add(new Movement(testMove));
                     }
