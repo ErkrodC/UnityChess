@@ -80,7 +80,7 @@ namespace UnityChess
             if (!IsPlayerInCheck(board, side)) { return true; }
 
             Board resultingBoard = new Board(board);
-            resultingBoard.MovePiece(move);
+            resultingBoard.MovePiece(new Movement(move.End, move.Piece.Clone()));
 
             return !IsPlayerInCheck(resultingBoard, side);
         }
@@ -94,7 +94,7 @@ namespace UnityChess
             King interBlackKing;
 
             Board resultingBoard = new Board(board);
-            resultingBoard.MovePiece(move);
+            resultingBoard.MovePiece(new Movement(move.End, move.Piece.Clone()));
 
             initKings(resultingBoard, out interWhiteKing, out interBlackKing);
 
@@ -103,7 +103,7 @@ namespace UnityChess
 
         private static void initKings(Board board, out King whiteKing, out King blackKing)
         {
-            List<King> kings = board.BasePieceList.FindAll(bp => bp is King).ConvertAll<King>(bp => bp as King);
+            List<King> kings = board.BasePieceList.OfType<King>().ToList();
             whiteKing = kings.Find(k => k.Side == Side.White);
             blackKing = kings.Find(k => k.Side == Side.Black);
         }
