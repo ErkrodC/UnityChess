@@ -61,11 +61,11 @@ namespace UnityChess
             CurrentTurn = CurrentTurn == Side.White ? Side.Black : Side.White;
         }
 
-        public static void UpdateAllPiecesValidMoves(Board board, LinkedList<Movement> moveList, Side turn)
+        public static void UpdateAllPiecesValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn)
         {
             foreach (Piece piece in board.BasePieceList.FindAll(bp => bp is Piece))
             {
-                piece.UpdateValidMoves(board, moveList, turn);
+                piece.UpdateValidMoves(board, previousMoves, turn);
             }
         }
     }

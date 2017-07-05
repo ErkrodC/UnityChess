@@ -112,5 +112,10 @@ namespace UnityChess
             hash = (hash * 7) + File.GetHashCode();
             return hash;
         }
+
+        public override string ToString()
+        {
+            return string.Format("File: {0} \t Rank: {1}", File, Rank);
+        }
     }
 }
