@@ -8,6 +8,7 @@ namespace UnityChess
     /// </summary>
     public abstract class Piece : BasePiece
     {
+        // TODO give ID member
         public Side Side { get; set; }
         public Square Position { get; set; }
         public bool HasMoved { get; set; }
@@ -27,7 +28,7 @@ namespace UnityChess
             this.HasMoved = pieceCopy.HasMoved;
             this.Position = new Square(pieceCopy.Position);
             //deep copy of valid moves list
-            this.ValidMoves = pieceCopy.ValidMoves.ConvertAll<Movement>(move => new Movement(new Square(pieceCopy.Position), this));
+            this.ValidMoves = pieceCopy.ValidMoves.ConvertAll<Movement>(move => new Movement(move));
         }
 
         public abstract Piece Clone();
@@ -54,6 +55,11 @@ namespace UnityChess
             hash = (hash * 7) + Position.GetHashCode();
             hash = (hash * 7) + HasMoved.GetHashCode();
             return hash;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1}", this.Side.ToString(), this.GetType().ToString().Substring(11));
         }
     }
 }

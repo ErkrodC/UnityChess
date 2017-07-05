@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace UnityChess
 {
@@ -68,6 +69,16 @@ namespace UnityChess
             hash = (hash * 7) + End.GetHashCode();
             hash = (hash * 7) + Piece.GetHashCode();
             return hash;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder s = new StringBuilder();
+
+            s.AppendLine(Piece.ToString());
+            s.AppendLine(string.Format("\tFrom: {0}", Piece.Position.ToString()));
+            s.AppendFormat("\tTo: {0}", End.ToString());
+            return s.ToString();
         }
     }
 }
