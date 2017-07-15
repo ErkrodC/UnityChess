@@ -5,9 +5,17 @@ namespace UnityChess
 {
     public class Pawn : Piece
     {
-        public Pawn(Square startingPosition, Side side) : base(startingPosition, side) { }
+        private static int instanceCounter = 0;
 
-        private Pawn(Pawn pawnCopy) : base(pawnCopy) { }
+        public Pawn(Square startingPosition, Side side) : base(startingPosition, side)
+        {
+            this.ID = ++instanceCounter;
+        }
+
+        private Pawn(Pawn pawnCopy) : base(pawnCopy)
+        {
+            this.ID = pawnCopy.ID;
+        }
 
         public override void UpdateValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn)
         {
