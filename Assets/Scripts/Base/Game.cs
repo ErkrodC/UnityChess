@@ -33,7 +33,6 @@ namespace UnityChess
             this.PreviousMoves = new LinkedList<Movement>();
 
             UpdateAllPiecesValidMoves(this.BoardList.Last.Value, this.PreviousMoves, Side.White);
-            CheckRules.KingsInitialized = false;
         }
 
         /// <summary>

@@ -12,6 +12,8 @@ namespace UnityChess
     {
         public static EmptyPiece EmptyPiece = new EmptyPiece();
         public static InvalidPiece InvalidPiece = new InvalidPiece();
+        public King WhiteKing { get; set; }
+        public King BlackKing { get; set; }
 
         /*
         Boards will be represented as a 10x12 grid in a one dimensional list.
@@ -36,7 +38,7 @@ namespace UnityChess
         /// </summary>
         public Board()
         {
-            this.BasePieceList = new List<BasePiece>(Enumerable.Range(0, 120).Select(i => (BasePiece)null));
+            this.BasePieceList = Enumerable.Range(0, 120).Select(i => (BasePiece)null).ToList();
             this.SetStartingPosition();
         }
 
@@ -45,7 +47,7 @@ namespace UnityChess
         /// </summary>
         public Board(Board board)
         {
-            this.BasePieceList = new List<BasePiece>(Enumerable.Range(0, 120).Select(i => (BasePiece)null));
+            this.BasePieceList = Enumerable.Range(0, 120).Select(i => (BasePiece)null).ToList();
             this.SetBlankBoard();
 
             //creates deep copy (makes copy of each piece and deep copy of their respective ValidMoves lists) of board (list of BasePiece's)
@@ -56,6 +58,8 @@ namespace UnityChess
             {
                 BasePieceList[piece.Position.AsIndex()] = piece.Clone();
             }
+
+            initKings();
         }
 
         /// <summary>
@@ -80,6 +84,9 @@ namespace UnityChess
                 BasePieceList[i] = InvalidPiece;
                 BasePieceList[i + 9] = InvalidPiece;
             }
+
+            WhiteKing = null;
+            BlackKing = null;
         }
 
         /// <summary>
@@ -115,6 +122,9 @@ namespace UnityChess
             this.BasePieceList[96] = new Bishop(new Square(96), Side.Black);
             this.BasePieceList[97] = new Knight(new Square(97), Side.Black);
             this.BasePieceList[98] = new Rook(new Square(98), Side.Black);
+
+            WhiteKing = BasePieceList[25] as King;
+            WhiteKing = BasePieceList[95] as King;
         }
 
         /// <summary>
@@ -126,9 +136,15 @@ namespace UnityChess
             this.BasePieceList[move.End.AsIndex()] = move.Piece;
 
             move.Piece.HasMoved = true;
-            move.Piece.Position = move.End;
+            move.Piece.Position.CopyPosition(move.End);
 
             if (move is SpecialMove) { (move as SpecialMove).HandleAssociatedPiece(this); }
+        }
+
+        public void initKings()
+        {
+            WhiteKing = (King)BasePieceList.Single(bp => bp is King && (bp as King).Side == Side.White);//kings.Find(k => k.Side == Side.White);
+            BlackKing = (King)BasePieceList.Single(bp => bp is King && (bp as King).Side == Side.Black);//kings.Find(k => k.Side == Side.Black);
         }
 
         // NOTE add methods to handle adding/removing pieces from board?

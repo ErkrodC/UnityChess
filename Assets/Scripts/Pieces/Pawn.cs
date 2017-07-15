@@ -24,7 +24,7 @@ namespace UnityChess
             Movement testMove = new Movement(testSquare, this);
 
             testSquare.AddVector(0, this.Side == Side.White ? 1 : -1);
-            if (!testSquare.IsOccupied(board) && CheckRules.ObeysCheckRules(board, testMove, turn))
+            if (!testSquare.IsOccupied(board) && Rules.MoveObeysRules(board, testMove, turn))
             {
                 if (this.Position.Rank == (this.Side == Side.White ? 7 : 2))
                 {
@@ -42,7 +42,7 @@ namespace UnityChess
                     if (!this.HasMoved)
                     {
                         testSquare.AddVector(0, this.Side == Side.White ? 1 : -1);
-                        if (!testSquare.IsOccupied(board) && CheckRules.ObeysCheckRules(board, testMove, turn))
+                        if (!testSquare.IsOccupied(board) && Rules.MoveObeysRules(board, testMove, turn))
                         {
                             ValidMoves.Add(new Movement(testMove));
                         }
@@ -61,7 +61,7 @@ namespace UnityChess
                 testSquare.CopyPosition(this.Position);
                 testSquare.AddVector(i, this.Side == Side.White ? 1 : -1);
 
-                if (testSquare.IsValid() && testSquare.IsOccupiedByFriendly(board, this.Side == Side.White ? Side.Black : Side.White) && CheckRules.ObeysCheckRules(board, testMove, turn))
+                if (testSquare.IsValid() && testSquare.IsOccupiedBySide(board, this.Side == Side.White ? Side.Black : Side.White) && Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(this.Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position))
                 {
                     if (this.Position.Rank == (this.Side == Side.White ? 7 : 2))
                     {
@@ -100,7 +100,7 @@ namespace UnityChess
                         {
                             EnPassantMove testMove = new EnPassantMove(new Square(testSquare.Rank + (this.Side == Side.White ? 1 : -1)), this, enemyLateralPawn);
 
-                            if (CheckRules.ObeysCheckRules(board, testMove, turn))
+                            if (Rules.MoveObeysRules(board, testMove, turn))
                             {
                                 ValidMoves.Add(new EnPassantMove(new Square(testSquare.Rank + (this.Side == Side.White ? 1 : -1)), this, enemyLateralPawn));
                             }
