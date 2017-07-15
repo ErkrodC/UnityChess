@@ -23,38 +23,6 @@ namespace UnityChess
             return new King(this);
         }
 
-        /// <summary>
-        /// Checks whether this King instance is under threat of check.
-        /// </summary>
-        public bool AmInCheck(Board board)
-        {
-            foreach (BasePiece basePiece in board.BasePieceList)
-            {
-                if (basePiece is Piece)
-                {
-                    Piece piece = basePiece as Piece;
-                    if (piece.Side != this.Side)
-                    {
-                        if (IsPieceCheckingMe(board, piece)) { return true; }
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        private bool IsPieceCheckingMe(Board board, Piece piece)
-        {
-            if (piece.Side == this.Side) { return false; }
-
-            foreach (Movement move in piece.ValidMoves)
-            {
-                if (move.End.Equals(this.Position)) { return true; }
-            }
-
-            return false;
-        }
-
         private void CheckSurroundingSquares(Board board, Side turn)
         {
             Square testSquare = new Square(this.Position);
@@ -67,7 +35,7 @@ namespace UnityChess
 
                     testSquare.CopyPosition(this.Position);
                     testSquare.AddVector(i, j);
-                    if (testSquare.IsValid() && !testSquare.IsOccupiedByFriendly(board, this.Side) && CheckRules.ObeysCheckRules(board, testMove, turn))
+                    if (testSquare.IsValid() && !testSquare.IsOccupiedBySide(board, this.Side) && Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(this.Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position))
                     {
                         ValidMoves.Add(new Movement(testMove));
                     }
@@ -103,7 +71,7 @@ namespace UnityChess
                             inBtwnMoves.Add(new Movement(inBtwnSquares[0], this));
                             inBtwnMoves.Add(new Movement(inBtwnSquares[1], this));
 
-                            if (CheckRules.ObeysCheckRules(board, inBtwnMoves[0], turn) && CheckRules.ObeysCheckRules(board, inBtwnMoves[1], turn))
+                            if (Rules.MoveObeysRules(board, inBtwnMoves[0], turn) && Rules.MoveObeysRules(board, inBtwnMoves[1], turn))
                             {
                                 ValidMoves.Add(new CastlingMove(new Square(inBtwnSquares[1]), this, rook));
                             }

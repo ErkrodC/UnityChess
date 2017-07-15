@@ -70,9 +70,9 @@ namespace UnityChess
         }
 
         /// <summary>
-        /// Determines whether the square contains is occupied by a piece belonging to the given side.
+        /// Determines whether the square is occupied by a piece belonging to the given side.
         /// </summary>
-        internal bool IsOccupiedByFriendly(Board board, Side side)
+        internal bool IsOccupiedBySide(Board board, Side side)
         {
             BasePiece BP = board.BasePieceList[this.AsIndex()];
             return (BP is Piece ? (BP as Piece).Side == side : false );

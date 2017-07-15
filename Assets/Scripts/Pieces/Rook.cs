@@ -32,14 +32,14 @@ namespace UnityChess
                     {
                         if (testSquare.IsOccupied(board))
                         {
-                            if (!testSquare.IsOccupiedByFriendly(board, this.Side) && CheckRules.ObeysCheckRules(board, testMove, turn))
+                            if (!testSquare.IsOccupiedBySide(board, this.Side) && Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(this.Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position))
                             {
                                 ValidMoves.Add(new Movement(testMove));
                             }
 
                             break;
                         }
-                        else if (CheckRules.ObeysCheckRules(board, testMove, turn))
+                        else if (Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(this.Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position))
                         {
                             ValidMoves.Add(new Movement(testMove));
                         }

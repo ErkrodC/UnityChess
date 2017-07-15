@@ -1,11 +1,11 @@
 ﻿using NUnit.Framework;
 using UnityChess;
 
-namespace UnityChess.CheckRulesTests
+namespace UnityChess.RulesTests
 {
     [TestFixture()]
     [Author("Eric Rodriguez")]
-    public class CheckRulesTests
+    public class RulesTests
     {
         Board board;
 
@@ -28,7 +28,7 @@ namespace UnityChess.CheckRulesTests
             board.BasePieceList[whiteRook2.Position.AsIndex()] = whiteRook2;
             board.BasePieceList[blackKing.Position.AsIndex()] = blackKing;
 
-            bool actual = CheckRules.IsPlayerCheckmated(board, Side.Black);
+            bool actual = Rules.IsPlayerCheckmated(board, Side.Black);
 
             Assert.AreEqual(expected, actual);
         }
