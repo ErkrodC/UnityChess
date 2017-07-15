@@ -5,9 +5,17 @@ namespace UnityChess
 {
     public class Bishop : Piece
     {
-        public Bishop(Square startingPosition, Side side) : base(startingPosition, side) { }
+        private static int instanceCounter = 0;
 
-        private Bishop(Bishop bishopCopy) : base(bishopCopy) { }
+        public Bishop(Square startingPosition, Side side) : base(startingPosition, side)
+        {
+            this.ID = ++instanceCounter;
+        }
+
+        private Bishop(Bishop bishopCopy) : base(bishopCopy)
+        {
+            this.ID = bishopCopy.ID;
+        }
 
         public override void UpdateValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn)
         {

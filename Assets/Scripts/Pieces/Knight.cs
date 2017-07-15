@@ -5,9 +5,17 @@ namespace UnityChess
 {
     public class Knight : Piece
     {
-        public Knight(Square startingPosition, Side side) : base(startingPosition, side) { }
+        private static int instanceCounter = 0;
 
-        private Knight(Knight knightCopy) : base(knightCopy) { }
+        public Knight(Square startingPosition, Side side) : base(startingPosition, side)
+        {
+            this.ID = ++instanceCounter;
+        }
+
+        private Knight(Knight knightCopy) : base(knightCopy)
+        {
+            this.ID = knightCopy.ID;
+        }
 
         public override void UpdateValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn)
         {

@@ -6,9 +6,17 @@ namespace UnityChess
 {
     public class King : Piece
     {
-        public King(Square startingPosition, Side side) : base(startingPosition, side) { }
+        private static int instanceCounter = 0;
 
-        private King(King kingCopy) : base(kingCopy) { }
+        public King(Square startingPosition, Side side) : base(startingPosition, side)
+        {
+            this.ID = ++instanceCounter;
+        }
+
+        private King(King kingCopy) : base(kingCopy)
+        {
+            this.ID = kingCopy.ID;
+        }
 
         public override void UpdateValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn)
         {

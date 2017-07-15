@@ -14,6 +14,8 @@ namespace UnityChess
         public bool HasMoved { get; set; }
         public List<Movement> ValidMoves { get; set; }
 
+        public int ID { get; protected set; }
+
         public Piece(Square startPosition, Side side)
         {
             this.Side = side;
@@ -29,6 +31,7 @@ namespace UnityChess
             this.Position = new Square(pieceCopy.Position);
             //deep copy of valid moves list
             this.ValidMoves = pieceCopy.ValidMoves.ConvertAll<Movement>(move => new Movement(move));
+            this.ID = pieceCopy.ID;
         }
 
         public abstract Piece Clone();
@@ -44,7 +47,7 @@ namespace UnityChess
             }
 
             Piece piece = obj as Piece;
-            return (Side == piece.Side && HasMoved == piece.HasMoved && Position == piece.Position);
+            return (Side == piece.Side && ID == piece.ID);
         }
 
         // override object.GetHashCode
@@ -52,8 +55,7 @@ namespace UnityChess
         {
             int hash = 13;
             hash = (hash * 7) + Side.GetHashCode();
-            hash = (hash * 7) + Position.GetHashCode();
-            hash = (hash * 7) + HasMoved.GetHashCode();
+            hash = (hash * 7) + ID.GetHashCode();
             return hash;
         }
 

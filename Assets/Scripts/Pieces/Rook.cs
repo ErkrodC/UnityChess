@@ -5,9 +5,17 @@ namespace UnityChess
 {
     public class Rook : Piece
     {
-        public Rook(Square startingPosition, Side side) : base(startingPosition, side) { }
+        private static int instanceCounter = 0;
 
-        private Rook(Rook rookCopy) : base(rookCopy) { }
+        public Rook(Square startingPosition, Side side) : base(startingPosition, side)
+        {
+            this.ID = ++instanceCounter;
+        }
+
+        private Rook(Rook rookCopy) : base(rookCopy)
+        {
+            this.ID = rookCopy.ID;
+        }
 
         public override void UpdateValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn)
         {
