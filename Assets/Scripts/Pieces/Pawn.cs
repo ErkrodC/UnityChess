@@ -69,7 +69,7 @@ namespace UnityChess
                 testSquare.CopyPosition(this.Position);
                 testSquare.AddVector(i, this.Side == Side.White ? 1 : -1);
 
-                if (testSquare.IsValid() && testSquare.IsOccupiedBySide(board, this.Side == Side.White ? Side.Black : Side.White) && Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(this.Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position))
+                if (testSquare.IsValid() && testSquare.IsOccupiedBySide(board, this.Side.Complement()) && Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(this.Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position))
                 {
                     if (this.Position.Rank == (this.Side == Side.White ? 7 : 2))
                     {

@@ -57,7 +57,7 @@ namespace UnityChess
             UpdateAllPiecesValidMoves(resultingBoard, PreviousMoves, CurrentTurn);
 
             TurnCount++;
-            CurrentTurn = CurrentTurn == Side.White ? Side.Black : Side.White;
+            CurrentTurn = CurrentTurn.Complement();
         }
 
         public static void UpdateAllPiecesValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn)

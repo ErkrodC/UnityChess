@@ -47,7 +47,7 @@ namespace UnityChess
         /// </summary>
         public static bool IsPlayerInCheck(Board board, Side side)
         {
-            return IsKingInCheck(board, side == Side.Black ? board.BlackKing : board.WhiteKing);
+            return IsKingInCheck(board, side == Side.White ? board.WhiteKing : board.BlackKing);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace UnityChess
 
                     while (testSquare.IsValid())
                     {
-                        if (testSquare.IsOccupiedBySide(board, king.Side == Side.White ? Side.Black : Side.White))
+                        if (testSquare.IsOccupiedBySide(board, king.Side.Complement()))
                         {
                             Piece piece = board.GetPiece(testSquare);
 
@@ -160,7 +160,7 @@ namespace UnityChess
                     testSquare.CopyPosition(king.Position);
                     testSquare.AddVector(i, j);
 
-                    if (testSquare.IsValid() && testSquare.IsOccupiedBySide(board, king.Side == Side.White ? Side.Black : Side.White))
+                    if (testSquare.IsValid() && testSquare.IsOccupiedBySide(board, king.Side.Complement()))
                     {
                         Piece piece = board.GetPiece(testSquare);
                         if (piece is Knight)
