@@ -65,7 +65,7 @@ namespace UnityChess
 
         internal bool IsOccupied(Board board)
         {
-            BasePiece BP = board.BasePieceList[this.AsIndex()];
+            BasePiece BP = board.GetBasePiece(this);
             return (BP is Piece);
         }
 
@@ -74,7 +74,7 @@ namespace UnityChess
         /// </summary>
         internal bool IsOccupiedBySide(Board board, Side side)
         {
-            BasePiece BP = board.BasePieceList[this.AsIndex()];
+            BasePiece BP = board.GetBasePiece(this);
             return (BP is Piece ? (BP as Piece).Side == side : false );
         }
 
@@ -84,10 +84,10 @@ namespace UnityChess
         /// <returns></returns>
         public int AsIndex()
         {
-            return RankFileAsIndex(File, Rank);
+            return FileRankAsIndex(File, Rank);
         }
 
-        public static int RankFileAsIndex(int file, int rank)
+        public static int FileRankAsIndex(int file, int rank)
         {
             return (rank + 1) * 10 + file;
         }

@@ -18,18 +18,14 @@ namespace UnityChess.PromotionMoveTests
         }
 
         [Test()]
-        [TestCase(ElectedPiece.Bishop)]
-        [TestCase(ElectedPiece.Knight)]
-        [TestCase(ElectedPiece.Queen)]
-        [TestCase(ElectedPiece.Rook)]
-        public void HandleAssociatedPiece_PromotionMove_ElectedPieceGenerated(ElectedPiece election)
+        public void HandleAssociatedPiece_PromotionMove_ElectedPieceGenerated([Values]ElectedPiece election)
         {
             Square expectedPosition = new Square(8, 1);
             MockPromotionMove mpm = new MockPromotionMove(expectedPosition, election);
 
             mpm.HandleAssociatedPiece(board);
 
-            Assert.AreEqual($"UnityChess.{ election.ToString() }", board.BasePieceList[expectedPosition.AsIndex()].GetType().ToString());
+            Assert.AreEqual($"UnityChess.{ election.ToString() }", board.GetBasePiece(expectedPosition).GetType().ToString());
         }
     }
 

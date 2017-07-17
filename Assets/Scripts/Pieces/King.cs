@@ -61,9 +61,9 @@ namespace UnityChess
                 List<BasePiece> cornerPieces = new List<BasePiece>
                 {
                     //kingside corner square
-                    board.BasePieceList[Square.RankFileAsIndex(this.Position.File + 3, this.Position.Rank)],
+                    board.GetBasePiece(Position.File + 3, Position.Rank),
                     //queenside corner square
-                    board.BasePieceList[Square.RankFileAsIndex(this.Position.File - 4, this.Position.Rank)]
+                    board.GetBasePiece(Position.File - 4, Position.Rank)
                 };
 
                 foreach (Rook rook in cornerPieces.OfType<Rook>())

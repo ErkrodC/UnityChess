@@ -23,7 +23,7 @@ namespace UnityChess.CastlingMoveTests
         public void HandleAssociatedPiece_CastlingMove_RookMovedAsExpected(int expected, int rookStartingFile)
         {
             Rook rook = new Rook(new Square(rookStartingFile, 1), Side.White);
-            board.BasePieceList[rook.Position.AsIndex()] = rook;
+            board.PlacePiece(rook);
             MockCastlingMove mcm = new MockCastlingMove(rook);
 
             mcm.HandleAssociatedPiece(board);

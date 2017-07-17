@@ -24,7 +24,7 @@ namespace UnityChess
         /// <param name="board">Board on which the move is being made.</param>
         public override void HandleAssociatedPiece(Board board)
         {
-            board.BasePieceList[AssociatedPiece.Position.AsIndex()] = Board.EmptyPiece;
+            board.LiftPiece(AssociatedPiece);
 
             //may be unnecessary since GC will/should destroy pieces removed from the board. Mostly here for safety.
             Piece.HasMoved = true;

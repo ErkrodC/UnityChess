@@ -8,12 +8,10 @@ namespace UnityChess
     /// </summary>
     public abstract class Piece : BasePiece
     {
-        // TODO give ID member
         public Side Side { get; set; }
         public Square Position { get; set; }
         public bool HasMoved { get; set; }
         public List<Movement> ValidMoves { get; set; }
-
         public int ID { get; protected set; }
 
         public Piece(Square startPosition, Side side)

@@ -104,7 +104,7 @@ namespace UnityChess
                     {
                         if (testSquare.IsOccupiedBySide(board, king.Side == Side.White ? Side.Black : Side.White))
                         {
-                            Piece piece = board.BasePieceList[testSquare.AsIndex()] as Piece;
+                            Piece piece = board.GetPiece(testSquare);
 
                             //diagonal direction
                             if (Math.Abs(i) == Math.Abs(j))
@@ -162,7 +162,7 @@ namespace UnityChess
 
                     if (testSquare.IsValid() && testSquare.IsOccupiedBySide(board, king.Side == Side.White ? Side.Black : Side.White))
                     {
-                        Piece piece = board.BasePieceList[testSquare.AsIndex()] as Piece;
+                        Piece piece = board.GetPiece(testSquare);
                         if (piece is Knight)
                         {
                             return true;
