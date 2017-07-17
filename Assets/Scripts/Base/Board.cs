@@ -132,21 +132,34 @@ namespace UnityChess
         /// </summary>
         public void MovePiece(Movement move)
         {
-            this.BasePieceList[move.Piece.Position.AsIndex()] = EmptyPiece;
-            this.BasePieceList[move.End.AsIndex()] = move.Piece;
+            LiftPiece(move.Piece);
+            PlacePiece(move.Piece, move.End);
 
             move.Piece.HasMoved = true;
-            move.Piece.Position.CopyPosition(move.End);
 
             if (move is SpecialMove) { (move as SpecialMove).HandleAssociatedPiece(this); }
         }
 
-        public void initKings()
+        public void PlacePiece(Piece piece)
         {
-            WhiteKing = (King)BasePieceList.Single(bp => bp is King && (bp as King).Side == Side.White);//kings.Find(k => k.Side == Side.White);
-            BlackKing = (King)BasePieceList.Single(bp => bp is King && (bp as King).Side == Side.Black);//kings.Find(k => k.Side == Side.Black);
+            BasePieceList[piece.Position.AsIndex()] = piece;
         }
 
-        // NOTE add methods to handle adding/removing pieces from board?
+        public void PlacePiece(Piece piece, Square position)
+        {
+            BasePieceList[position.AsIndex()] = piece;
+            piece.Position.CopyPosition(position);
+        }
+
+        public void LiftPiece(Piece piece)
+        {
+            BasePieceList[piece.Position.AsIndex()] = EmptyPiece;
+        }
+
+        public void initKings()
+        {
+            WhiteKing = (King)BasePieceList.Single(bp => bp is King && (bp as King).Side == Side.White);
+            BlackKing = (King)BasePieceList.Single(bp => bp is King && (bp as King).Side == Side.Black);
+        }
     }
 }
