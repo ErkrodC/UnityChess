@@ -10,4 +10,12 @@ namespace UnityChess
         Black,
         White
     }
+
+    public static class SideMethods
+    {
+        public static Side Complement(this Side side)
+        {
+            return (side == Side.White) ? Side.Black : Side.White;
+        }
+    }
 }
