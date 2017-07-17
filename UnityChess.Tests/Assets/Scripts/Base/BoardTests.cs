@@ -27,15 +27,15 @@ namespace UnityChess.BoardTests
         [TestCase(3, 4)]
         public void MovePiece_NormalMove_PieceIsMoved(int expectedFile, int expectedRank)
         {
-            int initialPositionAsIndex = Square.RankFileAsIndex(pawn.Position.File, pawn.Position.Rank);
-            int expectedPositionAsIndex = Square.RankFileAsIndex(expectedFile, expectedRank);
+            Square initialPosition = new Square(pawn.Position.File, pawn.Position.Rank);
+            Square expectedPosition = new Square(expectedFile, expectedRank);
             Movement move = new Movement(new Square(expectedFile, expectedRank), pawn);
 
             board.MovePiece(move);
 
             Assert.Multiple(() => {
-                Assert.AreEqual(board.BasePieceList[expectedPositionAsIndex], pawn);
-                Assert.AreEqual(board.BasePieceList[initialPositionAsIndex], Board.EmptyPiece);
+                Assert.AreEqual(board.GetBasePiece(expectedPosition), pawn);
+                Assert.AreEqual(board.GetBasePiece(initialPosition), Board.EmptyPiece);
                 Assert.AreEqual(expectedFile, pawn.Position.File);
                 Assert.AreEqual(expectedRank, pawn.Position.Rank);
                 Assert.True(pawn.HasMoved);

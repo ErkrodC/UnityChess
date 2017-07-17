@@ -32,7 +32,7 @@ namespace UnityChess
         /// <param name="board">Board on which the move is being made.</param>
         public override void HandleAssociatedPiece(Board board)
         {
-            board.BasePieceList[End.AsIndex()] = AssociatedPiece;
+            board.PlacePiece(AssociatedPiece, End);
         }
     }
 }

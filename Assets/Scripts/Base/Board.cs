@@ -31,7 +31,7 @@ namespace UnityChess
               10  11 12 13  ... 17 18   19
                0   1  2  3  ...  7  8   9
         */
-        public List<BasePiece> BasePieceList { get; set; }
+        public List<BasePiece> BasePieceList { get; private set; }
 
         /// <summary>
         /// Creates a Board with initial chess game position.
@@ -70,7 +70,7 @@ namespace UnityChess
             for (int i = 1; i <= 8; i++)
                 for (int j = 1; j <= 8; j++)
                 {
-                    BasePieceList[Square.RankFileAsIndex(i, j)] = EmptyPiece;
+                    BasePieceList[Square.FileRankAsIndex(i, j)] = EmptyPiece;
                 }
 
             for (int i = 0; i <= 19; i++)
@@ -151,10 +151,55 @@ namespace UnityChess
             piece.Position.CopyPosition(position);
         }
 
+        public void PlacePiece(Piece piece, int index)
+        {
+            Square s = new Square(index);
+
+            BasePieceList[index] = piece;
+            piece.Position.CopyPosition(s);
+        }
+
+        public void PlacePiece(Piece piece, int file, int rank)
+        {
+            PlacePiece(piece, Square.FileRankAsIndex(file, rank));
+        }
+
         public void LiftPiece(Piece piece)
         {
             BasePieceList[piece.Position.AsIndex()] = EmptyPiece;
         }
+
+        public BasePiece GetBasePiece(Square position)
+        {
+            return BasePieceList[position.AsIndex()];
+        }
+
+        public BasePiece GetBasePiece(int index)
+        {
+            return BasePieceList[index];
+        }
+
+        public BasePiece GetBasePiece(int file, int rank)
+        {
+            return GetBasePiece(Square.FileRankAsIndex(file, rank));
+        }
+
+        public Piece GetPiece(Square position)
+        {
+            return GetBasePiece(position) as Piece;
+        }
+
+        public Piece GetPiece(int index)
+        {
+            return GetBasePiece(index) as Piece;
+        }
+
+        public Piece GetPiece(int file, int rank)
+        {
+            return GetBasePiece(file, rank) as Piece;
+        }
+
+
 
         public void initKings()
         {

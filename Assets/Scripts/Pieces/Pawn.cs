@@ -99,9 +99,9 @@ namespace UnityChess
                     testSquare.CopyPosition(this.Position);
                     testSquare.AddVector(i, 0);
 
-                    if (testSquare.IsValid() && board.BasePieceList[testSquare.AsIndex()] is Pawn && (board.BasePieceList[testSquare.AsIndex()] as Pawn).Side != this.Side)
+                    if (testSquare.IsValid() && board.GetPiece(testSquare) is Pawn && (board.GetPiece(testSquare) as Pawn).Side != this.Side)
                     {
-                        Pawn enemyLateralPawn = board.BasePieceList[testSquare.AsIndex()] as Pawn;
+                        Pawn enemyLateralPawn = board.GetPiece(testSquare) as Pawn;
                         Piece pieceLastMoved = previousMoves.Last.Value.Piece;
 
                         if (pieceLastMoved is Pawn && (pieceLastMoved as Pawn) == enemyLateralPawn && pieceLastMoved.Position.Rank == (pieceLastMoved.Side == Side.White ? 2 : 7))

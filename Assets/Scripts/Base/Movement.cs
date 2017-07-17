@@ -59,7 +59,7 @@ namespace UnityChess
             }
 
             Movement move = obj as Movement;
-            return (End.Equals(move.End) && Piece == move.Piece);
+            return (End.Equals(move.End) && Piece.Equals(move.Piece));
         }
 
         // override object.GetHashCode
