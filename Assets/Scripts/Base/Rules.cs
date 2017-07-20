@@ -10,27 +10,55 @@ namespace UnityChess
     public static class Rules
     {
         /// <summary>
-        /// Determines whether the move obeys all checking rules.
-        /// </summary>
-        /// <param name="turn">The side of the player whose turn it currently is.</param>
-        /// <returns></returns>
-        public static bool MoveObeysRules(Board board, Movement move, Side turn)
-        {
-            return !DoesMoveCauseCheck(board, move, move.Piece.Side) && DoesMoveRemoveCheck(board, move, move.Piece.Side);
-        }
-
-        /// <summary>
         /// Checks if the player of the given side has been checkmated.
         /// </summary>
         public static bool IsPlayerCheckmated(Board board, Side side)
         {
-            return IsPlayerStalemated(board, side) && IsPlayerInCheck(board, side);
+            return IsTotalValidMovesZero(board, side) && IsPlayerInCheck(board, side);
         }
 
         /// <summary>
         /// Checks if the player of the given side has been stalemated.
         /// </summary>
         public static bool IsPlayerStalemated(Board board, Side side)
+        {
+            return IsTotalValidMovesZero(board, side) && !IsPlayerInCheck(board, side);
+        }
+
+        /// <summary>
+        /// Checks if the player of the given side is in check.
+        /// </summary>
+        public static bool IsPlayerInCheck(Board board, Side side)
+        {
+            return IsKingInCheck(board, side == Side.White ? board.WhiteKing : board.BlackKing);
+        }
+
+        internal static bool MoveObeysRules(Board board, Movement move, Side turn)
+        {
+            return !DoesMoveCauseCheck(board, move, move.Piece.Side) && DoesMoveRemoveCheck(board, move, move.Piece.Side);
+        }
+
+        private static bool DoesMoveRemoveCheck(Board board, Movement move, Side side)
+        {
+            if (!IsPlayerInCheck(board, side)) { return true; }
+
+            Board resultingBoard = new Board(board);
+            Piece analogPiece = resultingBoard.BasePieceList.Single(bp => bp is Piece && (bp as Piece).Position.Equals(move.Piece.Position)) as Piece;
+            resultingBoard.MovePiece(new Movement(move.End, analogPiece));
+
+            return !IsPlayerInCheck(resultingBoard, side);
+        }
+
+        private static bool DoesMoveCauseCheck(Board board, Movement move, Side side)
+        {
+            Board resultingBoard = new Board(board);
+            Piece analogPiece = resultingBoard.BasePieceList.Single(bp => bp is Piece && (bp as Piece).Position.Equals(move.Piece.Position)) as Piece;
+            resultingBoard.MovePiece(new Movement(move.End, analogPiece));
+
+            return IsPlayerInCheck(resultingBoard, side);
+        }
+
+        private static bool IsTotalValidMovesZero(Board board, Side side)
         {
             int sumOfValidMoves = 0;
 
@@ -42,43 +70,6 @@ namespace UnityChess
             return sumOfValidMoves == 0;
         }
 
-        /// <summary>
-        /// Checks if the player of the given side is in check.
-        /// </summary>
-        public static bool IsPlayerInCheck(Board board, Side side)
-        {
-            return IsKingInCheck(board, side == Side.White ? board.WhiteKing : board.BlackKing);
-        }
-
-        /// <summary>
-        /// Checks if a move made by the player of the given side relieves him of the threat of check, if it exists.
-        /// </summary>
-        public static bool DoesMoveRemoveCheck(Board board, Movement move, Side side)
-        {
-            if (!IsPlayerInCheck(board, side)) { return true; }
-
-            Board resultingBoard = new Board(board);
-            Piece analogPiece = resultingBoard.BasePieceList.Single(bp => bp is Piece && (bp as Piece).Position.Equals(move.Piece.Position)) as Piece;
-            resultingBoard.MovePiece(new Movement(move.End, analogPiece));
-
-            return !IsPlayerInCheck(resultingBoard, side);
-        }
-
-        /// <summary>
-        /// Checks if a move made by the player of the given side exposes his king to the threat of check.
-        /// </summary>
-        public static bool DoesMoveCauseCheck(Board board, Movement move, Side side)
-        {
-            Board resultingBoard = new Board(board);
-            Piece analogPiece = resultingBoard.BasePieceList.Single(bp => bp is Piece && (bp as Piece).Position.Equals(move.Piece.Position)) as Piece;
-            resultingBoard.MovePiece(new Movement(move.End, analogPiece));
-
-            return IsPlayerInCheck(resultingBoard, side);
-        }
-
-        /// <summary>
-        /// Checks whether this King instance is under threat of check.
-        /// </summary>
         private static bool IsKingInCheck(Board board, King king)
         {
             return IsCheckedRoseDirections(board, king) || IsCheckedKnightDirections(board, king);
@@ -100,7 +91,7 @@ namespace UnityChess
                     testSquare.CopyPosition(king.Position);
                     testSquare.AddVector(i, j);
 
-                    while (testSquare.IsValid())
+                    while (testSquare.IsValid() && !testSquare.IsOccupiedBySide(board, king.Side))
                     {
                         if (testSquare.IsOccupiedBySide(board, king.Side.Complement()))
                         {
@@ -195,6 +186,5 @@ namespace UnityChess
                 }
             }
         }
-
     }
 }
