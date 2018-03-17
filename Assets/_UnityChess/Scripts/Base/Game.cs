@@ -2,21 +2,21 @@
 using System.Linq;
 
 namespace UnityChess {
-    /// <summary>
-    ///     Representation of a standard chess game including a history of moves made.
-    /// </summary>
-    public class Game {
+	/// <summary>
+	///     Representation of a standard chess game including a history of moves made.
+	/// </summary>
+	public class Game {
 
-        /// <summary>
-        ///     Creates a new human versus human Game instance.
-        /// </summary>
-        public Game() : this(Mode.HvH) { }
+		/// <summary>
+		///     Creates a new human versus human Game instance.
+		/// </summary>
+		public Game() : this(Mode.HvH) { }
 
-        /// <summary>
-        ///     Creates a Game instance of a given mode with a standard starting Board.
-        /// </summary>
-        /// <param name="mode">Describes which players are human or AI.</param>
-        public Game(Mode mode) {
+		/// <summary>
+		///     Creates a Game instance of a given mode with a standard starting Board.
+		/// </summary>
+		/// <param name="mode">Describes which players are human or AI.</param>
+		public Game(Mode mode) {
 			CurrentTurn = Side.White;
 			TurnCount = 0;
 			Mode = mode;
@@ -33,10 +33,10 @@ namespace UnityChess {
 		public LinkedList<Board> BoardList { get; set; }
 		public LinkedList<Movement> PreviousMoves { get; set; }
 
-        /// <summary>
-        ///     Executes passed move and switches sides; also adds move to history.
-        /// </summary>
-        public void ExecuteTurn(Movement move) {
+		/// <summary>
+		///     Executes passed move and switches sides; also adds move to history.
+		/// </summary>
+		public void ExecuteTurn(Movement move) {
 			// NOTE may be safe to assume move being passed is a legal move since it should be getting grabbed from a Piece's ValidMoves list
 			if (!move.IsLegal(CurrentTurn)) {
 				// PSEUDO call to gui method which notifies user made invalid move
