@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\Eric\.Rider2017.3\system\resharper-host\local\Transient\ReSharperHost\v11\SolutionCaches\_UnityChess.50438257.00" t="ExcludeRecursive" />
+    <e p="E:\Eric\Documents\Unity Projects\UnityChess" t="IncludeRecursive">
+      <e p="Assembly-CSharp-Editor-firstpass.csproj" t="IncludeRecursive" />
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="_UnityChess" t="Include">
+          <e p="Scripts" t="Include">
+            <e p="AI" t="Include">
+              <e p="AssessedMove.cs" t="Include" />
+              <e p="TreeNode.cs" t="Include" />
+            </e>
+            <e p="Base" t="Include">
+              <e p="Board.cs" t="Include" />
+              <e p="CastlingMove.cs" t="Include" />
+              <e p="ElectedPiece.cs" t="Include" />
+              <e p="EnPassantMove.cs" t="Include" />
+              <e p="Game.cs" t="Include" />
+              <e p="Mode.cs" t="Include" />
+              <e p="Movement.cs" t="Include" />
+              <e p="PromotionMove.cs" t="Include" />
+              <e p="Rules.cs" t="Include" />
+              <e p="Side.cs" t="Include" />
+              <e p="SpecialMove.cs" t="Include" />
+              <e p="Square.cs" t="Include" />
+            </e>
+            <e p="Pieces" t="Include">
+              <e p="BasePiece.cs" t="Include" />
+              <e p="Bishop.cs" t="Include" />
+              <e p="EmptyPiece.cs" t="Include" />
+              <e p="InvalidPiece.cs" t="Include" />
+              <e p="King.cs" t="Include" />
+              <e p="Knight.cs" t="Include" />
+              <e p="Pawn.cs" t="Include" />
+              <e p="Piece.cs" t="Include" />
+              <e p="Queen.cs" t="Include" />
+              <e p="Rook.cs" t="Include" />
+            </e>
+            <e p="Unity" t="Include">
+              <e p="MonoBeh" t="Include">
+                <e p="BoardManager.cs" t="Include" />
+                <e p="GameManager.cs" t="Include" />
+                <e p="PieceManager.cs" t="Include" />
+              </e>
+              <e p="StateBeh" t="Include">
+                <e p="HoldingPiece.cs" t="Include" />
+              </e>
+            </e>
+          </e>
+        </e>
+        <e p="CFX_MainMenu" t="Include">
+          <e p="Standard Assets" t="Include">
+            <e p="ParticleSystems" t="Include">
+              <e p="ParticleSystemsGuidelines.txt" t="Include" />
+              <e p="Shaders" t="Include">
+                <e p="PriorityParticleAdd.shader" t="Include" />
+                <e p="PriorityParticleAddSoft.shader" t="Include" />
+                <e p="PriorityParticleAlpha.shader" t="Include" />
+              </e>
+            </e>
+          </e>
+        </e>
+        <e p="Plugins" t="Include">
+          <e p="Editor" t="Include">
+            <e p="JetBrains" t="Include">
+              <e p="Unity3DRider.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="Library" t="ExcludeRecursive" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Temp" t="ExcludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+      </e>
+      <e p="UnityChess.sln" t="IncludeFlat" />
+    </e>
+  </component>
+</project>

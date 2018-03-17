@@ -3,28 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace UnityChess {
-    /// <summary>
-    ///     Contains methods for checking legality of moves and board positions.
-    /// </summary>
-    public static class Rules {
-        /// <summary>
-        ///     Checks if the player of the given side has been checkmated.
-        /// </summary>
-        public static bool IsPlayerCheckmated(Board board, Side side) {
+	/// <summary>
+	///     Contains methods for checking legality of moves and board positions.
+	/// </summary>
+	public static class Rules {
+		/// <summary>
+		///     Checks if the player of the given side has been checkmated.
+		/// </summary>
+		public static bool IsPlayerCheckmated(Board board, Side side) {
 			return IsTotalValidMovesZero(board, side) && IsPlayerInCheck(board, side);
 		}
 
-        /// <summary>
-        ///     Checks if the player of the given side has been stalemated.
-        /// </summary>
-        public static bool IsPlayerStalemated(Board board, Side side) {
+		/// <summary>
+		///     Checks if the player of the given side has been stalemated.
+		/// </summary>
+		public static bool IsPlayerStalemated(Board board, Side side) {
 			return IsTotalValidMovesZero(board, side) && !IsPlayerInCheck(board, side);
 		}
 
-        /// <summary>
-        ///     Checks if the player of the given side is in check.
-        /// </summary>
-        public static bool IsPlayerInCheck(Board board, Side side) {
+		/// <summary>
+		///     Checks if the player of the given side is in check.
+		/// </summary>
+		public static bool IsPlayerInCheck(Board board, Side side) {
 			return IsKingInCheck(board, side == Side.White ? board.WhiteKing : board.BlackKing);
 		}
 

@@ -35,18 +35,15 @@ public class BoardManager : MonoBehaviour {
 		}
 	}
 
-	public void PopulateStartBoard() {
-		string ModelName;
-		GameObject PieceObject;
-
+	public static void PopulateStartBoard() {
 		foreach (Piece piece in GameManager.Game.BoardList.Last.Value.BasePieceList.OfType<Piece>()) {
-			ModelName = "";
-			ModelName += piece.Side + " ";
-			ModelName += piece.GetType().Name;
+			string modelName = "";
+			modelName += piece.Side + " ";
+			modelName += piece.GetType().Name;
 
-			PieceObject = Instantiate(Resources.Load("Models/Arcane Cyber/Chess/Prefabs/Marble/" + ModelName) as GameObject, positionMap[piece.Position].transform);
-			PieceObject.GetComponent<PieceManager>().Piece = piece;
-			PieceObject.GetComponent<PieceManager>().Type = ModelName;
+			GameObject pieceObject = Instantiate(Resources.Load("Models/Arcane Cyber/Chess/Prefabs/Marble/" + modelName) as GameObject, positionMap[piece.Position].transform);
+			pieceObject.GetComponent<PieceManager>().Piece = piece;
+			pieceObject.GetComponent<PieceManager>().Type = modelName;
 		}
 	}
 }

@@ -1,17 +1,17 @@
 ﻿using System.Text;
 
 namespace UnityChess {
-    /// <summary>
-    ///     Representation of a move, namely a piece and its end square.
-    /// </summary>
-    public class Movement {
+	/// <summary>
+	///     Representation of a move, namely a piece and its end square.
+	/// </summary>
+	public class Movement {
 
-        /// <summary>
-        ///     Creates a new Movement.
-        /// </summary>
-        /// <param name="end">Square which the piece will land on.</param>
-        /// <param name="piece">Piece being moved.</param>
-        public Movement(Square end, Piece piece) {
+		/// <summary>
+		///     Creates a new Movement.
+		/// </summary>
+		/// <param name="end">Square which the piece will land on.</param>
+		/// <param name="piece">Piece being moved.</param>
+		public Movement(Square end, Piece piece) {
 			End = end;
 			Piece = piece;
 		}
@@ -22,10 +22,10 @@ namespace UnityChess {
 			Piece = piece;
 		}
 
-        /// <summary>
-        ///     Copy constructor.
-        /// </summary>
-        internal Movement(Movement move) {
+		/// <summary>
+		///     Copy constructor.
+		/// </summary>
+		internal Movement(Movement move) {
 			End = new Square(move.End);
 			Piece = move.Piece;
 		}
@@ -33,11 +33,11 @@ namespace UnityChess {
 		public Square End { get; set; }
 		public Piece Piece { get; set; }
 
-        /// <summary>
-        ///     Checks whether a move is legal on a given board/turn.
-        /// </summary>
-        /// <param name="turn">Side of the player whose turn it currently is.</param>
-        public bool IsLegal(Side turn) {
+		/// <summary>
+		///     Checks whether a move is legal on a given board/turn.
+		/// </summary>
+		/// <param name="turn">Side of the player whose turn it currently is.</param>
+		public bool IsLegal(Side turn) {
 			if (Piece.Side != turn) return false;
 
 			return Piece.ValidMoves.Contains(this);

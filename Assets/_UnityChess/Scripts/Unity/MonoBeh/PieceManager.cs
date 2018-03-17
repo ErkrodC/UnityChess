@@ -9,8 +9,8 @@ public class PieceManager : MonoBehaviour {
 	private float posX;
 	private float posY;
 
-	public Piece Piece { get; set; }
-	public string Type { get; set; }
+	public Piece Piece;
+	public string Type;
 
 	private void OnMouseDown() {
 		GameObject.FindWithTag("GameManager").GetComponent<GameManager>().GrabPiece(gameObject);

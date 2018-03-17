@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour {
 	public void Start() {
 		boardManager = GameObject.FindWithTag("Board").GetComponent<BoardManager>();
 		StartNewGame(Mode.HvH);
-		boardManager.PopulateStartBoard();
+		BoardManager.PopulateStartBoard();
 	}
 
 	public void StartNewGame(Mode mode) {

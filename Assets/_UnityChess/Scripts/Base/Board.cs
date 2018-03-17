@@ -2,25 +2,25 @@
 using System.Linq;
 
 namespace UnityChess {
-    /// <summary>
-    ///     A 120-length, 1-D representation of a chessboard.
-    /// </summary>
-    public class Board {
+	/// <summary>
+	///     A 120-length, 1-D representation of a chessboard.
+	/// </summary>
+	public class Board {
 		public static EmptyPiece EmptyPiece = new EmptyPiece();
 		public static InvalidPiece InvalidPiece = new InvalidPiece();
 
-        /// <summary>
-        ///     Creates a Board with initial chess game position.
-        /// </summary>
-        public Board() {
+		/// <summary>
+		///     Creates a Board with initial chess game position.
+		/// </summary>
+		public Board() {
 			BasePieceList = Enumerable.Range(0, 120).Select(i => (BasePiece) null).ToList();
 			SetStartingPosition();
 		}
 
-        /// <summary>
-        ///     Creates a deep copy of the passed Board.
-        /// </summary>
-        public Board(Board board) {
+		/// <summary>
+		///     Creates a deep copy of the passed Board.
+		/// </summary>
+		public Board(Board board) {
 			BasePieceList = Enumerable.Range(0, 120).Select(i => (BasePiece) null).ToList();
 			SetBlankBoard();
 
@@ -42,24 +42,24 @@ namespace UnityChess {
 		Boards will be represented as a 10x12 grid in a one dimensional list.
 		The 8x8 chessboard is in the center, viewed from above with white on the side closer to index 0.
 
-		     110  111 112 ... 117 118  119                                  Compass:             (0, 1)
-		     100  101 102 ... 107 108  109                                                        Black
-		        |---------------------|               ^                    (-1, 1) Black-Queenside  |   Black-Kingside (1, 1)
-		       .|              .   98 | 99          R |                                          \  |  /
-		       .|            .        | .           a |               (-1,0) Queenside--------------*------------------Kingside (1, 0)
-		       .|          .          | .           n |                                          /  |  \
-		      30| 31 32 33 ...        | 39          k |                  (-1, -1) White-Queenside   |   White-Kingside (1, -1)
-		      20| 21 22 23 ...        | 29            ------------>                               White
-		        |---------------------|         (1,1)       file                                 (0, -1)
-		      10  11 12 13  ... 17 18   19
-		       0   1  2  3  ...  7  8   9
+			 110  111 112 ... 117 118  119                                  Compass:             (0, 1)
+			 100  101 102 ... 107 108  109                                                        Black
+			    |---------------------|               ^                    (-1, 1) Black-Queenside  |   Black-Kingside (1, 1)
+			   .|              .   98 | 99          R |                                          \  |  /
+			   .|            .        | .           a |               (-1,0) Queenside--------------*------------------Kingside (1, 0)
+			   .|          .          | .           n |                                          /  |  \
+			  30| 31 32 33 ...        | 39          k |                  (-1, -1) White-Queenside   |   White-Kingside (1, -1)
+			  20| 21 22 23 ...        | 29            ------------>                               White
+			    |---------------------|         (1,1)       file                                 (0, -1)
+			  10  11 12 13  ... 17 18   19
+			   0   1  2  3  ...  7  8   9
 		*/
 		public List<BasePiece> BasePieceList { get; private set; }
 
-        /// <summary>
-        ///     Used to remove all pieces from the board.
-        /// </summary>
-        public void SetBlankBoard() {
+		/// <summary>
+		///     Used to remove all pieces from the board.
+		/// </summary>
+		public void SetBlankBoard() {
 			for (int i = 1; i <= 8; i++) {
 				for (int j = 1; j <= 8; j++) {
 					BasePieceList[Square.FileRankAsIndex(i, j)] = EmptyPiece;
@@ -80,10 +80,10 @@ namespace UnityChess {
 			BlackKing = null;
 		}
 
-        /// <summary>
-        ///     Used to reset the Board to initial chess game position.
-        /// </summary>
-        public void SetStartingPosition() {
+		/// <summary>
+		///     Used to reset the Board to initial chess game position.
+		/// </summary>
+		public void SetStartingPosition() {
 			SetBlankBoard();
 
 			//Row 2/Rank 7 and Row 7/Rank 2, both rows of pawns
@@ -115,10 +115,10 @@ namespace UnityChess {
 			BlackKing = BasePieceList[95] as King;
 		}
 
-        /// <summary>
-        ///     Used to execute a move.
-        /// </summary>
-        public void MovePiece(Movement move) {
+		/// <summary>
+		///     Used to execute a move.
+		/// </summary>
+		public void MovePiece(Movement move) {
 			LiftPiece(move.Piece);
 			PlacePiece(move.Piece, move.End);
 

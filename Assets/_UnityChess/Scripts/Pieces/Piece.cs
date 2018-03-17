@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
 namespace UnityChess {
-    /// <summary>
-    ///     Base class for any chess piece.
-    /// </summary>
-    public abstract class Piece : BasePiece {
+	/// <summary>
+	///     Base class for any chess piece.
+	/// </summary>
+	public abstract class Piece : BasePiece {
 
 		public Piece(Square startPosition, Side side) {
 			Side = side;
