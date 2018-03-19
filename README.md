@@ -1,6 +1,6 @@
 # UnityChess
 
-UnityChess is a 2D Chess program built using Unity/C#, complete with its own AI.
+UnityChess is a 3D Chess game built using Unity/C#, complete with its own AI.
 
 ![UnityChess demo](https://i.imgur.com/VJOXHkK.jpg)
 
@@ -10,9 +10,9 @@ Be sure to follow this [branching strategy](https://docs.google.com/document/d/1
 
 If you wish to contribute, it is recommended you have the following resources:
 
-* [Unity 5.6.1](https://unity3d.com/get-unity/download/archive) - A free to download game engine.
-* [Visual Studio](https://www.visualstudio.com/downloads/) - THE IDE for C# (amongst other languages)
-* [Gitkraken](https://www.gitkraken.com/download) - A graphical tool that makes it easy to rebase and view branch histories
+* [Unity 2017.3.1f1](https://unity3d.com/get-unity/download/archive) - A free to download game engine.
+* [Visual Studio Community 2017](https://www.visualstudio.com/downloads/) - Microsoft's free IDE for C# (amongst other languages)
+* [Gitkraken](https://www.gitkraken.com/download) - A git/github interface that makes it easy to rebase and view branch histories
 
 ### Installation
 
