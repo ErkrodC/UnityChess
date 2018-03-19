@@ -2,6 +2,8 @@
 
 UnityChess is a 2D Chess program built using Unity/C#, complete with its own AI.
 
+![UnityChess demo](https://i.imgur.com/VJOXHkK.jpg)
+
 ### Contributing
 Be sure to follow this [branching strategy](https://docs.google.com/document/d/15klJI6eCww5gX8QA6ZMac-jmPLpe1CN79f1v6vGPkNw/pub) if you were given push priveleges. Otherwise, follow the collaborative github workflow, well described [here](https://github.com/asmeurer/git-workflow/blob/master/README.md), and make your branch off of the development branch.
 
