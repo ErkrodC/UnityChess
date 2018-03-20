@@ -30,9 +30,7 @@ public class BoardManager : MonoBehaviour {
 			modelName += piece.Side + " ";
 			modelName += piece.GetType().Name;
 
-			GameObject pieceObject = Instantiate(Resources.Load("PieceSets/Marble/" + modelName) as GameObject, positionMap[piece.Position].transform);
-			pieceObject.GetComponent<PieceBeh>().Piece = piece;
-			pieceObject.GetComponent<PieceBeh>().Type = modelName;
+			Instantiate(Resources.Load("PieceSets/Marble/" + modelName) as GameObject, positionMap[piece.Position].transform);
 		}
 	}
 }

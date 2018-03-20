@@ -1,5 +1,7 @@
-﻿using UnityChess;
+﻿using System.Linq;
+using UnityChess;
 using UnityEngine;
+
 
 public class GameManager : MonoBehaviour {
 	[HideInInspector] public static GameManager Instance;
@@ -29,6 +31,9 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void OnPieceMoved() {
-		Game.ExecuteTurn(MoveHistory.Pop());
+		Movement move = MoveHistory.Pop();
+		
+		//Debug.Log($"{Game.CurrentTurn}\t{move}");
+		Game.ExecuteTurn(move);
 	}
 }

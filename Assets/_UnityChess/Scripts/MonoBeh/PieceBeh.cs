@@ -10,7 +10,6 @@ public class PieceBeh : MonoBehaviour {
 	public PieceType PieceType;
 	public Side Side;
 	public GameEvent PieceMovedEvent;
-	[HideInInspector] public string Type;
 
 	private Square currentSquare;
 	private Vector3 distance;
@@ -80,15 +79,17 @@ public class PieceBeh : MonoBehaviour {
 		}
 		
 		Movement potentialMove = GenerateMove(closestSquare);
-		if (!potentialMove.IsLegal(GameManager.Instance.Game.CurrentTurn))
+
+		if (potentialMove.IsLegal(GameManager.Instance.Game.CurrentTurn))
 		{
-			transform.position = transform.parent.position;
-		} else {
 			transform.parent = closestSquare;
 			// ReSharper disable once PossibleNullReferenceException
 			transform.position = closestSquare.position;
 			MoveHistory.Push(potentialMove);
 			PieceMovedEvent.Raise();
+		} else {
+			transform.position = transform.parent.position;
+			ShowLegalMovesInLog();
 		}
 		
 		//probably should rid the need for this
@@ -103,5 +104,14 @@ public class PieceBeh : MonoBehaviour {
 		Square toSquare = new Square(file, rank);
 		
 		return new Movement(toSquare, Piece);
+	}
+	
+	public void ShowLegalMovesInLog() {
+		
+		string debMsg = $"# of valid moves: {Piece.ValidMoves.Count}\n";
+		foreach (Movement validMove in Piece.ValidMoves) {
+			debMsg += $"{validMove}\n";
+		}
+		Debug.Log(debMsg);
 	}
 }
