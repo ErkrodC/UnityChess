@@ -137,7 +137,7 @@ namespace UnityChess.RulesTests
             {
                 board.SetStartingPosition();
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -153,7 +153,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(pinningKing);
                 board.PlacePiece(pinningBishop);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -169,7 +169,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(pinningKing);
                 board.PlacePiece(pinningRook);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -183,7 +183,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(offensiveKing);
                 board.PlacePiece(offensiveKnight);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -214,7 +214,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(offensivePawn1);
                 board.PlacePiece(offensivePawn2);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -253,7 +253,7 @@ namespace UnityChess.RulesTests
                         break;
                 }
 
-                PositionInitializer initializer = (board, side) =>
+                PositionInitializer Initializer = (board, side) =>
                 {
                     King checkedKing = new King(new Square(4, 4), side);
                     King checkingKing = new King(new Square(8, 1), side.Complement());
@@ -263,11 +263,11 @@ namespace UnityChess.RulesTests
                     board.PlacePiece(checkingKing);
                     board.PlacePiece(checkingQueen);
 
-                    board.initKings();
+                    board.InitKings();
                     Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
                 };
 
-                return initializer;
+                return Initializer;
             }
 
             private static PositionInitializer RookCheck(Direction direction)
@@ -293,7 +293,7 @@ namespace UnityChess.RulesTests
                         break;
                 }
 
-                PositionInitializer initializer = (board, side) =>
+                PositionInitializer Initializer = (board, side) =>
                 {
                     King checkedKing = new King(new Square(4, 4), side);
                     King checkingKing = new King(new Square(8, 1), side.Complement());
@@ -303,11 +303,11 @@ namespace UnityChess.RulesTests
                     board.PlacePiece(checkingKing);
                     board.PlacePiece(checkingRook);
 
-                    board.initKings();
+                    board.InitKings();
                     Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
                 };
 
-                return initializer;
+                return Initializer;
             }
 
             private static PositionInitializer BishopCheck(Direction direction)
@@ -333,7 +333,7 @@ namespace UnityChess.RulesTests
                         break;
                 }
 
-                PositionInitializer initializer = (board, side) =>
+                PositionInitializer Initializer = (board, side) =>
                 {
                     King checkedKing = new King(new Square(4, 4), side);
                     King checkingKing = new King(new Square(8, 1), side.Complement());
@@ -343,11 +343,11 @@ namespace UnityChess.RulesTests
                     board.PlacePiece(checkingKing);
                     board.PlacePiece(checkingBishop);
 
-                    board.initKings();
+                    board.InitKings();
                     Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
                 };
 
-                return initializer;
+                return Initializer;
             }
 
             private static PositionInitializer KnightCheck(KnightDirection direction)
@@ -385,7 +385,7 @@ namespace UnityChess.RulesTests
                         break;
                 }
 
-                PositionInitializer initializer = (board, side) =>
+                PositionInitializer Initializer = (board, side) =>
                 {
                     King checkedKing = new King(new Square(4, 4), side);
                     King checkingKing = new King(new Square(8, 1), side.Complement());
@@ -395,11 +395,11 @@ namespace UnityChess.RulesTests
                     board.PlacePiece(checkingKing);
                     board.PlacePiece(checkingKnight);
 
-                    board.initKings();
+                    board.InitKings();
                     Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
                 };
 
-                return initializer;
+                return Initializer;
             }
 
             private static PositionInitializer PawnCheck(Direction direction, Side checkedSide)
@@ -437,7 +437,7 @@ namespace UnityChess.RulesTests
                     }
                 }
 
-                PositionInitializer initializer = (board, side) =>
+                PositionInitializer Initializer = (board, side) =>
                 {
                     King checkedKing = new King(new Square(4, 4), side);
                     King checkingKing = new King(new Square(8, 1), side.Complement());
@@ -447,11 +447,11 @@ namespace UnityChess.RulesTests
                     board.PlacePiece(checkingKing);
                     board.PlacePiece(checkingPawn);
 
-                    board.initKings();
+                    board.InitKings();
                     Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
                 };
 
-                return initializer;
+                return Initializer;
             }
 
             private static void KingPawnStalemate(Board board, Side side)
@@ -477,7 +477,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(blunderKing);
                 board.PlacePiece(blunderPawn);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -491,7 +491,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(blunderKing);
                 board.PlacePiece(blunderRook);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -505,7 +505,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(blunderKing);
                 board.PlacePiece(blunderBishop);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -521,7 +521,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(blunderRook);
                 board.PlacePiece(stalematedBishop);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -535,7 +535,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(blunderKing);
                 board.PlacePiece(blunderQueen);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -570,7 +570,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(blunderPawn1);
                 board.PlacePiece(blunderPawn2);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -605,7 +605,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(blunderBishop);
                 board.PlacePiece(blunderPawn);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -636,7 +636,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(blunderRook);
                 board.PlacePiece(blunderPawn);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -699,7 +699,7 @@ namespace UnityChess.RulesTests
                     board.PlacePiece(p);
                 }
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -715,7 +715,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(winningRook1);
                 board.PlacePiece(winningRook2);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -729,7 +729,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(winningKing);
                 board.PlacePiece(winningQueen);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -743,7 +743,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(winningKing);
                 board.PlacePiece(winningRook);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -759,7 +759,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(winningBishop1);
                 board.PlacePiece(winningBishop2);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -775,7 +775,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(winningBishop);
                 board.PlacePiece(winningKnight);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -791,7 +791,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(winningKnight1);
                 board.PlacePiece(winningKnight2);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -822,7 +822,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(winningPawn1);
                 board.PlacePiece(winningPawn2);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -861,7 +861,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(losingPawn2);
                 board.PlacePiece(losingPawn3);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -900,7 +900,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(losingPawn2);
                 board.PlacePiece(losingRook);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -916,7 +916,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(winningKnight);
                 board.PlacePiece(winningRook);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
@@ -932,7 +932,7 @@ namespace UnityChess.RulesTests
                 board.PlacePiece(winningQueen);
                 board.PlacePiece(winningBishop);
 
-                board.initKings();
+                board.InitKings();
                 Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
             }
 
