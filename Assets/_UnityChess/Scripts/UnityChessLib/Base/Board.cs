@@ -124,7 +124,7 @@ namespace UnityChess {
 
 			move.Piece.HasMoved = true;
 
-			if (move is SpecialMove) (move as SpecialMove).HandleAssociatedPiece(this);
+			(move as SpecialMove)?.HandleAssociatedPiece(this);
 		}
 
 		public void PlacePiece(Piece piece) {
@@ -174,7 +174,6 @@ namespace UnityChess {
 		public Piece GetPiece(int file, int rank) {
 			return GetBasePiece(file, rank) as Piece;
 		}
-
 
 		public void InitKings() {
 			WhiteKing = (King) BasePieceList.Single(bp => bp is King && (bp as King).Side == Side.White);
