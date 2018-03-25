@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using NUnit.Framework.Internal.Filters;
 using UnityChess;
 using UnityEngine;
-
+using static UnityChessDebug;
 
 public class GameManager : MonoBehaviour {
 	[HideInInspector] public static GameManager Instance;
@@ -10,6 +10,10 @@ public class GameManager : MonoBehaviour {
 	
 	//Events
 	public GameEvent NewGameStarted;
+	
+	//Debug
+	public bool Debug;
+	public GameObject DebugView;
 	
 	private void Awake() {
 		if (Instance == null) {
@@ -21,8 +25,16 @@ public class GameManager : MonoBehaviour {
 	}
 	
 	public void Start() {
-		//in for testing
-		StartNewGame(Mode.HvH);
+		if (Debug) {
+			StartNewGame(Mode.HvH);
+		}
+	}
+
+	private void Update() {
+		if (Debug) {
+			UpdateBoardDebugView(Game.BoardList.Last.Value);
+			UpdateMoveHistoryDebugView(Game.PreviousMoves);
+		}
 	}
 
 	public void StartNewGame(Mode mode) {

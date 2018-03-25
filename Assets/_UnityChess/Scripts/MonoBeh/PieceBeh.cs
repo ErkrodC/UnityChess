@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using UnityChess;
 using UnityEngine;
-using static FileConverter;
+using static FileIntConverter;
+using static UnityChessDebug;
 
 public class PieceBeh : MonoBehaviour {
 
@@ -18,11 +19,7 @@ public class PieceBeh : MonoBehaviour {
 	
 	private void Start() {
 		string parentSquareName = transform.parent.name;
-		
-		int file = FileToInt(parentSquareName.Substring(0, 1));
-		int rank = int.Parse(parentSquareName.Substring(1, 1));
-
-		currentSquare = new Square(file, rank);
+		currentSquare = StringToSquare(parentSquareName);
 
 		Piece = GameManager.Instance.Game.BoardList.Last.Value.GetPiece(currentSquare);
 	}
@@ -79,7 +76,6 @@ public class PieceBeh : MonoBehaviour {
 		}
 		
 		Movement potentialMove = GenerateMove(closestSquare);
-
 		if (potentialMove.IsLegal(GameManager.Instance.Game.CurrentTurn))
 		{
 			transform.parent = closestSquare;
@@ -89,7 +85,7 @@ public class PieceBeh : MonoBehaviour {
 			PieceMovedEvent.Raise();
 		} else {
 			transform.position = transform.parent.position;
-			ShowLegalMovesInLog();
+			ShowLegalMovesInLog(Piece);
 		}
 		
 		//probably should rid the need for this
@@ -98,20 +94,8 @@ public class PieceBeh : MonoBehaviour {
 	
 	private Movement GenerateMove(Transform toSquareTransform) {
 		string toSquareString = toSquareTransform.name;
-		int file = FileToInt(toSquareString.Substring(0, 1));
-		int rank = int.Parse(toSquareString.Substring(1, 1));
-		
-		Square toSquare = new Square(file, rank);
+		Square toSquare = StringToSquare(toSquareString);
 		
 		return new Movement(toSquare, Piece);
-	}
-	
-	public void ShowLegalMovesInLog() {
-		
-		string debMsg = $"# of valid moves: {Piece.ValidMoves.Count}\n";
-		foreach (Movement validMove in Piece.ValidMoves) {
-			debMsg += $"{validMove}\n";
-		}
-		Debug.Log(debMsg);
 	}
 }
