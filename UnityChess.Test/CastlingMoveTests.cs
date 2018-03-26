@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using UnityChess;
 using System;
+using Moq;
 
 namespace UnityChess.CastlingMoveTests
 {
