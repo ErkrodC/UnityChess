@@ -85,6 +85,7 @@ $RECYCLE.BIN/
 
 # Other
 .idea/
+Logs/
 UnityChess\.Test/obj/
 UnityChess\.Test/bin/Debug/
 UnityChess\.Test/bin/
