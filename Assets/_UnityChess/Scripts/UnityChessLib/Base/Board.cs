@@ -1,46 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
-namespace UnityChess {
-	/// <summary>
-	///     A 120-length, 1-D representation of a chessboard.
-	/// </summary>
-	public class Board {
-		public static EmptyPiece EmptyPiece = new EmptyPiece();
-		public static InvalidPiece InvalidPiece = new InvalidPiece();
 
-		/// <summary>
-		///     Creates a Board with initial chess game position.
-		/// </summary>
-		public Board() {
-			BasePieceList = Enumerable.Range(0, 120).Select(i => (BasePiece) null).ToList();
-			SetStartingPosition();
-		}
-
-		/// <summary>
-		///     Creates a deep copy of the passed Board.
-		/// </summary>
-		public Board(Board board) {
-			BasePieceList = Enumerable.Range(0, 120).Select(i => (BasePiece) null).ToList();
-			SetBlankBoard();
-
-			//creates deep copy (makes copy of each piece and deep copy of their respective ValidMoves lists) of board (list of BasePiece's)
-			//this may be a memory hog since each Board has a list of Piece's, and each piece has a list of Movement's
-			//avg number turns/Board's per game should be around ~80. usual max number of pieces per board is 32
-			// TODO optimize this method
-			foreach (Piece piece in board.BasePieceList.OfType<Piece>()) {
-				BasePieceList[piece.Position.AsIndex()] = piece.Clone();
-			}
-
-			InitKings();
-		}
-
-		public King WhiteKing { get; set; }
-		public King BlackKing { get; set; }
-
-		/*
-		Boards will be represented as a 10x12 grid in a one dimensional list.
-		The 8x8 chessboard is in the center, viewed from above with white on the side closer to index 0.
+/*
+		Boards represented as a 10x12 grid in a one dimensional list.
+		The 8x8 chessboard is in the center, viewed from above, with white on the side closer to index 0.
 
 			 110  111 112 ... 117 118  119                                  Compass:             (0, 1)
 			 100  101 102 ... 107 108  109                                                        Black
@@ -53,18 +16,44 @@ namespace UnityChess {
 			    |---------------------|         (1,1)       file                                 (0, -1)
 			  10  11 12 13  ... 17 18   19
 			   0   1  2  3  ...  7  8   9
-		*/
-		public List<BasePiece> BasePieceList { get; private set; }
+*/
 
-		/// <summary>
-		///     Used to remove all pieces from the board.
-		/// </summary>
+namespace UnityChess {
+	/// <summary>A 120-length, 1-D representation of a chessboard.</summary>
+	public class Board {
+		public static readonly EmptyPiece EmptyPiece = new EmptyPiece();
+		public static readonly InvalidPiece InvalidPiece = new InvalidPiece();
+		
+		public King WhiteKing { get; private set; }
+		public King BlackKing { get; private set; }
+		public BasePiece[] BasePieceList { get; }
+
+		/// <summary>Creates a Board with initial chess game position.</summary>
+		public Board() {
+			BasePieceList = Enumerable.Range(0, 120).Select(i => (BasePiece) null).ToArray();
+			SetStartingPosition();
+		}
+
+		/// <summary>Creates a deep copy of the passed Board.</summary>
+		public Board(Board board) {
+			BasePieceList = Enumerable.Range(0, 120).Select(i => (BasePiece) null).ToArray();
+			SetBlankBoard();
+
+			//creates deep copy (makes copy of each piece and deep copy of their respective ValidMoves lists) of board (list of BasePiece's)
+			//this may be a memory hog since each Board has a list of Piece's, and each piece has a list of Movement's
+			//avg number turns/Board's per game should be around ~80. usual max number of pieces per board is 32
+			// TODO optimize this method
+			foreach (Piece piece in board.BasePieceList.OfType<Piece>())
+				BasePieceList[piece.Position.AsIndex()] = piece.Clone();
+
+			InitKings();
+		}
+
+		/// <summary>Used to remove all pieces from the board.</summary>
 		public void SetBlankBoard() {
-			for (int i = 1; i <= 8; i++) {
-				for (int j = 1; j <= 8; j++) {
+			for (int i = 1; i <= 8; i++)
+				for (int j = 1; j <= 8; j++)
 					BasePieceList[Square.FileRankAsIndex(i, j)] = EmptyPiece;
-				}
-			}
 
 			for (int i = 0; i <= 19; i++) {
 				BasePieceList[i] = InvalidPiece;
@@ -80,9 +69,7 @@ namespace UnityChess {
 			BlackKing = null;
 		}
 
-		/// <summary>
-		///     Used to reset the Board to initial chess game position.
-		/// </summary>
+		/// <summary>Used to reset the Board to initial chess game position.</summary>
 		public void SetStartingPosition() {
 			SetBlankBoard();
 
@@ -111,15 +98,13 @@ namespace UnityChess {
 			BasePieceList[97] = new Knight(new Square(97), Side.Black);
 			BasePieceList[98] = new Rook(new Square(98), Side.Black);
 
-			WhiteKing = BasePieceList[25] as King;
-			BlackKing = BasePieceList[95] as King;
+			WhiteKing = (King) BasePieceList[25];
+			BlackKing = (King) BasePieceList[95];
 		}
 
-		/// <summary>
-		///     Used to execute a move.
-		/// </summary>
+		/// <summary>Used to execute a move.</summary>
 		public void MovePiece(Movement move) {
-			LiftPiece(move.Piece);
+			KillPiece(move.Piece);
 			PlacePiece(move.Piece, move.End);
 
 			move.Piece.HasMoved = true;
@@ -127,53 +112,33 @@ namespace UnityChess {
 			(move as SpecialMove)?.HandleAssociatedPiece(this);
 		}
 
-		public void PlacePiece(Piece piece) {
-			BasePieceList[piece.Position.AsIndex()] = piece;
-		}
+		public void PlacePiece(Piece piece) => BasePieceList[piece.Position.AsIndex()] = piece;
 
 		public void PlacePiece(Piece piece, Square position) {
 			BasePieceList[position.AsIndex()] = piece;
-			piece.Position.CopyPosition(position);
+			piece.Position = new Square(position);
 		}
 
 		public void PlacePiece(Piece piece, int index) {
-			Square s = new Square(index);
-
 			BasePieceList[index] = piece;
-			piece.Position.CopyPosition(s);
+			piece.Position = new Square(index);
 		}
 
-		public void PlacePiece(Piece piece, int file, int rank) {
-			PlacePiece(piece, Square.FileRankAsIndex(file, rank));
-		}
+		public void PlacePiece(Piece piece, int file, int rank) => PlacePiece(piece, Square.FileRankAsIndex(file, rank));
 
-		public void LiftPiece(Piece piece) {
-			BasePieceList[piece.Position.AsIndex()] = EmptyPiece;
-		}
+		public void KillPiece(Piece piece) => BasePieceList[piece.Position.AsIndex()] = EmptyPiece;
 
-		public BasePiece GetBasePiece(Square position) {
-			return BasePieceList[position.AsIndex()];
-		}
+		public BasePiece GetBasePiece(Square position) => BasePieceList[position.AsIndex()];
 
-		public BasePiece GetBasePiece(int index) {
-			return BasePieceList[index];
-		}
+		public BasePiece GetBasePiece(int index) => BasePieceList[index];
 
-		public BasePiece GetBasePiece(int file, int rank) {
-			return GetBasePiece(Square.FileRankAsIndex(file, rank));
-		}
+		public BasePiece GetBasePiece(int file, int rank) => GetBasePiece(Square.FileRankAsIndex(file, rank));
 
-		public Piece GetPiece(Square position) {
-			return GetBasePiece(position) as Piece;
-		}
+		public Piece GetPiece(Square position) => GetBasePiece(position) as Piece;
 
-		public Piece GetPiece(int index) {
-			return GetBasePiece(index) as Piece;
-		}
+		public Piece GetPiece(int index) => GetBasePiece(index) as Piece;
 
-		public Piece GetPiece(int file, int rank) {
-			return GetBasePiece(file, rank) as Piece;
-		}
+		public Piece GetPiece(int file, int rank) => GetBasePiece(file, rank) as Piece;
 
 		public void InitKings() {
 			WhiteKing = (King) BasePieceList.Single(bp => bp is King && (bp as King).Side == Side.White);

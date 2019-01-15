@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityChess;
 using UnityEngine;
-using static FileIntConverter;
+using static SquareUtil;
 using static UnityChessDebug;
 
 public class PieceBeh : MonoBehaviour {

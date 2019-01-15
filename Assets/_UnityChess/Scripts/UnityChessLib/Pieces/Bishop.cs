@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace UnityChess {
 	public class Bishop : Piece {
@@ -23,10 +22,9 @@ namespace UnityChess {
 			Square testSquare = new Square(Position);
 			Movement testMove = new Movement(testSquare, this);
 
-			foreach (int i in new[] {-1, 1}) {
-				foreach (int j in new[] {-1, 1}) {
-					testSquare.CopyPosition(Position);
-					testSquare.AddVector(i, j);
+			foreach (int fileOffset in new[] {-1, 1}) {
+				foreach (int rankOffset in new[] {-1, 1}) {
+					testSquare = new Square(Position, fileOffset, rankOffset);
 
 					while (testSquare.IsValid()) {
 						if (testSquare.IsOccupied(board)) {
@@ -41,7 +39,7 @@ namespace UnityChess {
 							ValidMoves.Add(new Movement(testMove));
 						}
 
-						testSquare.AddVector(i, j);
+						testSquare = new Square(testSquare, fileOffset, rankOffset);
 					}
 				}
 			}

@@ -1,23 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using UnityEngine;
 
 namespace UnityChess {
-	/// <summary>
-	///     Representation of a standard chess game including a history of moves made.
-	/// </summary>
+	/// <summary>Representation of a standard chess game including a history of moves made.</summary>
 	public class Game {
-
-		/// <summary>
-		///     Creates a new human versus human Game instance.
-		/// </summary>
-		public Game() : this(Mode.HvH) { }
-
-		/// <summary>
-		///     Creates a Game instance of a given mode with a standard starting Board.
-		/// </summary>
+		/// <summary>Creates a Game instance of a given mode with a standard starting Board.</summary>
 		/// <param name="mode">Describes which players are human or AI.</param>
 		public Game(Mode mode) {
 			CurrentTurn = Side.White;
@@ -30,17 +17,14 @@ namespace UnityChess {
 			UpdateAllPiecesValidMoves(BoardList.Last.Value, PreviousMoves, Side.White);
 		}
 
-		public Side CurrentTurn { get; set; }
+		public Side CurrentTurn { get; private set; }
 		public int TurnCount { get; set; }
-		public Mode Mode { get; set; }
-		public LinkedList<Board> BoardList { get; set; }
-		public LinkedList<Movement> PreviousMoves { get; set; }
+		public Mode Mode { get; }
+		public LinkedList<Board> BoardList { get; }
+		public LinkedList<Movement> PreviousMoves { get; }
 		
-		/// <summary>
-		///     Executes passed move and switches sides; also adds move to history.
-		/// </summary>
+		/// <summary>Executes passed move and switches sides; also adds move to history.</summary>
 		public void ExecuteTurn(Movement move) {
-			
 			//create new copy of previous current board, and execute the move on it
 			Board resultingBoard = new Board(BoardList.Last.Value);
 			resultingBoard.MovePiece(move);
@@ -53,11 +37,9 @@ namespace UnityChess {
 			CurrentTurn = CurrentTurn.Complement();
 		}
 
-		public static void UpdateAllPiecesValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn) {
-		
-			foreach (Piece piece in board.BasePieceList.OfType<Piece>()) {
+		private static void UpdateAllPiecesValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn) {
+			foreach (Piece piece in board.BasePieceList.OfType<Piece>())
 				piece.UpdateValidMoves(board, previousMoves, turn);
-			}
 		}
 	}
 }

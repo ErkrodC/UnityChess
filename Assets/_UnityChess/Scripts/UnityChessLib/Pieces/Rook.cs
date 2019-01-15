@@ -23,25 +23,22 @@ namespace UnityChess {
 			Square testSquare = new Square(Position);
 			Movement testMove = new Movement(testSquare, this);
 
-			foreach (int i in new[] {-1, 0, 1}) {
-				foreach (int j in Math.Abs(i) == 1 ? new[] {0} : new[] {-1, 1}) {
-					testSquare.CopyPosition(Position);
-					testSquare.AddVector(i, j);
+			foreach (int fileOffset in new[] {-1, 0, 1}) {
+				foreach (int rankOffset in Math.Abs(fileOffset) == 1 ? new[] {0} : new[] {-1, 1}) {
+					testSquare = new Square(Position, fileOffset, rankOffset);
 
 					while (testSquare.IsValid()) {
 						if (testSquare.IsOccupied(board)) {
-							if (!testSquare.IsOccupiedBySide(board, Side) && Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position)) {
+							if (!testSquare.IsOccupiedBySide(board, Side) && Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position))
 								ValidMoves.Add(new Movement(testMove));
-							}
 
 							break;
 						}
 
-						if (Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position)) {
+						if (Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position))
 							ValidMoves.Add(new Movement(testMove));
-						}
 
-						testSquare.AddVector(i, j);
+						testSquare = new Square(testSquare, fileOffset, rankOffset);
 					}
 				}
 			}

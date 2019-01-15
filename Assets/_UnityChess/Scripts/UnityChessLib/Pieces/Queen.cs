@@ -22,12 +22,11 @@ namespace UnityChess {
 			Square testSquare = new Square(Position);
 			Movement testMove = new Movement(testSquare, this);
 
-			foreach (int i in new[] {-1, 0, 1}) {
-				foreach (int j in new[] {-1, 0, 1}) {
-					if (i == 0 && j == 0) continue;
+			foreach (int fileOffset in new[] {-1, 0, 1}) {
+				foreach (int rankOffset in new[] {-1, 0, 1}) {
+					if (fileOffset == 0 && rankOffset == 0) continue;
 
-					testSquare.CopyPosition(Position);
-					testSquare.AddVector(i, j);
+					testSquare = new Square(Position, fileOffset, rankOffset);
 
 					while (testSquare.IsValid()) {
 						if (testSquare.IsOccupied(board)) {
@@ -42,14 +41,12 @@ namespace UnityChess {
 							ValidMoves.Add(new Movement(testMove));
 						}
 
-						testSquare.AddVector(i, j);
+						testSquare = new Square(testSquare, fileOffset, rankOffset);
 					}
 				}
 			}
 		}
 
-		public override Piece Clone() {
-			return new Queen(this);
-		}
+		public override Piece Clone() => new Queen(this);
 	}
 }

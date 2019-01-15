@@ -23,12 +23,11 @@ namespace UnityChess {
 			Square testSquare = new Square(Position);
 			Movement testMove = new Movement(testSquare, this);
 
-			for (int i = -2; i <= 2; i++) {
-				if (i == 0) continue;
+			for (int fileOffset = -2; fileOffset <= 2; fileOffset++) {
+				if (fileOffset == 0) continue;
 
-				foreach (int j in Math.Abs(i) == 2 ? new[] {-1, 1} : new[] {-2, 2}) {
-					testSquare.CopyPosition(Position);
-					testSquare.AddVector(i, j);
+				foreach (int rankOffset in Math.Abs(fileOffset) == 2 ? new[] {-1, 1} : new[] {-2, 2}) {
+					testSquare = new Square(Position, fileOffset, rankOffset);
 
 					if (testSquare.IsValid() && !testSquare.IsOccupiedBySide(board, Side) && Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position)) {
 						ValidMoves.Add(new Movement(testMove));
