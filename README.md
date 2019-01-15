@@ -10,9 +10,9 @@ Be sure to follow this [branching strategy](https://docs.google.com/document/d/1
 
 If you wish to contribute, it is recommended you have the following resources:
 
-* [Unity 2017.3.1f1](https://unity3d.com/get-unity/download/archive) - A free to download game engine.
-* [Visual Studio Community 2017](https://www.visualstudio.com/downloads/) - Microsoft's free IDE for C# (amongst other languages)
-* [Gitkraken](https://www.gitkraken.com/download) - A git/github interface that makes it easy to rebase and view branch histories
+* [Unity 2018.3.1f1](https://unity3d.com/get-unity/download/archive) - A free to download game engine.
+* [SourceTree](https://www.sourcetreeapp.com/) - A version control system interface that makes it easy to rebase and view branch histories
+* Your favorite C# IDE
 
 ### Installation
 

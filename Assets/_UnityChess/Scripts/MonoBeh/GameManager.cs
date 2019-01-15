@@ -1,10 +1,9 @@
-﻿using NUnit.Framework.Internal.Filters;
-using UnityChess;
+﻿using UnityChess;
 using UnityEngine;
 using static UnityChessDebug;
 
 public class GameManager : MonoBehaviour {
-	[HideInInspector] public static GameManager Instance;
+	public static GameManager Instance;
 	public Game Game;
 	public MoveHistory MoveHistory;
 	
