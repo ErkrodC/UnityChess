@@ -83,9 +83,8 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-
-# Added manually via gitKraken
-\.idea/\.idea\.UnityChess/\.idea/
+# Other
+.idea/
 UnityChess\.Test/obj/
 UnityChess\.Test/bin/Debug/
 UnityChess\.Test/bin/
