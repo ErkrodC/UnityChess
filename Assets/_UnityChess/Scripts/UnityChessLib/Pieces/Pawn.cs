@@ -24,10 +24,9 @@ namespace UnityChess {
 		}
 
 		private void CheckForwardMovingSquares(Board board, Side turn) {
-			Square testSquare = new Square(Position);
+			Square testSquare = new Square(Position, 0, Side == Side.White ? 1 : -1);
 			Movement testMove = new Movement(testSquare, this);
-
-			testSquare = new Square(testSquare, 0, Side == Side.White ? 1 : -1);
+			
 			if (!testSquare.IsOccupied(board) && Rules.MoveObeysRules(board, testMove, turn)) {
 				if (Position.Rank == (Side == Side.White ? 7 : 2)) {
 					// PSEUDO call to gui method which gets user promotion piece choice
@@ -41,6 +40,7 @@ namespace UnityChess {
 
 					if (!HasMoved) {
 						testSquare = new Square(testSquare, 0, Side == Side.White ? 1 : -1);
+						testMove = new Movement(testSquare, this);
 						if (!testSquare.IsOccupied(board) && Rules.MoveObeysRules(board, testMove, turn))
 							ValidMoves.Add(new Movement(testMove));
 					}

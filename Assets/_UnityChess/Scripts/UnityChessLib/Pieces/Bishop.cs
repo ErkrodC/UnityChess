@@ -19,27 +19,24 @@ namespace UnityChess {
 		}
 
 		private void CheckDiagonalDirections(Board board, Side turn) {
-			Square testSquare = new Square(Position);
-			Movement testMove = new Movement(testSquare, this);
-
 			foreach (int fileOffset in new[] {-1, 1}) {
 				foreach (int rankOffset in new[] {-1, 1}) {
-					testSquare = new Square(Position, fileOffset, rankOffset);
+					Square testSquare = new Square(Position, fileOffset, rankOffset);
+					Movement testMove = new Movement(testSquare, this);
 
 					while (testSquare.IsValid()) {
 						if (testSquare.IsOccupied(board)) {
-							if (!testSquare.IsOccupiedBySide(board, Side) && Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position)) {
+							if (!testSquare.IsOccupiedBySide(board, Side) && Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position))
 								ValidMoves.Add(new Movement(testMove));
-							}
 
 							break;
 						}
 
-						if (Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position)) {
+						if (Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position))
 							ValidMoves.Add(new Movement(testMove));
-						}
 
 						testSquare = new Square(testSquare, fileOffset, rankOffset);
+						testMove = new Movement(testSquare, this);
 					}
 				}
 			}

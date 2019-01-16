@@ -1,8 +1,9 @@
 ﻿namespace UnityChess {
+	// TODO make this struct to avoid confusing behavior
 	/// <summary>Representation of a move, namely a piece and its end square.</summary>
 	public class Movement {
-		public Square End { get; }
-		public Piece Piece { get; }
+		public readonly Square End;
+		public readonly Piece Piece;
 
 		/// <summary>Creates a new Movement.</summary>
 		/// <param name="end">Square which the piece will land on.</param>
@@ -47,6 +48,6 @@
 			return hash;
 		}
 
-		public override string ToString() => $"{Piece}\tFrom: {Piece.Position}\tTo: {End}";
+		public override string ToString() => $"{Piece} {Piece.Position}->{End}";
 	}
 }
