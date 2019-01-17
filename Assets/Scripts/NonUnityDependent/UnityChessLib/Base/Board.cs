@@ -104,12 +104,13 @@ namespace UnityChess {
 
 		/// <summary>Used to execute a move.</summary>
 		public void MovePiece(Movement move) {
-			KillPiece(move.Piece);
-			PlacePiece(move.Piece, move.End);
+			Piece pieceToMove = GetPiece(move.Start);
+			KillPiece(pieceToMove);
+			PlacePiece(pieceToMove, move.End);
 
-			move.Piece.HasMoved = true;
+			pieceToMove.HasMoved = true;
 
-			(move as SpecialMove)?.HandleAssociatedPiece(this);
+			(move as SpecialMove)?.HandleAssociatedPiece(this, pieceToMove);
 		}
 
 		public void PlacePiece(Piece piece) => BasePieceList[piece.Position.AsIndex()] = piece;
@@ -141,8 +142,8 @@ namespace UnityChess {
 		public Piece GetPiece(int file, int rank) => GetBasePiece(file, rank) as Piece;
 
 		public void InitKings() {
-			WhiteKing = (King) BasePieceList.Single(bp => bp is King && (bp as King).Side == Side.White);
-			BlackKing = (King) BasePieceList.Single(bp => bp is King && (bp as King).Side == Side.Black);
+			WhiteKing = (King) BasePieceList.Single(bp => bp is King && (bp as King).PieceOwner == Side.White);
+			BlackKing = (King) BasePieceList.Single(bp => bp is King && (bp as King).PieceOwner == Side.Black);
 		}
 	}
 }

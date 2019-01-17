@@ -4,7 +4,7 @@ namespace UnityChess {
 	public class Queen : Piece {
 		private static int instanceCounter;
 
-		public Queen(Square startingPosition, Side side) : base(startingPosition, side) {
+		public Queen(Square startingPosition, Side pieceOwner) : base(startingPosition, pieceOwner) {
 			ID = ++instanceCounter;
 		}
 
@@ -12,7 +12,7 @@ namespace UnityChess {
 			ID = queenCopy.ID;
 		}
 
-		public override void UpdateValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn) {
+		public override void UpdateValidMoves(Board board, LinkedList<Turn> previousMoves, Side turn) {
 			ValidMoves.Clear();
 
 			CheckRoseDirections(board, turn);
@@ -20,7 +20,7 @@ namespace UnityChess {
 
 		private void CheckRoseDirections(Board board, Side turn) {
 			Square testSquare = new Square(Position);
-			Movement testMove = new Movement(testSquare, this);
+			Movement testMove = new Movement(this, testSquare);
 
 			foreach (int fileOffset in new[] {-1, 0, 1}) {
 				foreach (int rankOffset in new[] {-1, 0, 1}) {
@@ -29,15 +29,16 @@ namespace UnityChess {
 					testSquare = new Square(Position, fileOffset, rankOffset);
 
 					while (testSquare.IsValid()) {
+						Square enemyKingPosition = PieceOwner == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
 						if (testSquare.IsOccupied(board)) {
-							if (!testSquare.IsOccupiedBySide(board, Side) && Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position)) {
+							if (!testSquare.IsOccupiedBySide(board, PieceOwner) && Rules.MoveObeysRules(board, testMove, PieceOwner) && testSquare != enemyKingPosition) {
 								ValidMoves.Add(new Movement(testMove));
 							}
 
 							break;
 						}
 
-						if (Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position)) {
+						if (Rules.MoveObeysRules(board, testMove, PieceOwner) && testSquare != enemyKingPosition) {
 							ValidMoves.Add(new Movement(testMove));
 						}
 

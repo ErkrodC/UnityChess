@@ -36,7 +36,7 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 		}
 	}
 
-	private static void UpdateMoveHistoryDebugView(LinkedList<Movement> moveHistory) {
+	private static void UpdateMoveHistoryDebugView(LinkedList<Turn> moveHistory) {
 		GameObject debugMoveHistory = GameManager.Instance.DebugView.transform.Find("MoveHistory").gameObject;
 		debugMoveHistory.SetActive(true);
 		

@@ -12,7 +12,7 @@ namespace UnityChess {
 			Mode = mode;
 			BoardList = new LinkedList<Board>();
 			BoardList.AddLast(new Board());
-			PreviousMoves = new LinkedList<Movement>();
+			PreviousMoves = new LinkedList<Turn>();
 
 			UpdateAllPiecesValidMoves(BoardList.Last.Value, PreviousMoves, Side.White);
 		}
@@ -21,23 +21,23 @@ namespace UnityChess {
 		public int TurnCount { get; set; }
 		public Mode Mode { get; }
 		public LinkedList<Board> BoardList { get; }
-		public LinkedList<Movement> PreviousMoves { get; }
+		public LinkedList<Turn> PreviousMoves { get; }
 		
 		/// <summary>Executes passed move and switches sides; also adds move to history.</summary>
-		public void ExecuteTurn(Movement move) {
+		public void ExecuteTurn(Piece piece, Movement move) {
 			//create new copy of previous current board, and execute the move on it
 			Board resultingBoard = new Board(BoardList.Last.Value);
 			resultingBoard.MovePiece(move);
 
 			BoardList.AddLast(resultingBoard);
-			PreviousMoves.AddLast(move);
+			PreviousMoves.AddLast(new Turn(piece, move));
 			UpdateAllPiecesValidMoves(resultingBoard, PreviousMoves, CurrentTurn);
 
 			TurnCount++;
 			CurrentTurn = CurrentTurn.Complement();
 		}
 
-		private static void UpdateAllPiecesValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn) {
+		private static void UpdateAllPiecesValidMoves(Board board, LinkedList<Turn> previousMoves, Side turn) {
 			foreach (Piece piece in board.BasePieceList.OfType<Piece>())
 				piece.UpdateValidMoves(board, previousMoves, turn);
 		}

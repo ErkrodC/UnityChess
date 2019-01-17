@@ -6,7 +6,7 @@
 		/// <param name="end">Square which the promoting pawn is landing on.</param>
 		/// <param name="pawn">The promoting pawn.</param>
 		/// <param name="election">The piece to promote the promoting pawn to.</param>
-		public PromotionMove(Square end, Pawn pawn, ElectedPiece election) : base(end, pawn, ParseElection(election, end, pawn.Side)) { }
+		public PromotionMove(Square end, Pawn pawn, ElectedPiece election) : base(end, pawn, ParseElection(election, end, pawn.PieceOwner)) { }
 
 		private static Piece ParseElection(ElectedPiece election, Square end, Side side) {
 			Piece piece = PieceUtil.PromotionMoveGeneratorMap[election](end, side);
@@ -17,6 +17,7 @@
 
 		/// <summary>Handles replacing the promoting pawn with the elected promotion piece.</summary>
 		/// <param name="board">Board on which the move is being made.</param>
-		public override void HandleAssociatedPiece(Board board) => board.PlacePiece(AssociatedPiece, End);
+		/// <param name="piece">Piece that was first moved.</param>
+		public override void HandleAssociatedPiece(Board board, Piece piece) => board.PlacePiece(AssociatedPiece, End);
 	}
 }

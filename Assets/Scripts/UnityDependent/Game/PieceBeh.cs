@@ -2,25 +2,17 @@
 using UnityChess;
 using UnityEngine;
 using static UnityChess.SquareUtil;
-//using static UnityChessDebug;
 
 public class PieceBeh : MonoBehaviour {
-	public Piece Piece;
+	public Piece Piece => GameManager.Instance.CurrentBoard.GetPiece(currentSquare);
 	public Side Side;
 	public GameEvent PieceMovedEvent;
 
-	private Square currentSquare;
+	private Square currentSquare => StringToSquare(transform.parent.name);
 	private Vector3 distance;
 	private float posX;
 	private float posY;
 	private SphereCollider pieceBoundingSphere;
-	
-	private void Start() {
-		string parentSquareName = transform.parent.name;
-		currentSquare = StringToSquare(parentSquareName);
-
-		Piece = GameManager.Instance.CurrentBoard.GetPiece(currentSquare);
-	}
 
 	private void OnMouseDown() => CalculateMousePositionOnBoard();
 
@@ -61,8 +53,8 @@ public class PieceBeh : MonoBehaviour {
 		}
 
 		// try potential move using closest square
-		Movement potentialMove = new Movement(StringToSquare(closestSquareTransform.name), Piece);
-		if (potentialMove.IsLegal(GameManager.Instance.Game.CurrentTurn)) {
+		Movement potentialMove = new Movement(Piece, StringToSquare(closestSquareTransform.name));
+		if (potentialMove.IsLegal(GameManager.Instance.Game.CurrentTurn, Piece)) {
 			transform.parent = closestSquareTransform;
 			transform.position = closestSquareTransform.position;
 			GameManager.Instance.MoveHistory.Push(potentialMove);

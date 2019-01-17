@@ -34,27 +34,15 @@
 		internal bool IsOccupied(Board board) => board.GetBasePiece(this) is Piece;
 
 		/// <summary>Determines whether the square is occupied by a piece belonging to the given side.</summary>
-		internal bool IsOccupiedBySide(Board board, Side side) => board.GetBasePiece(this) is Piece piece && piece.Side == side;
+		internal bool IsOccupiedBySide(Board board, Side side) => board.GetBasePiece(this) is Piece piece && piece.PieceOwner == side;
 
 		/// <summary>Returns the 1-D analog of the Square, with regard to a 120-length board array.</summary>
 		public int AsIndex() => FileRankAsIndex(File, Rank);
 
 		public static int FileRankAsIndex(int file, int rank) => (rank + 1) * 10 + file;
 
-		// override object.Equals
-		public override bool Equals(object obj) {
-			if (obj == null || GetType() != obj.GetType()) return false;
-
-			return obj is Square square && Rank == square.Rank && File == square.File;
-		}
-
-		// override object.GetHashCode
-		public override int GetHashCode() {
-			int hash = 13;
-			hash = hash * 7 + Rank.GetHashCode();
-			hash = hash * 7 + File.GetHashCode();
-			return hash;
-		}
+		public static bool operator ==(Square lhs, Square rhs) => lhs.File == rhs.File && lhs.Rank == rhs.Rank;
+		public static bool operator !=(Square lhs, Square rhs) => !(lhs == rhs);
 
 		public override string ToString() => SquareUtil.FileRankToSquareString(File, Rank);
 	}

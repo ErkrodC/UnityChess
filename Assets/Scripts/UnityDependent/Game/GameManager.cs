@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public GameObject DebugView;
 	public Piece[] CurrentPieces => Game.BoardList.Last.Value.BasePieceList.OfType<Piece>().ToArray();
 	public Board CurrentBoard => Game.BoardList.Last.Value;
-	public LinkedList<Movement> PreviousMoves => Game.PreviousMoves;
+	public LinkedList<Turn> PreviousMoves => Game.PreviousMoves;
 	
 	public void Start() {
 		MoveHistory = new Stack<Movement>();
@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 
 	public void OnPieceMoved() {
 		Movement move = MoveHistory.Pop();
-		Game.ExecuteTurn(move);
+		Piece piece = CurrentBoard.GetPiece(move.Start);
+		Game.ExecuteTurn(piece, move);
 	}
 }

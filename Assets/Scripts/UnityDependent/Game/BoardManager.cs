@@ -30,7 +30,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 
 	public void PopulateStartBoard() {
 		foreach (Piece piece in GameManager.Instance.CurrentPieces) {
-			string modelName = $"{piece.Side} {piece.GetType().Name}";
+			string modelName = $"{piece.PieceOwner} {piece.GetType().Name}";
 			Instantiate(Resources.Load("PieceSets/Marble/" + modelName) as GameObject, positionMap[piece.Position].transform);
 		}
 	}

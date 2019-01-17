@@ -7,7 +7,7 @@ namespace UnityChess {
 		public static event PieceChoiceAction PawnPromoted;
 		private static int instanceCounter;
 
-		public Pawn(Square startingPosition, Side side) : base(startingPosition, side) {
+		public Pawn(Square startingPosition, Side pieceOwner) : base(startingPosition, pieceOwner) {
 			ID = ++instanceCounter;
 		}
 
@@ -15,7 +15,7 @@ namespace UnityChess {
 			ID = pawnCopy.ID;
 		}
 
-		public override void UpdateValidMoves(Board board, LinkedList<Movement> previousMoves, Side turn) {
+		public override void UpdateValidMoves(Board board, LinkedList<Turn> previousMoves, Side turn) {
 			ValidMoves.Clear();
 
 			CheckForwardMovingSquares(board, turn);
@@ -24,11 +24,11 @@ namespace UnityChess {
 		}
 
 		private void CheckForwardMovingSquares(Board board, Side turn) {
-			Square testSquare = new Square(Position, 0, Side == Side.White ? 1 : -1);
-			Movement testMove = new Movement(testSquare, this);
+			Square testSquare = new Square(Position, 0, PieceOwner == Side.White ? 1 : -1);
+			Movement testMove = new Movement(this, testSquare);
 			
-			if (!testSquare.IsOccupied(board) && Rules.MoveObeysRules(board, testMove, turn)) {
-				if (Position.Rank == (Side == Side.White ? 7 : 2)) {
+			if (!testSquare.IsOccupied(board) && Rules.MoveObeysRules(board, testMove, PieceOwner)) {
+				if (Position.Rank == (PieceOwner == Side.White ? 7 : 2)) {
 					// PSEUDO call to gui method which gets user promotion piece choice
 					// ElectedPiece userElection = GUI.getElectionChoice();
 
@@ -39,9 +39,9 @@ namespace UnityChess {
 					ValidMoves.Add(new Movement(testMove));
 
 					if (!HasMoved) {
-						testSquare = new Square(testSquare, 0, Side == Side.White ? 1 : -1);
-						testMove = new Movement(testSquare, this);
-						if (!testSquare.IsOccupied(board) && Rules.MoveObeysRules(board, testMove, turn))
+						testSquare = new Square(testSquare, 0, PieceOwner == Side.White ? 1 : -1);
+						testMove = new Movement(this, testSquare);
+						if (!testSquare.IsOccupied(board) && Rules.MoveObeysRules(board, testMove, PieceOwner))
 							ValidMoves.Add(new Movement(testMove));
 					}
 				}
@@ -50,14 +50,15 @@ namespace UnityChess {
 
 		private void CheckAttackingSquares(Board board, Side turn) {
 			Square testSquare = new Square(Position);
-			Movement testMove = new Movement(testSquare, this);
+			Movement testMove = new Movement(this, testSquare);
 
 			foreach (int fileOffset in new[] {-1, 1}) {
-				int rankOffset = Side == Side.White ? 1 : -1;
+				int rankOffset = PieceOwner == Side.White ? 1 : -1;
 				testSquare = new Square(Position, fileOffset, rankOffset);
 
-				if (testSquare.IsValid() && testSquare.IsOccupiedBySide(board, Side.Complement()) && Rules.MoveObeysRules(board, testMove, turn) && !testSquare.Equals(Side == Side.White ? board.BlackKing.Position : board.WhiteKing.Position)) {
-					if (Position.Rank == (Side == Side.White ? 7 : 2)) {
+				Square enemyKingPosition = PieceOwner == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
+				if (testSquare.IsValid() && testSquare.IsOccupiedBySide(board, PieceOwner.Complement()) && Rules.MoveObeysRules(board, testMove, PieceOwner) && testSquare != enemyKingPosition) {
+					if (Position.Rank == (PieceOwner == Side.White ? 7 : 2)) {
 						// TODO subscribe to event
 						ElectedPiece userElection = PawnPromoted.Invoke();
 						
@@ -67,20 +68,20 @@ namespace UnityChess {
 			}
 		}
 
-		private void CheckEnPassantCaptures(Board board, LinkedList<Movement> previousMoves, Side turn) {
-			if (Side == Side.White ? Position.Rank == 5 : Position.Rank == 4) {
+		private void CheckEnPassantCaptures(Board board, LinkedList<Turn> previousMoves, Side turn) {
+			if (PieceOwner == Side.White ? Position.Rank == 5 : Position.Rank == 4) {
 				foreach (int fileOffset in new[] {-1, 1}) {
 					Square testSquare = new Square(Position, fileOffset, 0);
 
-					if (testSquare.IsValid() && board.GetPiece(testSquare) is Pawn enemyLateralPawn && enemyLateralPawn.Side != Side) {
-						Piece pieceLastMoved = previousMoves.Last.Value.Piece;
+					if (testSquare.IsValid() && board.GetPiece(testSquare) is Pawn enemyLateralPawn && enemyLateralPawn.PieceOwner != PieceOwner) {
+						Piece lastMovedPiece = previousMoves.Last.Value.Piece;
 
 						// TODO verify Equals call works 
-						if (pieceLastMoved is Pawn pawn && Equals(pawn, enemyLateralPawn) && pawn.Position.Rank == (pawn.Side == Side.White ? 2 : 7)) {
-							EnPassantMove testMove = new EnPassantMove(new Square(testSquare.Rank + (Side == Side.White ? 1 : -1)), this, enemyLateralPawn);
+						if (lastMovedPiece is Pawn pawn && Equals(pawn, enemyLateralPawn) && pawn.Position.Rank == (pawn.PieceOwner == Side.White ? 2 : 7)) {
+							EnPassantMove testMove = new EnPassantMove(new Square(testSquare.Rank + (PieceOwner == Side.White ? 1 : -1)), this, enemyLateralPawn);
 
-							if (Rules.MoveObeysRules(board, testMove, turn))
-								ValidMoves.Add(new EnPassantMove(new Square(testSquare.Rank + (Side == Side.White ? 1 : -1)), this, enemyLateralPawn));
+							if (Rules.MoveObeysRules(board, testMove, PieceOwner))
+								ValidMoves.Add(new EnPassantMove(new Square(testSquare.Rank + (PieceOwner == Side.White ? 1 : -1)), this, enemyLateralPawn));
 						}
 					}
 				}
