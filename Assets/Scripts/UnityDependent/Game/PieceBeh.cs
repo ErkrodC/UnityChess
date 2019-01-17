@@ -2,7 +2,7 @@
 using UnityChess;
 using UnityEngine;
 using static UnityChess.SquareUtil;
-using static UnityChessDebug;
+//using static UnityChessDebug;
 
 public class PieceBeh : MonoBehaviour {
 	public Piece Piece;
@@ -70,7 +70,7 @@ public class PieceBeh : MonoBehaviour {
 		} else {
 			transform.position = transform.parent.position;
 #if DEBUG_VIEW
-			ShowLegalMovesInLog(Piece);
+			UnityChessDebug.ShowLegalMovesInLog(Piece);
 #endif
 		}
 	}

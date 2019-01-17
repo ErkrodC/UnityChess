@@ -10,18 +10,12 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public GameObject DebugView;
 	public Piece[] CurrentPieces => Game.BoardList.Last.Value.BasePieceList.OfType<Piece>().ToArray();
 	public Board CurrentBoard => Game.BoardList.Last.Value;
+	public LinkedList<Movement> PreviousMoves => Game.PreviousMoves;
 	
 	public void Start() {
 		MoveHistory = new Stack<Movement>();
 #if GAME_TEST
 		StartNewGame(Mode.HvH);
-#endif
-	}
-
-	private void Update() {
-#if DEBUG_VIEW
-		UnityChessDebug.UpdateBoardDebugView(Game.BoardList.Last.Value);
-		UnityChessDebug.UpdateMoveHistoryDebugView(Game.PreviousMoves);
 #endif
 	}
 
