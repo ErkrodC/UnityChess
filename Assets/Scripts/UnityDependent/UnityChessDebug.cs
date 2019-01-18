@@ -6,8 +6,7 @@ using UnityEngine.UI;
 public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 	[SerializeField] private GameObject debugBoard;
 
-#if DEBUG_VIEW
-	private void Start() {
+	private void OnEnable() {
 		debugBoard.SetActive(true);
 	}
 
@@ -15,7 +14,6 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 		UpdateBoardDebugView(GameManager.Instance.CurrentBoard);
 		UpdateMoveHistoryDebugView(GameManager.Instance.PreviousMoves);
 	}
-#endif
 
 	public static void ShowLegalMovesInLog(Piece piece) {
 		string debMsg = $"# of valid moves: {piece.ValidMoves.Count}\n";
@@ -37,9 +35,9 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 	}
 
 	private static void UpdateMoveHistoryDebugView(LinkedList<Turn> moveHistory) {
-		GameObject debugMoveHistory = GameManager.Instance.DebugView.transform.Find("MoveHistory").gameObject;
+		/*GameObject debugMoveHistory = GameManager.Instance.DebugView.transform.Find("MoveHistory").gameObject;
 		debugMoveHistory.SetActive(true);
 		
-		// TODO finish writing
+		// TODO finish writing*/
 	}
 }

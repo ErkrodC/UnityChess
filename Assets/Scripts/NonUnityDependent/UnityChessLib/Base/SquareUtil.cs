@@ -25,6 +25,8 @@ namespace UnityChess {
 		};
 	
 		public static string FileRankToSquareString(int file, int rank) => $"{FileIntToCharMap[file]}{rank}";
+
+		public static string SquareToString(Square square) => FileRankToSquareString(square.File, square.Rank);
 	
 		public static Square StringToSquare(string squareText) {
 			int file = FileCharToIntMap[squareText.Substring(0, 1)];

@@ -12,17 +12,16 @@ namespace UnityChess {
 			ID = bishopCopy.ID;
 		}
 
-		public override void UpdateValidMoves(Board board, LinkedList<Turn> previousMoves, Side turn) {
+		public override void UpdateValidMoves(Board board, LinkedList<Turn> previousMoves) {
 			ValidMoves.Clear();
-
-			CheckDiagonalDirections(board, turn);
+			CheckDiagonalDirections(board);
 		}
 
-		private void CheckDiagonalDirections(Board board, Side turn) {
+		private void CheckDiagonalDirections(Board board) {
 			foreach (int fileOffset in new[] {-1, 1}) {
 				foreach (int rankOffset in new[] {-1, 1}) {
 					Square testSquare = new Square(Position, fileOffset, rankOffset);
-					Movement testMove = new Movement(this, testSquare);
+					Movement testMove = new Movement(Position, testSquare);
 
 					while (testSquare.IsValid()) {
 						Square enemyKingPosition = PieceOwner == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
@@ -37,14 +36,12 @@ namespace UnityChess {
 							ValidMoves.Add(new Movement(testMove));
 
 						testSquare = new Square(testSquare, fileOffset, rankOffset);
-						testMove = new Movement(this, testSquare);
+						testMove = new Movement(Position, testSquare);
 					}
 				}
 			}
 		}
 
-		public override Piece Clone() {
-			return new Bishop(this);
-		}
+		public override Piece Clone() => new Bishop(this);
 	}
 }

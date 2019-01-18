@@ -600,10 +600,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: DebugView
       objectReference: {fileID: 0}
-    - target: {fileID: 1361712574049066, guid: 38897352257dd8a4ab9a3421268f1c71, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 224939313174518342, guid: 38897352257dd8a4ab9a3421268f1c71,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -642,7 +638,7 @@ PrefabInstance:
     - target: {fileID: 224939313174518342, guid: 38897352257dd8a4ab9a3421268f1c71,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224939313174518342, guid: 38897352257dd8a4ab9a3421268f1c71,
         type: 3}
@@ -836,7 +832,7 @@ PrefabInstance:
     - target: {fileID: 7463109367895200370, guid: caf93e4ddc2f0544cbddf4e2facb7fd7,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7463109367895200370, guid: caf93e4ddc2f0544cbddf4e2facb7fd7,
         type: 3}

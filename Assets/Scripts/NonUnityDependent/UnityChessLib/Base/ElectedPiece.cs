@@ -3,6 +3,7 @@
 		Knight,
 		Bishop,
 		Rook,
-		Queen
+		Queen,
+		None
 	}
 }

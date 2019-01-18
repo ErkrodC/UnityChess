@@ -25,7 +25,7 @@ namespace UnityChess {
 
 			Board resultingBoard = new Board(board);
 			Piece resultingBoardAnalogPiece = resultingBoard.BasePieceList.Single(bp => bp is Piece piece && piece.Position == move.Start) as Piece;
-			resultingBoard.MovePiece(new Movement(resultingBoardAnalogPiece, move.End));
+			resultingBoard.MovePiece(new Movement(resultingBoardAnalogPiece.Position, move.End));
 
 			return !IsPlayerInCheck(resultingBoard, side);
 		}
@@ -33,7 +33,7 @@ namespace UnityChess {
 		private static bool DoesMovePutMoverInCheck(Board board, Movement move, Side moverSide) {
 			Board resultingBoard = new Board(board);
 			Piece resultingBoardAnalogPiece = resultingBoard.BasePieceList.Single(bp => bp is Piece piece && piece.Position == move.Start) as Piece;
-			resultingBoard.MovePiece(new Movement(resultingBoardAnalogPiece, move.End));
+			resultingBoard.MovePiece(new Movement(resultingBoardAnalogPiece.Position, move.End));
 
 			return IsPlayerInCheck(resultingBoard, moverSide);
 		}

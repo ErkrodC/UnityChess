@@ -26,7 +26,7 @@ namespace UnityChess {
 
 		public abstract Piece Clone();
 
-		public abstract void UpdateValidMoves(Board board, LinkedList<Turn> previousMoves, Side turn);
+		public abstract void UpdateValidMoves(Board board, LinkedList<Turn> previousMoves);
 
 		// override object.Equals
 		public override bool Equals(object obj) {

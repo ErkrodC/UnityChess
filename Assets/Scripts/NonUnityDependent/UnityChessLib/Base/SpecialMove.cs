@@ -1,8 +1,8 @@
 ﻿namespace UnityChess {
 	public abstract class SpecialMove : Movement {
-		protected readonly Piece AssociatedPiece;
+		protected internal Piece AssociatedPiece;
 
-		protected SpecialMove(Square end, Piece piece, Piece associatedPiece) : base(piece, end) {
+		protected SpecialMove(Square piecePosition, Square end, Piece associatedPiece) : base(piecePosition, end) {
 			AssociatedPiece = associatedPiece;
 		}
 

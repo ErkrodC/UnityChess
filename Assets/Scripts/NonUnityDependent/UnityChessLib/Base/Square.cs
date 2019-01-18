@@ -44,6 +44,6 @@
 		public static bool operator ==(Square lhs, Square rhs) => lhs.File == rhs.File && lhs.Rank == rhs.Rank;
 		public static bool operator !=(Square lhs, Square rhs) => !(lhs == rhs);
 
-		public override string ToString() => SquareUtil.FileRankToSquareString(File, Rank);
+		public override string ToString() => SquareUtil.SquareToString(this);
 	}
 }
