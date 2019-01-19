@@ -30,7 +30,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 7463109367895200370}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -70,6 +70,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e38cfda37101dc2438d8aef8fe82ca99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  promotionUI: {fileID: 0}
 --- !u!1 &7463109367895200372
 GameObject:
   m_ObjectHideFlags: 0
@@ -99,8 +100,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 6869759534976187777}
   - {fileID: 8410410115195109703}
+  - {fileID: 6869759534976187777}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -116,9 +117,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 241803167e25d0b499c5296fdf571029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unityChessDebug: {fileID: 608673176574255946}
   NewGameStarted: {fileID: 11400000, guid: 76828cd5e21f9b248b7b0498bc0e0880, type: 2}
   promotionUI: {fileID: 5835953867452424500}
+  unityChessDebug: {fileID: 608673176574255946}
 --- !u!114 &7463109367895200371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,6 +160,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DebugView
       objectReference: {fileID: 0}
+    - target: {fileID: 1361712574049066, guid: 38897352257dd8a4ab9a3421268f1c71, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 224939313174518342, guid: 38897352257dd8a4ab9a3421268f1c71,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -197,7 +202,7 @@ PrefabInstance:
     - target: {fileID: 224939313174518342, guid: 38897352257dd8a4ab9a3421268f1c71,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224939313174518342, guid: 38897352257dd8a4ab9a3421268f1c71,
         type: 3}

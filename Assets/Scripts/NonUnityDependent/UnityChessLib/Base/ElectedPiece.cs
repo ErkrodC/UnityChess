@@ -1,9 +1,9 @@
 ﻿namespace UnityChess {
 	public enum ElectedPiece {
-		Knight,
-		Bishop,
-		Rook,
-		Queen,
-		None
+		Knight = 0,
+		Bishop = 1,
+		Rook = 2,
+		Queen = 3,
+		None = -1
 	}
 }
