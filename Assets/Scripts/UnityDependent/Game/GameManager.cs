@@ -34,12 +34,9 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		Movement move = MoveQueue.Dequeue();
 
 		if (move is SpecialMove specialMove) {
-			Task task = new Task(() => HandleAssociatedPieceBehavior(specialMove));
-			task.Start();
-			while (!task.IsCompleted) {
-				task.Wait();
-			}
-		} 
+			HandleAssociatedPieceBehavior(specialMove);
+			return;
+		}
 			
 		Game.ExecuteTurn(move);
 	}
@@ -62,5 +59,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				promotionUI.DeactivateUI();
 				break;
 		}
+		
+		Game.ExecuteTurn(specialMove);
 	}
 }

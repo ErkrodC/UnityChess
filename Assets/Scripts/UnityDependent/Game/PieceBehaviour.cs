@@ -41,7 +41,7 @@ public class PieceBehaviour : MonoBehaviour {
 			thisTransform.position = thisTransform.parent.position;
 			return;
 		}
-		
+	
 		// determine closest square out of potential landing squares.
 		Transform closestSquareTransform = potentialLandingSquares[0].transform;
 		float shortestDistanceFromPieceSquared = (closestSquareTransform.transform.position - thisTransform.position).sqrMagnitude;
