@@ -2,17 +2,15 @@
 
 UnityChess is a 3D Chess game built using Unity/C#, complete with its own AI.
 
-![UnityChess demo](https://i.imgur.com/VJOXHkK.jpg)
+![UnityChess demo](https://github.com/ErkrodC/UnityChess/blob/refactor/Codebase/UnityChess.gif)
 
 ### Contributing
-Be sure to follow this [branching strategy](https://docs.google.com/document/d/15klJI6eCww5gX8QA6ZMac-jmPLpe1CN79f1v6vGPkNw/pub) if you were given push priveleges. Otherwise, follow the collaborative github workflow, well described [here](https://github.com/asmeurer/git-workflow/blob/master/README.md), and make your branch off of the development branch.
+Please follow the collaborative github workflow, well described [here](https://github.com/asmeurer/git-workflow/blob/master/README.md).
 
 
-If you wish to contribute, it is recommended you have the following resources:
+The project is using the following version of Unity:
 
 * [Unity 2018.3.1f1](https://unity3d.com/get-unity/download/archive) - A free to download game engine.
-* [SourceTree](https://www.sourcetreeapp.com/) - A version control system interface that makes it easy to rebase and view branch histories
-* Your favorite C# IDE
 
 ### Installation
 
