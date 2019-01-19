@@ -7,6 +7,9 @@ using static UnityChess.SquareUtil;
 public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	[HideInInspector] public GameObject[] AllSquaresGO = new GameObject[64];
 	private Dictionary<Square, GameObject> positionMap;
+	private const float BoardPlaneSideLength = 14f; // measured from corner square center to corner square center, on same side.
+	private const float BoardPlaneSideHalfLength = BoardPlaneSideLength * 0.5f;
+	private const float BoardHeight = 1.6f;
 
 	private void Start() {
 		positionMap = new Dictionary<Square, GameObject>(64);
@@ -16,10 +19,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		for (int file = 1; file <= 8; file++) {
 			for (int rank = 1; rank <= 8; rank++) {
 				GameObject squareGO = new GameObject(FileRankToSquareString(file, rank), typeof(BoxCollider2D));
-				BoxCollider2D squareCollider = squareGO.GetComponent<BoxCollider2D>();
-				squareCollider.isTrigger = false;
-				squareCollider.size = new Vector2(9, 9);
-				squareGO.transform.position = new Vector3(boardPosition.x - 31.5f + (file - 1) * 9, boardPosition.y - 31.5f + (rank - 1) * 9, boardPosition.z - 7.2f);
+				squareGO.transform.position = new Vector3(boardPosition.x + FileOrRankToSidePosition(file), boardPosition.y + BoardHeight, boardPosition.z + FileOrRankToSidePosition(rank));
 				squareGO.transform.parent = boardTransform;
 				squareGO.tag = "Square";
 				
@@ -58,13 +58,6 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		rookGO.transform.position = landingSquare.transform.position;
 	}
 
-	private GameObject GetPieceGOAtPosition(Square position) {
-		GameObject square = GetSquareGOByPosition(position);
-		return square.transform.childCount == 0 ? null : square.transform.GetChild(0).gameObject;
-	}
-
-	private GameObject GetSquareGOByPosition(Square position) => Array.Find(AllSquaresGO, go => go.name == SquareToString(position));
-
 	public void CreateAndPlacePieceGO(Piece piece) {
 		string modelName = $"{piece.PieceOwner} {piece.GetType().Name}";
 		Instantiate(Resources.Load("PieceSets/Marble/" + modelName) as GameObject, positionMap[piece.Position].transform);
@@ -97,4 +90,16 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		if (pieceBehaviour == null) return;
 		Destroy(pieceBehaviour.gameObject);
 	}
+	
+	private static float FileOrRankToSidePosition(int index) {
+		float t = (index - 1) / 7f;
+		return Mathf.Lerp(-BoardPlaneSideHalfLength, BoardPlaneSideHalfLength, t);
+	}
+	
+	private GameObject GetPieceGOAtPosition(Square position) {
+		GameObject square = GetSquareGOByPosition(position);
+		return square.transform.childCount == 0 ? null : square.transform.GetChild(0).gameObject;
+	}
+
+	private GameObject GetSquareGOByPosition(Square position) => Array.Find(AllSquaresGO, go => go.name == SquareToString(position));
 }

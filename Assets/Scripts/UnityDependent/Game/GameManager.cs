@@ -34,14 +34,14 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		Movement move = MoveQueue.Dequeue();
 
 		if (move is SpecialMove specialMove) {
-			HandleAssociatedPieceBehavior(specialMove);
+			HandleSpecialMoveExecution(specialMove);
 			return;
 		}
 			
 		Game.ExecuteTurn(move);
 	}
 
-	private async void HandleAssociatedPieceBehavior(SpecialMove specialMove) {
+	private async void HandleSpecialMoveExecution(SpecialMove specialMove) {
 		switch (specialMove) {
 			case CastlingMove castlingMove:
 				BoardManager.Instance.CastleRook(castlingMove.AssociatedPiece.Position);

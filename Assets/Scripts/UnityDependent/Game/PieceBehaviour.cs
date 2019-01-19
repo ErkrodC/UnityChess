@@ -4,13 +4,13 @@ using UnityEngine;
 using static UnityChess.SquareUtil;
 
 public class PieceBehaviour : MonoBehaviour {
-	public GameEvent PieceMovedEvent;
+	[SerializeField] private GameEvent PieceMovedEvent;
+	private Camera boardCamera;
 
 	private const float SquareCollisionRadius = 9f;
 	private Square CurrentSquare => StringToSquare(transform.parent.name);
-	private Vector3 distance;
-	private float posX;
-	private float posY;
+	private Vector3 piecePositionSS;
+	private Vector2 mouseToPieceSS;
 	private SphereCollider pieceBoundingSphere;
 	private List<GameObject> potentialLandingSquares;
 	private Transform thisTransform;
@@ -18,26 +18,26 @@ public class PieceBehaviour : MonoBehaviour {
 	private void Start() {
 		potentialLandingSquares = new List<GameObject>();
 		thisTransform = transform;
+		boardCamera = Camera.main;
 	}
 
-	private void OnMouseDown() {
+	public void OnMouseDown() {
 		if (enabled) {
-			distance = Camera.main.WorldToScreenPoint(transform.position);
-			posX = Input.mousePosition.x - distance.x;
-			posY = Input.mousePosition.y - distance.y;
+			piecePositionSS = boardCamera.WorldToScreenPoint(transform.position);
+			mouseToPieceSS = new Vector2(Input.mousePosition.x - piecePositionSS.x, Input.mousePosition.y - piecePositionSS.y);
 		}
 	}
 
 	private void OnMouseDrag() {
 		if (enabled) {
-			Vector3 curPos = new Vector3(Input.mousePosition.x - posX, Input.mousePosition.y - posY, distance.z);
-			Vector3 worldPos = Camera.main.ScreenToWorldPoint(curPos);
+			Vector3 nextPiecePositionSS = new Vector3(Input.mousePosition.x - mouseToPieceSS.x, Input.mousePosition.y - mouseToPieceSS.y, piecePositionSS.z);
+			Vector3 nextPiecePositionWS = boardCamera.ScreenToWorldPoint(nextPiecePositionSS);
 
-			thisTransform.position = new Vector3(worldPos.x, worldPos.y, thisTransform.position.z);
+			thisTransform.position = new Vector3(nextPiecePositionWS.x, thisTransform.position.y, nextPiecePositionWS.z);
 		}
 	}
 
-	private void OnMouseUp() {
+	public void OnMouseUp() {
 		if (enabled) {
 			potentialLandingSquares.Clear();
 			BoardManager.Instance.GetSquareGOsWithinRadius(potentialLandingSquares, thisTransform.position, SquareCollisionRadius);
