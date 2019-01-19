@@ -88,3 +88,6 @@ Logs/
 UnityChess\.Test/obj/
 UnityChess\.Test/bin/Debug/
 UnityChess\.Test/bin/
+UnityChess\.Test/UnityChessLib/obj/
+UnityChess\.Test/UnityChessLib/bin/Debug/
+UnityChess\.Test/UnityChessLib/bin/
