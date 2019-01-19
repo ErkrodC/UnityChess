@@ -1,9 +1,8 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 
-namespace UnityChess.RulesTests {
+namespace UnityChess.Test {
 	[TestFixture]
-	[Author("Eric Rodriguez")]
 	public class RulesTests {
 		private Board board;
 

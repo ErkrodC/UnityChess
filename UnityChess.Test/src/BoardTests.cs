@@ -1,10 +1,8 @@
 ﻿using Moq;
 using NUnit.Framework;
-using UnityChess.GameTests;
 
-namespace UnityChess.BoardTests {
+namespace UnityChess.Test {
 	[TestFixture]
-	[Author("Eric Rodriguez")]
 	public class BoardTests {
 		private static Board board;
 		private static Piece pawn;

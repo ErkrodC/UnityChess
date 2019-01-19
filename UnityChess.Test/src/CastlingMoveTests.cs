@@ -1,8 +1,7 @@
 ﻿using NUnit.Framework;
 
-namespace UnityChess.CastlingMoveTests {
+namespace UnityChess.Test {
 	[TestFixture]
-	[Author("Eric Rodriguez")]
 	public class CastlingMoveTests {
 		private Board board;
 

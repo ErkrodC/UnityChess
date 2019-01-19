@@ -1,8 +1,7 @@
 ﻿using NUnit.Framework;
 
-namespace UnityChess.PromotionMoveTests {
+namespace UnityChess.Test {
 	[TestFixture]
-	[Author("Eric Rodriguez")]
 	public class PromotionMoveTests {
 		private Board board;
 

@@ -2,9 +2,8 @@
 using Moq;
 using System.Collections.Generic;
 
-namespace UnityChess.GameTests {
+namespace UnityChess.Test {
 	[TestFixture]
-	[Author("Eric Rodriguez")]
 	public class GameTests {
 		private Board board;
 		private LinkedList<Turn> dummyPreviousMoves;
