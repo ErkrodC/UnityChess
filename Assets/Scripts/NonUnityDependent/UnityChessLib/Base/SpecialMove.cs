@@ -6,6 +6,6 @@
 			AssociatedPiece = associatedPiece;
 		}
 
-		public abstract void HandleAssociatedPiece(Board board, Piece piece);
+		public abstract void HandleAssociatedPiece(Board board);
 	}
 }

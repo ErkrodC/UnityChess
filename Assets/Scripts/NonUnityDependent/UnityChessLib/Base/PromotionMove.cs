@@ -13,7 +13,6 @@ namespace UnityChess {
 
 		/// <summary>Handles replacing the promoting pawn with the elected promotion piece.</summary>
 		/// <param name="board">Board on which the move is being made.</param>
-		/// <param name="piece">Piece that was first moved.</param>
-		public override void HandleAssociatedPiece(Board board, Piece piece) => board.PlacePiece(AssociatedPiece, End);
+		public override void HandleAssociatedPiece(Board board) => board.PlacePiece(AssociatedPiece, End);
 	}
 }

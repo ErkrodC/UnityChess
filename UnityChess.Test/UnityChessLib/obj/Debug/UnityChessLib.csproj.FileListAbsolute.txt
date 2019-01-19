@@ -1,0 +1,6 @@
+C:\Users\ErkrodC\Documents\Unity Projects\UnityChess\UnityChess.Test\UnityChessLib\bin\Debug\UnityChessLib.dll
+C:\Users\ErkrodC\Documents\Unity Projects\UnityChess\UnityChess.Test\UnityChessLib\bin\Debug\UnityChessLib.pdb
+C:\Users\ErkrodC\Documents\Unity Projects\UnityChess\UnityChess.Test\UnityChessLib\obj\Debug\UnityChessLib.csprojAssemblyReference.cache
+C:\Users\ErkrodC\Documents\Unity Projects\UnityChess\UnityChess.Test\UnityChessLib\obj\Debug\UnityChessLib.csproj.CoreCompileInputs.cache
+C:\Users\ErkrodC\Documents\Unity Projects\UnityChess\UnityChess.Test\UnityChessLib\obj\Debug\UnityChessLib.dll
+C:\Users\ErkrodC\Documents\Unity Projects\UnityChess\UnityChess.Test\UnityChessLib\obj\Debug\UnityChessLib.pdb

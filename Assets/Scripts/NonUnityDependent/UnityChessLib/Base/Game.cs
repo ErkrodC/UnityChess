@@ -53,8 +53,8 @@ namespace UnityChess {
 			foundValidMove = foundMove;
 			return movingPiece.PieceOwner == CurrentTurnSide && actualMoveFound;
 		}
-		
-		private static void UpdateAllPiecesValidMoves(Board board, LinkedList<Turn> previousMoves, Side turn) {
+
+		public static void UpdateAllPiecesValidMoves(Board board, LinkedList<Turn> previousMoves, Side turn) {
 			foreach (Piece piece in board.BasePieceList.OfType<Piece>())
 				piece.UpdateValidMoves(board, previousMoves);
 		}

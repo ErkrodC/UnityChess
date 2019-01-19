@@ -9,8 +9,7 @@
 
 		/// <summary>Handles moving the associated rook to the correct position on the board.</summary>
 		/// <param name="board">Board on which the move is being made.</param>
-		/// <param name="piece">Piece that was first moved.</param>
-		public override void HandleAssociatedPiece(Board board, Piece piece) {
+		public override void HandleAssociatedPiece(Board board) {
 			switch (AssociatedPiece.Position.File) {
 				case 1: //queenside castling move
 					board.MovePiece(new Movement(AssociatedPiece.Position, new Square(AssociatedPiece.Position, 3, 0)));

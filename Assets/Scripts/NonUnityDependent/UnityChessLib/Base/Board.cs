@@ -110,7 +110,7 @@ namespace UnityChess {
 
 			pieceToMove.HasMoved = true;
 
-			(move as SpecialMove)?.HandleAssociatedPiece(this, pieceToMove);
+			(move as SpecialMove)?.HandleAssociatedPiece(this);
 		}
 
 		public void PlacePiece(Piece piece) => BasePieceList[piece.Position.AsIndex()] = piece;

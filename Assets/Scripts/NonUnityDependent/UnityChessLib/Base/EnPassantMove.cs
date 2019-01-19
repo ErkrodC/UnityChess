@@ -9,10 +9,8 @@
 
 		/// <summary>Handles removing the captured pawn from the board.</summary>
 		/// <param name="board">Board on which the move is being made.</param>
-		/// <param name="piece">Piece that was first moved.</param>
-		public override void HandleAssociatedPiece(Board board, Piece piece) {
+		public override void HandleAssociatedPiece(Board board) {
 			board.KillPiece(AssociatedPiece);
-			piece.HasMoved = true;
 		}
 	}
 }
