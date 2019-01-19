@@ -78,6 +78,20 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		}
 	}
 
+	public void DisableAllPieces() {
+		foreach (GameObject squareGO in AllSquaresGO) {
+			PieceBehaviour pieceOnSquare = squareGO.GetComponentInChildren<PieceBehaviour>();
+			if (pieceOnSquare != null) pieceOnSquare.enabled = false;
+		}
+	}
+
+	public void EnableAllPieces() {
+		foreach (GameObject squareGO in AllSquaresGO) {
+			PieceBehaviour pieceOnSquare = squareGO.GetComponentInChildren<PieceBehaviour>(true);
+			if (pieceOnSquare != null) pieceOnSquare.enabled = true;
+		}
+	}
+
 	public void DestroyPieceAtPosition(Square position) {
 		PieceBehaviour pieceBehaviour = positionMap[position].GetComponentInChildren<PieceBehaviour>();
 		if (pieceBehaviour == null) return;

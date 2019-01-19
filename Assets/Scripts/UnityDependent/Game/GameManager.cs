@@ -49,14 +49,18 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 			case EnPassantMove enPassantMove:
 				break;
 			case PromotionMove promotionMove:
-				Task<ElectedPiece> getUserChoiceTask = new Task<ElectedPiece>(promotionUI.GetUserSelection);
 				promotionUI.ActivateUI();
+				BoardManager.Instance.DisableAllPieces();
+				
+				Task<ElectedPiece> getUserChoiceTask = new Task<ElectedPiece>(promotionUI.GetUserSelection);
 				getUserChoiceTask.Start();
 				ElectedPiece choice = await getUserChoiceTask;
 				promotionMove.AssociatedPiece = PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, Game.CurrentTurnSide);
 				BoardManager.Instance.DestroyPieceAtPosition(promotionMove.End);
 				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.AssociatedPiece);
+				
 				promotionUI.DeactivateUI();
+				BoardManager.Instance.EnableAllPieces();
 				break;
 		}
 		

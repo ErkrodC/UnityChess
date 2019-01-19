@@ -21,41 +21,47 @@ public class PieceBehaviour : MonoBehaviour {
 	}
 
 	private void OnMouseDown() {
-		distance = Camera.main.WorldToScreenPoint(transform.position);
-		posX = Input.mousePosition.x - distance.x;
-		posY = Input.mousePosition.y - distance.y;
+		if (enabled) {
+			distance = Camera.main.WorldToScreenPoint(transform.position);
+			posX = Input.mousePosition.x - distance.x;
+			posY = Input.mousePosition.y - distance.y;
+		}
 	}
 
 	private void OnMouseDrag() {
-		Vector3 curPos = new Vector3(Input.mousePosition.x - posX, Input.mousePosition.y - posY, distance.z);
-		Vector3 worldPos = Camera.main.ScreenToWorldPoint(curPos);
+		if (enabled) {
+			Vector3 curPos = new Vector3(Input.mousePosition.x - posX, Input.mousePosition.y - posY, distance.z);
+			Vector3 worldPos = Camera.main.ScreenToWorldPoint(curPos);
 
-		thisTransform.position = new Vector3(worldPos.x, worldPos.y, thisTransform.position.z);
+			thisTransform.position = new Vector3(worldPos.x, worldPos.y, thisTransform.position.z);
+		}
 	}
 
 	private void OnMouseUp() {
-		potentialLandingSquares.Clear();
-		BoardManager.Instance.GetSquareGOsWithinRadius(potentialLandingSquares, thisTransform.position, SquareCollisionRadius);
+		if (enabled) {
+			potentialLandingSquares.Clear();
+			BoardManager.Instance.GetSquareGOsWithinRadius(potentialLandingSquares, thisTransform.position, SquareCollisionRadius);
 
-		if (potentialLandingSquares.Count == 0) { // piece moved off board
-			thisTransform.position = thisTransform.parent.position;
-			return;
-		}
-	
-		// determine closest square out of potential landing squares.
-		Transform closestSquareTransform = potentialLandingSquares[0].transform;
-		float shortestDistanceFromPieceSquared = (closestSquareTransform.transform.position - thisTransform.position).sqrMagnitude;
-		for (int i = 1; i < potentialLandingSquares.Count; i++) {
-			GameObject potentialLandingSquare = potentialLandingSquares[i];
-			float distanceFromPieceSquared = (potentialLandingSquare.transform.position - thisTransform.position).sqrMagnitude;
-
-			if (distanceFromPieceSquared < shortestDistanceFromPieceSquared) {
-				shortestDistanceFromPieceSquared = distanceFromPieceSquared;
-				closestSquareTransform = potentialLandingSquare.transform;
+			if (potentialLandingSquares.Count == 0) { // piece moved off board
+				thisTransform.position = thisTransform.parent.position;
+				return;
 			}
-		}
+	
+			// determine closest square out of potential landing squares.
+			Transform closestSquareTransform = potentialLandingSquares[0].transform;
+			float shortestDistanceFromPieceSquared = (closestSquareTransform.transform.position - thisTransform.position).sqrMagnitude;
+			for (int i = 1; i < potentialLandingSquares.Count; i++) {
+				GameObject potentialLandingSquare = potentialLandingSquares[i];
+				float distanceFromPieceSquared = (potentialLandingSquare.transform.position - thisTransform.position).sqrMagnitude;
 
-		TryExecuteMove(closestSquareTransform);
+				if (distanceFromPieceSquared < shortestDistanceFromPieceSquared) {
+					shortestDistanceFromPieceSquared = distanceFromPieceSquared;
+					closestSquareTransform = potentialLandingSquare.transform;
+				}
+			}
+
+			TryExecuteMove(closestSquareTransform);
+		}
 	}
 
 	private void TryExecuteMove(Transform closestSquareTransform) {
