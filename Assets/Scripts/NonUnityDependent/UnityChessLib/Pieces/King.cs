@@ -54,7 +54,7 @@ namespace UnityChess {
 							inBetweenMoves.Add(new Movement(Position, inBetweenSquares[1]));
 
 							if (Rules.MoveObeysRules(board, inBetweenMoves[0], Color) && Rules.MoveObeysRules(board, inBetweenMoves[1], Color)) {
-								LegalMoves.Add(new CastlingMove(Position, new Square(inBetweenSquares[1]), rook));
+								LegalMoves.Add(new CastlingMove(Position, inBetweenSquares[1], rook));
 							}
 						}
 

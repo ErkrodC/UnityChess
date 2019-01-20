@@ -17,9 +17,23 @@
 			Start = move.Start;
 			End = move.End;
 		}
-
-		public static bool operator ==(Movement lhs, Movement rhs) => lhs.Start == rhs.Start && lhs.End == rhs.End;
+		
+		protected bool Equals(Movement other) => Start == other.Start && End == other.End;
+		
+		public static bool operator ==(Movement lhs, Movement rhs) => rhs != null && lhs != null && lhs.Start == rhs.Start && lhs.End == rhs.End;
 		public static bool operator !=(Movement lhs, Movement rhs) => !(lhs == rhs);
+
+		public override bool Equals(object obj) {
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			return GetType() == obj.GetType() && Equals((Movement) obj);
+		}
+
+		public override int GetHashCode() {
+			unchecked {
+				return (Start.GetHashCode() * 397) ^ End.GetHashCode();
+			}
+		}
 
 		public override string ToString() => $"{Start}->{End}";
 	}

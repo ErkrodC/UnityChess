@@ -3,13 +3,13 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviourSingleton<UIManager> {
-	[SerializeField] private GameObject promotionUI;
-	[SerializeField] private GameObject gameEndUI;
-	[SerializeField] private Text resultText;
-	[SerializeField] private GameObject moveHistoryContentParent;
-	[SerializeField] private Image whiteTurnIndicator;
-	[SerializeField] private Image blackTurnIndicator;
-	
+	[SerializeField] private GameObject promotionUI = null;
+	[SerializeField] private GameObject gameEndUI = null;
+	[SerializeField] private Text resultText = null;
+	[SerializeField] private Image whiteTurnIndicator = null;
+	[SerializeField] private Image blackTurnIndicator = null;
+	[SerializeField] private GameObject moveHistoryContentParent = null;
+
 	private bool userHasMadePromotionPieceChoice;
 	private ElectedPiece userPromotionPieceChoice = ElectedPiece.None;
 
@@ -45,5 +45,5 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	public void OnElectionButton(int choice) {
 		userPromotionPieceChoice = (ElectedPiece) choice;
 		userHasMadePromotionPieceChoice = true;
-	}
+	}	
 }

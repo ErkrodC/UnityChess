@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
-	[SerializeField] private GameObject debugBoard;
+	[SerializeField] private GameObject debugBoard = null;
 
 	private void OnEnable() {
 		debugBoard.SetActive(true);

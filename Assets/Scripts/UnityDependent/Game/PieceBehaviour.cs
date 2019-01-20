@@ -8,7 +8,7 @@ public class PieceBehaviour : MonoBehaviour {
 	
 	private const float SquareCollisionRadius = 9f;
 	
-	[SerializeField] private GameEvent PieceMovedEvent;
+	[SerializeField] private GameEvent PieceMovedEvent = null;
 	private Camera boardCamera;
 	private Square CurrentSquare => StringToSquare(transform.parent.name);
 	private Vector3 piecePositionSS;

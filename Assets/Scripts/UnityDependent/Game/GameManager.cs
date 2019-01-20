@@ -6,9 +6,9 @@ using UnityEngine;
 public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public Game Game;
 	public Queue<Movement> MoveQueue;
-	[SerializeField] private GameEvent NewGameStartedEvent;
-	[SerializeField] private GameEvent GameEndedEvent;
-	[SerializeField] private UnityChessDebug unityChessDebug;
+	[SerializeField] private GameEvent NewGameStartedEvent = null;
+	[SerializeField] private GameEvent GameEndedEvent = null;
+	[SerializeField] private UnityChessDebug unityChessDebug = null;
 	public List<Piece> CurrentPieces {
 		get {
 			currentPiecesBacking.Clear();

@@ -12,20 +12,9 @@
 			Rank = rank;
 		}
 
-		/// <summary>Copy constructor.</summary>
-		internal Square(Square square) {
-			File = square.File;
-			Rank = square.Rank;
-		}
-
 		internal Square(Square startPosition, int fileOffset, int rankOffset) {
 			File = startPosition.File + fileOffset;
 			Rank = startPosition.Rank + rankOffset;
-		}
-		
-		public Square(int oneDimensionalIndex) {
-			File = oneDimensionalIndex % 10;
-			Rank = (oneDimensionalIndex - File) / 10 - 1;
 		}
 
 		/// <summary>Checks if this Square is on the 8x8 center of a 120-length board array.</summary>
@@ -43,6 +32,20 @@
 
 		public static bool operator ==(Square lhs, Square rhs) => lhs.File == rhs.File && lhs.Rank == rhs.Rank;
 		public static bool operator !=(Square lhs, Square rhs) => !(lhs == rhs);
+		
+		public bool Equals(Square other) => File == other.File && Rank == other.Rank;
+
+		public override bool Equals(object obj) {
+			if (ReferenceEquals(null, obj)) return false;
+
+			return obj is Square other && Equals(other);
+		}
+
+		public override int GetHashCode() {
+			unchecked {
+				return (File * 397) ^ Rank;
+			}
+		}
 
 		public override string ToString() => SquareUtil.SquareToString(this);
 	}

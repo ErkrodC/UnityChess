@@ -121,8 +121,8 @@ namespace UnityChess {
 
 					if (testSquare.IsValid()) {
 						if ((fileOffset == 1 || fileOffset == -1) && rankOffset == (king.Color == Side.White ? 1 : -1))
-							pawnAttackingSquares.Add(new Square(testSquare));
-						surroundingSquares.Add(new Square(testSquare));
+							pawnAttackingSquares.Add(testSquare);
+						surroundingSquares.Add(testSquare);
 					}
 				}
 			}

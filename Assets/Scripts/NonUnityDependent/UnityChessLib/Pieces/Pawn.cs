@@ -28,12 +28,7 @@ namespace UnityChess {
 			
 			if (!testSquare.IsOccupied(board) && Rules.MoveObeysRules(board, testMove, Color)) {
 				if (Position.Rank == (Color == Side.White ? 7 : 2)) {
-					// PSEUDO call to gui method which gets user promotion piece choice
-					// ElectedPiece userElection = GUI.getElectionChoice();
-
-					//for now will default to Queen election
-					ElectedPiece userElection = ElectedPiece.Queen;
-					LegalMoves.Add(new PromotionMove(Position, new Square(testSquare), userElection, Color));
+					LegalMoves.Add(new PromotionMove(Position, testSquare));
 				} else {
 					LegalMoves.Add(new Movement(testMove));
 
@@ -56,7 +51,7 @@ namespace UnityChess {
 				Square enemyKingPosition = Color == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
 				if (testSquare.IsValid() && testSquare.IsOccupiedBySide(board, Color.Complement()) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition) {
 					bool pawnAtSecondToLastRank = Position.Rank == (Color == Side.White ? 7 : 2);
-					Movement move = pawnAtSecondToLastRank ? new PromotionMove(Position, testSquare, ElectedPiece.None, Color) : new Movement(testMove);
+					Movement move = pawnAtSecondToLastRank ? new PromotionMove(Position, testSquare) : new Movement(testMove);
 					LegalMoves.Add(move);
 				}
 			}

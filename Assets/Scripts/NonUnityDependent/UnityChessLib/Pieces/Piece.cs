@@ -19,7 +19,7 @@ namespace UnityChess {
 		protected Piece(Piece pieceCopy) {
 			Color = pieceCopy.Color;
 			HasMoved = pieceCopy.HasMoved;
-			Position = new Square(pieceCopy.Position);
+			Position = pieceCopy.Position;
 			LegalMoves = pieceCopy.LegalMoves.DeepCopy();
 			ID = pieceCopy.ID;
 		}
