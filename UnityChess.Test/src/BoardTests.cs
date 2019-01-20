@@ -10,7 +10,7 @@ namespace UnityChess.Test {
 		[SetUp]
 		public void Init() {
 			board = new Board();
-			pawn = board.GetBasePiece(1, 2) as Pawn;
+			pawn = board[1, 2] as Pawn;
 		}
 
 		[Test]
@@ -28,8 +28,8 @@ namespace UnityChess.Test {
 
 			Assert.Multiple(() => {
 				Assert.AreEqual(expectedPosition, pawn.Position);
-				Assert.AreEqual(board.GetBasePiece(expectedPosition), pawn);
-				Assert.AreEqual(board.GetBasePiece(initialPosition), Board.EmptyPiece);
+				Assert.AreEqual(board[expectedPosition], pawn);
+				Assert.AreEqual(board[initialPosition], null);
 				Assert.True(pawn.HasMoved);
 			});
 		}

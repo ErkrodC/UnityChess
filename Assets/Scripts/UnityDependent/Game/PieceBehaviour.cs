@@ -79,7 +79,7 @@ public class PieceBehaviour : MonoBehaviour {
 		} else {
 			thisTransform.position = thisTransform.parent.position;
 #if DEBUG_VIEW
-			UnityChessDebug.ShowLegalMovesInLog(GameManager.Instance.CurrentBoard.GetPiece(CurrentSquare));
+			UnityChessDebug.ShowLegalMovesInLog(GameManager.Instance.CurrentBoard[CurrentSquare]);
 #endif
 		}
 	}

@@ -2,25 +2,25 @@
 
 namespace UnityChess {
 	/// <summary>Base class for any chess piece.</summary>
-	public abstract class Piece : BasePiece {
-		public readonly Side PieceOwner;
-		public readonly ValidMovesList ValidMoves;
+	public abstract class Piece {
+		public readonly Side Color;
+		public readonly LegalMovesList LegalMoves;
 		public Square Position;
 		public bool HasMoved;
 		protected int ID;
 
-		protected Piece(Square startPosition, Side pieceOwner) {
-			PieceOwner = pieceOwner;
+		protected Piece(Square startPosition, Side color) {
+			Color = color;
 			HasMoved = false;
 			Position = startPosition;
-			ValidMoves = new ValidMovesList();
+			LegalMoves = new LegalMovesList();
 		}
 
 		protected Piece(Piece pieceCopy) {
-			PieceOwner = pieceCopy.PieceOwner;
+			Color = pieceCopy.Color;
 			HasMoved = pieceCopy.HasMoved;
 			Position = new Square(pieceCopy.Position);
-			ValidMoves = pieceCopy.ValidMoves.DeepCopy();
+			LegalMoves = pieceCopy.LegalMoves.DeepCopy();
 			ID = pieceCopy.ID;
 		}
 
@@ -36,19 +36,19 @@ namespace UnityChess {
 
 			Piece piece = obj as Piece;
 			// ReSharper disable once PossibleNullReferenceException
-			return PieceOwner == piece.PieceOwner && ID == piece.ID;
+			return Color == piece.Color && ID == piece.ID;
 		}
 
 		// override object.GetHashCode
 		public override int GetHashCode() {
 			int hash = 13;
-			hash = hash * 7 + PieceOwner.GetHashCode();
+			hash = hash * 7 + Color.GetHashCode();
 			hash = hash * 7 + ID.GetHashCode();
 			return hash;
 		}
 
 		public override string ToString() {
-			return $"{PieceOwner.ToString()} {GetType().ToString().Substring(11)}";
+			return $"{Color.ToString()} {GetType().ToString().Substring(11)}";
 		}
 	}
 }

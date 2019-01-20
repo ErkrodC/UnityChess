@@ -125,10 +125,7 @@ namespace UnityChess.Test {
 				King pinningKing = new King(new Square(8, 1), side.Complement());
 				Bishop pinningBishop = new Bishop(new Square(6, 6), side.Complement());
 
-				board.PlacePiece(pinnedKing);
-				board.PlacePiece(pinnedRook);
-				board.PlacePiece(pinningKing);
-				board.PlacePiece(pinningBishop);
+				PlacePieces(board, pinnedKing, pinnedRook, pinningKing, pinningBishop);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -139,11 +136,8 @@ namespace UnityChess.Test {
 				Bishop pinnedBishop = new Bishop(new Square(4, 5), side);
 				King pinningKing = new King(new Square(8, 1), side.Complement());
 				Rook pinningRook = new Rook(new Square(4, 6), side.Complement());
-
-				board.PlacePiece(pinnedKing);
-				board.PlacePiece(pinnedBishop);
-				board.PlacePiece(pinningKing);
-				board.PlacePiece(pinningRook);
+				
+				PlacePieces(board, pinnedKing, pinnedBishop, pinningKing, pinningRook);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -154,9 +148,7 @@ namespace UnityChess.Test {
 				King offensiveKing = new King(new Square(8, 1), side.Complement());
 				Knight offensiveKnight = new Knight(new Square(6, 4), side.Complement());
 
-				board.PlacePiece(defensiveKing);
-				board.PlacePiece(offensiveKing);
-				board.PlacePiece(offensiveKnight);
+				PlacePieces(board, defensiveKing, offensiveKing, offensiveKnight);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -180,10 +172,7 @@ namespace UnityChess.Test {
 					offensivePawn2 = new Pawn(new Square(5, 5), side.Complement());
 				}
 
-				board.PlacePiece(defensiveKing);
-				board.PlacePiece(offensiveKing);
-				board.PlacePiece(offensivePawn1);
-				board.PlacePiece(offensivePawn2);
+				PlacePieces(board, defensiveKing, offensiveKing, offensivePawn1, offensivePawn2);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -227,9 +216,7 @@ namespace UnityChess.Test {
 					King checkingKing = new King(new Square(8, 1), side.Complement());
 					Queen checkingQueen = new Queen(queenSquare, side.Complement());
 
-					board.PlacePiece(checkedKing);
-					board.PlacePiece(checkingKing);
-					board.PlacePiece(checkingQueen);
+					PlacePieces(board, checkedKing, checkingKing, checkingQueen);
 
 					board.InitKings();
 					Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -264,9 +251,7 @@ namespace UnityChess.Test {
 					King checkingKing = new King(new Square(8, 1), side.Complement());
 					Rook checkingRook = new Rook(rookSquare, side.Complement());
 
-					board.PlacePiece(checkedKing);
-					board.PlacePiece(checkingKing);
-					board.PlacePiece(checkingRook);
+					PlacePieces(board, checkedKing, checkingKing, checkingRook);
 
 					board.InitKings();
 					Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -300,10 +285,8 @@ namespace UnityChess.Test {
 					King checkedKing = new King(new Square(4, 4), side);
 					King checkingKing = new King(new Square(8, 1), side.Complement());
 					Bishop checkingBishop = new Bishop(bishopSquare, side.Complement());
-
-					board.PlacePiece(checkedKing);
-					board.PlacePiece(checkingKing);
-					board.PlacePiece(checkingBishop);
+					
+					PlacePieces(board, checkedKing, checkingKing, checkingBishop);
 
 					board.InitKings();
 					Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -349,10 +332,8 @@ namespace UnityChess.Test {
 					King checkedKing = new King(new Square(4, 4), side);
 					King checkingKing = new King(new Square(8, 1), side.Complement());
 					Knight checkingKnight = new Knight(knightSquare, side.Complement());
-
-					board.PlacePiece(checkedKing);
-					board.PlacePiece(checkingKing);
-					board.PlacePiece(checkingKnight);
+					
+					PlacePieces(board, checkedKing, checkingKing, checkingKnight);
 
 					board.InitKings();
 					Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -395,9 +376,7 @@ namespace UnityChess.Test {
 					King checkingKing = new King(new Square(8, 1), side.Complement());
 					Pawn checkingPawn = new Pawn(pawnSquare, side.Complement());
 
-					board.PlacePiece(checkedKing);
-					board.PlacePiece(checkingKing);
-					board.PlacePiece(checkingPawn);
+					PlacePieces(board, checkedKing, checkingKing, checkingPawn);
 
 					board.InitKings();
 					Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -421,9 +400,7 @@ namespace UnityChess.Test {
 					blunderPawn = new Pawn(new Square(6, 7), side.Complement());
 				}
 
-				board.PlacePiece(stalematedKing);
-				board.PlacePiece(blunderKing);
-				board.PlacePiece(blunderPawn);
+				PlacePieces(board, stalematedKing, blunderKing, blunderPawn);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -433,10 +410,8 @@ namespace UnityChess.Test {
 				King stalematedKing = new King(new Square(1, 1), side);
 				King blunderKing = new King(new Square(3, 3), side.Complement());
 				Rook blunderRook = new Rook(new Square(2, 2), side.Complement());
-
-				board.PlacePiece(stalematedKing);
-				board.PlacePiece(blunderKing);
-				board.PlacePiece(blunderRook);
+				
+				PlacePieces(board, stalematedKing, blunderKing, blunderRook);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -447,9 +422,7 @@ namespace UnityChess.Test {
 				King blunderKing = new King(new Square(1, 6), side.Complement());
 				Bishop blunderBishop = new Bishop(new Square(6, 4), side.Complement());
 
-				board.PlacePiece(stalematedKing);
-				board.PlacePiece(blunderKing);
-				board.PlacePiece(blunderBishop);
+				PlacePieces(board, stalematedKing, blunderKing, blunderBishop);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -461,10 +434,7 @@ namespace UnityChess.Test {
 				Rook blunderRook = new Rook(new Square(8, 8), side.Complement());
 				Bishop stalematedBishop = new Bishop(new Square(2, 8), side);
 
-				board.PlacePiece(stalematedKing);
-				board.PlacePiece(blunderKing);
-				board.PlacePiece(blunderRook);
-				board.PlacePiece(stalematedBishop);
+				PlacePieces(board, stalematedKing, blunderKing, blunderRook, stalematedBishop);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -475,9 +445,7 @@ namespace UnityChess.Test {
 				King blunderKing = new King(new Square(8, 8), side.Complement());
 				Queen blunderQueen = new Queen(new Square(2, 3), side.Complement());
 
-				board.PlacePiece(stalematedKing);
-				board.PlacePiece(blunderKing);
-				board.PlacePiece(blunderQueen);
+				PlacePieces(board, stalematedKing, blunderKing, blunderQueen);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -504,11 +472,7 @@ namespace UnityChess.Test {
 					blunderPawn2 = new Pawn(new Square(7, 2), side.Complement());
 				}
 
-				board.PlacePiece(stalematedKing);
-				board.PlacePiece(stalematedPawn);
-				board.PlacePiece(blunderKing);
-				board.PlacePiece(blunderPawn1);
-				board.PlacePiece(blunderPawn2);
+				PlacePieces(board, stalematedKing, stalematedPawn, blunderKing, blunderPawn1, blunderPawn2);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -534,12 +498,8 @@ namespace UnityChess.Test {
 					blunderBishop = new Bishop(new Square(7, 7), side.Complement());
 					blunderPawn = new Pawn(new Square(1, 3), side.Complement());
 				}
-
-				board.PlacePiece(stalematedKing);
-				board.PlacePiece(stalematedPawn);
-				board.PlacePiece(blunderKing);
-				board.PlacePiece(blunderBishop);
-				board.PlacePiece(blunderPawn);
+				
+				PlacePieces(board, stalematedKing, stalematedPawn, blunderKing, blunderBishop, blunderPawn);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -563,10 +523,7 @@ namespace UnityChess.Test {
 					blunderPawn = new Pawn(new Square(6, 5), side.Complement());
 				}
 
-				board.PlacePiece(stalematedKing);
-				board.PlacePiece(blunderKing);
-				board.PlacePiece(blunderRook);
-				board.PlacePiece(blunderPawn);
+				PlacePieces(board, stalematedKing, blunderKing, blunderRook, blunderPawn);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -611,18 +568,15 @@ namespace UnityChess.Test {
 					blunderPawns[4] = new Pawn(new Square(7, 4), side.Complement());
 					blunderPawns[5] = new Pawn(new Square(8, 5), side.Complement());
 				}
+				
+				PlacePieces(board, stalematedKing, blunderKing, blunderRook, blunderQueen);
 
-				board.PlacePiece(stalematedKing);
-				board.PlacePiece(blunderKing);
-				board.PlacePiece(blunderRook);
-				board.PlacePiece(blunderQueen);
-
-				foreach (Pawn p in stalematedPawns) {
-					board.PlacePiece(p);
+				foreach (Pawn stalematedPawn in stalematedPawns) {
+					PlacePieces(board, stalematedPawn);
 				}
 
-				foreach (Pawn p in blunderPawns) {
-					board.PlacePiece(p);
+				foreach (Pawn blunderPawn in blunderPawns) {
+					PlacePieces(board, blunderPawn);
 				}
 
 				board.InitKings();
@@ -635,10 +589,8 @@ namespace UnityChess.Test {
 				Rook winningRook1 = new Rook(new Square(8, 1), side.Complement());
 				Rook winningRook2 = new Rook(new Square(8, 2), side.Complement());
 
-				board.PlacePiece(checkmatedKing);
-				board.PlacePiece(winningKing);
-				board.PlacePiece(winningRook1);
-				board.PlacePiece(winningRook2);
+				
+				PlacePieces(board, checkmatedKing, winningKing, winningRook1, winningRook2);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -649,9 +601,8 @@ namespace UnityChess.Test {
 				King winningKing = new King(new Square(6, 5), side.Complement());
 				Queen winningQueen = new Queen(new Square(7, 5), side.Complement());
 
-				board.PlacePiece(checkmatedKing);
-				board.PlacePiece(winningKing);
-				board.PlacePiece(winningQueen);
+				
+				PlacePieces(board, checkmatedKing, winningKing, winningQueen);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -662,9 +613,7 @@ namespace UnityChess.Test {
 				King winningKing = new King(new Square(6, 5), side.Complement());
 				Rook winningRook = new Rook(new Square(8, 1), side.Complement());
 
-				board.PlacePiece(checkmatedKing);
-				board.PlacePiece(winningKing);
-				board.PlacePiece(winningRook);
+				PlacePieces(board, checkmatedKing, winningKing, winningRook);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -675,11 +624,8 @@ namespace UnityChess.Test {
 				King winningKing = new King(new Square(7, 6), side.Complement());
 				Bishop winningBishop1 = new Bishop(new Square(1, 2), side.Complement());
 				Bishop winningBishop2 = new Bishop(new Square(2, 2), side.Complement());
-
-				board.PlacePiece(checkmatedKing);
-				board.PlacePiece(winningKing);
-				board.PlacePiece(winningBishop1);
-				board.PlacePiece(winningBishop2);
+				
+				PlacePieces(board, checkmatedKing, winningKing, winningBishop1, winningBishop2);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -690,11 +636,8 @@ namespace UnityChess.Test {
 				King winningKing = new King(new Square(2, 6), side.Complement());
 				Bishop winningBishop = new Bishop(new Square(3, 6), side.Complement());
 				Knight winningKnight = new Knight(new Square(1, 6), side.Complement());
-
-				board.PlacePiece(checkmatedKing);
-				board.PlacePiece(winningKing);
-				board.PlacePiece(winningBishop);
-				board.PlacePiece(winningKnight);
+				
+				PlacePieces(board, checkmatedKing, winningKing, winningBishop, winningKnight);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -705,11 +648,8 @@ namespace UnityChess.Test {
 				King winningKing = new King(new Square(8, 6), side.Complement());
 				Knight winningKnight1 = new Knight(new Square(6, 6), side.Complement());
 				Knight winningKnight2 = new Knight(new Square(7, 6), side.Complement());
-
-				board.PlacePiece(checkmatedKing);
-				board.PlacePiece(winningKing);
-				board.PlacePiece(winningKnight1);
-				board.PlacePiece(winningKnight2);
+				
+				PlacePieces(board, checkmatedKing, winningKing, winningKnight1, winningKnight2);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -733,10 +673,7 @@ namespace UnityChess.Test {
 					winningPawn2 = new Pawn(new Square(4, 7), side.Complement());
 				}
 
-				board.PlacePiece(checkmatedKing);
-				board.PlacePiece(winningKing);
-				board.PlacePiece(winningPawn1);
-				board.PlacePiece(winningPawn2);
+				PlacePieces(board, checkmatedKing, winningKing, winningPawn1, winningPawn2);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -766,12 +703,7 @@ namespace UnityChess.Test {
 					losingPawn3 = new Pawn(new Square(8, 7), side);
 				}
 
-				board.PlacePiece(checkmatedKing);
-				board.PlacePiece(winningKing);
-				board.PlacePiece(winningRook);
-				board.PlacePiece(losingPawn1);
-				board.PlacePiece(losingPawn2);
-				board.PlacePiece(losingPawn3);
+				PlacePieces(board, checkmatedKing, winningKing, winningRook, losingPawn1, losingPawn2, losingPawn3);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -801,12 +733,7 @@ namespace UnityChess.Test {
 					losingRook = new Rook(new Square(7, 8), side);
 				}
 
-				board.PlacePiece(checkmatedKing);
-				board.PlacePiece(winningKing);
-				board.PlacePiece(winningKnight);
-				board.PlacePiece(losingPawn1);
-				board.PlacePiece(losingPawn2);
-				board.PlacePiece(losingRook);
+				PlacePieces(board, checkmatedKing, winningKing, winningKnight, losingPawn1, losingPawn2, losingRook);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -817,11 +744,8 @@ namespace UnityChess.Test {
 				King winningKing = new King(new Square(7, 1), side.Complement());
 				Knight winningKnight = new Knight(new Square(6, 6), side.Complement());
 				Rook winningRook = new Rook(new Square(8, 7), side.Complement());
-
-				board.PlacePiece(checkmatedKing);
-				board.PlacePiece(winningKing);
-				board.PlacePiece(winningKnight);
-				board.PlacePiece(winningRook);
+				
+				PlacePieces(board, checkmatedKing, winningKing, winningKnight, winningRook);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
@@ -833,13 +757,16 @@ namespace UnityChess.Test {
 				Queen winningQueen = new Queen(new Square(7, 7), side.Complement());
 				Bishop winningBishop = new Bishop(new Square(8, 6), side.Complement());
 
-				board.PlacePiece(checkmatedKing);
-				board.PlacePiece(winningKing);
-				board.PlacePiece(winningQueen);
-				board.PlacePiece(winningBishop);
+				PlacePieces(board, checkmatedKing, winningKing, winningQueen, winningBishop);
 
 				board.InitKings();
 				Game.UpdateAllPiecesValidMoves(board, dummyPreviousMoves, side);
+			}
+
+			private static void PlacePieces(Board board, params Piece[] pieces) {
+				foreach (Piece piece in pieces) {
+					board[piece.Position] = piece;
+				}
 			}
 
 			public static object[] NoneCases = {

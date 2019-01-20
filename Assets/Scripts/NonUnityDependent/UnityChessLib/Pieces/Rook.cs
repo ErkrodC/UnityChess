@@ -5,7 +5,7 @@ namespace UnityChess {
 	public class Rook : Piece {
 		private static int instanceCounter;
 
-		public Rook(Square startingPosition, Side pieceOwner) : base(startingPosition, pieceOwner) {
+		public Rook(Square startingPosition, Side color) : base(startingPosition, color) {
 			ID = ++instanceCounter;
 		}
 
@@ -14,7 +14,7 @@ namespace UnityChess {
 		}
 
 		public override void UpdateValidMoves(Board board, LinkedList<Turn> previousMoves) {
-			ValidMoves.Clear();
+			LegalMoves.Clear();
 
 			CheckCardinalDirections(board);
 		}
@@ -26,16 +26,16 @@ namespace UnityChess {
 					Movement testMove = new Movement(Position, testSquare);
 
 					while (testSquare.IsValid()) {
-						Square enemyKingPosition = PieceOwner == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
+						Square enemyKingPosition = Color == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
 						if (testSquare.IsOccupied(board)) {
-							if (!testSquare.IsOccupiedBySide(board, PieceOwner) && Rules.MoveObeysRules(board, testMove, PieceOwner) && testSquare != enemyKingPosition)
-								ValidMoves.Add(new Movement(testMove));
+							if (!testSquare.IsOccupiedBySide(board, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
+								LegalMoves.Add(new Movement(testMove));
 
 							break;
 						}
 
-						if (Rules.MoveObeysRules(board, testMove, PieceOwner) && testSquare != enemyKingPosition)
-							ValidMoves.Add(new Movement(testMove));
+						if (Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
+							LegalMoves.Add(new Movement(testMove));
 
 						testSquare = new Square(testSquare, fileOffset, rankOffset);
 						testMove = new Movement(Position, testSquare);

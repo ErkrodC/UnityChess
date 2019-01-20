@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace UnityChess {
 	/// <summary>Representation of a standard chess game including a history of moves made.</summary>
@@ -28,7 +27,7 @@ namespace UnityChess {
 		/// <summary>Executes passed move and switches sides; also adds move to history.</summary>
 		public void ExecuteTurn(Movement move) {
 			//create new copy of previous current board, and execute the move on it
-			PreviousMoves.AddLast(new Turn(LatestBoard.GetPiece(move.Start), move));
+			PreviousMoves.AddLast(new Turn(LatestBoard[move.Start], move));
 			Board resultingBoard = new Board(LatestBoard);
 			resultingBoard.MovePiece(move);
 
@@ -43,24 +42,26 @@ namespace UnityChess {
 		/// <param name="baseMove">The base move used to search in the appropriate piece's ValidMovesList.</param>
 		/// <param name="foundValidMove">The move (potentially a special move) found in the pieces ValidMovesList that corresponds to the passed in baseMove</param>
 		public bool MoveIsLegal(Movement baseMove, out Movement foundValidMove) {
-			Piece movingPiece = LatestBoard.GetPiece(baseMove.Start);
+			Piece movingPiece = LatestBoard[baseMove.Start];
 			if (movingPiece == null) {
 				foundValidMove = null;
 				return false;
 			}
 
-			bool actualMoveFound = movingPiece.ValidMoves.FindValidMoveUsingBaseMove(baseMove, out Movement foundMove);
+			bool actualMoveFound = movingPiece.LegalMoves.FindLegalMoveUsingBaseMove(baseMove, out Movement foundMove);
 			foundValidMove = foundMove;
-			return movingPiece.PieceOwner == CurrentTurnSide && actualMoveFound;
+			return movingPiece.Color == CurrentTurnSide && actualMoveFound;
 		}
 
-		private static void UpdateAllPiecesValidMoves(Board board, LinkedList<Turn> previousMoves, Side turn) {
-			foreach (BasePiece basePiece in board.BasePieceList) {
-				if (!(basePiece is Piece piece)) continue;
-				
-				if (piece.PieceOwner == turn) piece.UpdateValidMoves(board, previousMoves);
-				else piece.ValidMoves.Clear();
-			}
+		public static void UpdateAllPiecesValidMoves(Board board, LinkedList<Turn> previousMoves, Side turn) {
+			for (int file = 1; file <= 8; file++)
+				for (int rank = 1; rank <= 8; rank++) {
+					Piece piece = board[file, rank];
+					if (piece == null) continue;
+					
+					if (piece.Color == turn) piece.UpdateValidMoves(board, previousMoves);
+					else piece.LegalMoves.Clear();
+				}
 		}
 	}
 }

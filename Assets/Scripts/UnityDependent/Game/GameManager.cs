@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityChess;
 using UnityEngine;
@@ -10,7 +9,20 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	[SerializeField] private GameEvent NewGameStartedEvent;
 	[SerializeField] private GameEvent GameEndedEvent;
 	[SerializeField] private UnityChessDebug unityChessDebug;
-	public Piece[] CurrentPieces => Game.BoardList.Last.Value.BasePieceList.OfType<Piece>().ToArray();
+	public List<Piece> CurrentPieces {
+		get {
+			currentPiecesBacking.Clear();
+			for (int file = 1; file <= 8; file++)
+				for (int rank = 1; rank <= 8; rank++) {
+					Piece piece = CurrentBoard[file, rank];
+					if (piece != null) currentPiecesBacking.Add(piece);
+				}
+
+			return currentPiecesBacking;
+		}
+	}
+	private readonly List<Piece> currentPiecesBacking = new List<Piece>(); 
+	
 	public Board CurrentBoard => Game.BoardList.Last.Value;
 	public LinkedList<Turn> PreviousMoves => Game.PreviousMoves;
 	[HideInInspector] public bool checkmated;

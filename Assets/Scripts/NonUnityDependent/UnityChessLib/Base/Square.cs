@@ -31,15 +31,15 @@
 		/// <summary>Checks if this Square is on the 8x8 center of a 120-length board array.</summary>
 		internal bool IsValid() => 1 <= File && File <= 8 && 1 <= Rank && Rank <= 8;
 
-		internal bool IsOccupied(Board board) => board.GetBasePiece(this) is Piece;
+		internal bool IsOccupied(Board board) => board[this] != null;
 
 		/// <summary>Determines whether the square is occupied by a piece belonging to the given side.</summary>
-		internal bool IsOccupiedBySide(Board board, Side side) => board.GetBasePiece(this) is Piece piece && piece.PieceOwner == side;
+		internal bool IsOccupiedBySide(Board board, Side side) {
+			Piece piece = board[this];
+			return piece != null && piece.Color == side;
+		}
 
-		/// <summary>Returns the 1-D analog of the Square, with regard to a 120-length board array.</summary>
-		public int AsIndex() => FileRankAsIndex(File, Rank);
-
-		public static int FileRankAsIndex(int file, int rank) => (rank + 1) * 10 + file;
+		//public static int FileRankAsIndex(int file, int rank) => (rank + 1) * 10 + file;
 
 		public static bool operator ==(Square lhs, Square rhs) => lhs.File == rhs.File && lhs.Rank == rhs.Rank;
 		public static bool operator !=(Square lhs, Square rhs) => !(lhs == rhs);

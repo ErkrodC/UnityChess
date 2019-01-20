@@ -15,8 +15,9 @@ namespace UnityChess.Test {
 		[TestCase(6, 8)] //Kingside castle
 		[TestCase(4, 1)] //Queenside castle
 		public void HandleAssociatedPiece_CastlingMove_RookMovedAsExpected(int expected, int rookStartingFile) {
-			Rook rook = new Rook(new Square(rookStartingFile, 1), Side.White);
-			board.PlacePiece(rook);
+			Square startingSquare = new Square(rookStartingFile, 1);
+			Rook rook = new Rook(startingSquare, Side.White);
+			board[startingSquare] = rook;
 			MockCastlingMove mcm = new MockCastlingMove(rook);
 
 			mcm.HandleAssociatedPiece(board);

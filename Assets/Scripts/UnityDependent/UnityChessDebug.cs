@@ -14,8 +14,8 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 	}
 
 	public static void ShowLegalMovesInLog(Piece piece) {
-		string debMsg = $"# of valid moves: {piece.ValidMoves.Count}\n";
-		foreach (Movement validMove in piece.ValidMoves) {
+		string debMsg = $"# of valid moves: {piece.LegalMoves.Count}\n";
+		foreach (Movement validMove in piece.LegalMoves) {
 			debMsg += $"{validMove}\n";
 		}
 		Debug.LogWarning(debMsg);
@@ -24,10 +24,10 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 	private void UpdateBoardDebugView(Board board) {
 		for (int file = 1; file <= 8; file++) {
 			for (int rank = 1; rank <= 8; rank++) {
-				BasePiece basePiece = board.GetBasePiece(file, rank);
+				Piece piece = board[file, rank];
 				Text squareText = debugBoard.transform.Find($"{SquareUtil.FileRankToSquareString(file, rank)}").GetComponentInChildren<Text>();
 
-				squareText.text = basePiece is Piece ? basePiece.ToString() : "";
+				squareText.text = piece == null ? "" : piece.ToString();
 			}
 		}
 	}

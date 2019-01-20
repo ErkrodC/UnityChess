@@ -27,10 +27,10 @@ namespace UnityChess.Test {
 		}
 
 		private void PopulateBoard(int numberOfPieces, IMock<MockPiece> mockPiece) {
-			numberOfPieces = numberOfPieces > 98 ? 98 : numberOfPieces;
-
 			for (int i = 0; i < numberOfPieces; i++) {
-				board.PlacePiece(mockPiece.Object, i + 21);
+				int file = i / 8 + 1;
+				int rank = i % 8 + 1; 
+				board[file, rank] = mockPiece.Object;
 			}
 		}
 	}

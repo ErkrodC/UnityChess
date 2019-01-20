@@ -64,7 +64,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	}
 
 	public void CreateAndPlacePieceGO(Piece piece) {
-		string modelName = $"{piece.PieceOwner} {piece.GetType().Name}";
+		string modelName = $"{piece.Color} {piece.GetType().Name}";
 		GameObject pieceGO = Instantiate(Resources.Load("PieceSets/Marble/" + modelName) as GameObject, positionMap[piece.Position].transform);
 
 		if (!(piece is Knight) && !(piece is King)) {

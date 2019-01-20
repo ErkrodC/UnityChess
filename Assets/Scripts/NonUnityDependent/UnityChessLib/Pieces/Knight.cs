@@ -5,7 +5,7 @@ namespace UnityChess {
 	public class Knight : Piece {
 		private static int instanceCounter;
 
-		public Knight(Square startingPosition, Side pieceOwner) : base(startingPosition, pieceOwner) {
+		public Knight(Square startingPosition, Side color) : base(startingPosition, color) {
 			ID = ++instanceCounter;
 		}
 
@@ -14,7 +14,7 @@ namespace UnityChess {
 		}
 
 		public override void UpdateValidMoves(Board board, LinkedList<Turn> previousMoves) {
-			ValidMoves.Clear();
+			LegalMoves.Clear();
 			CheckKnightCircleSquares(board);
 		}
 
@@ -26,9 +26,9 @@ namespace UnityChess {
 					Square testSquare = new Square(Position, fileOffset, rankOffset);
 					Movement testMove = new Movement(Position, testSquare);
 
-					Square enemyKingPosition = PieceOwner == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
-					if (testSquare.IsValid() && !testSquare.IsOccupiedBySide(board, PieceOwner) && Rules.MoveObeysRules(board, testMove, PieceOwner) && testSquare != enemyKingPosition)
-						ValidMoves.Add(new Movement(testMove));
+					Square enemyKingPosition = Color == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
+					if (testSquare.IsValid() && !testSquare.IsOccupiedBySide(board, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
+						LegalMoves.Add(new Movement(testMove));
 				}
 			}
 		}

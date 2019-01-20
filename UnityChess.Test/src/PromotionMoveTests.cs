@@ -22,7 +22,7 @@ namespace UnityChess.Test {
 
 			mpm.HandleAssociatedPiece(board);
 
-			Assert.AreEqual($"UnityChess.{election.ToString()}", board.GetBasePiece(expectedPosition).GetType().ToString());
+			Assert.AreEqual($"UnityChess.{election.ToString()}", board[expectedPosition].GetType().ToString());
 		}
 	}
 

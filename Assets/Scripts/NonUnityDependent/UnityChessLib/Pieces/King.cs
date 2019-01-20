@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace UnityChess {
 	public class King : Piece {
 		private static int instanceCounter;
 
-		public King(Square startingPosition, Side pieceOwner) : base(startingPosition, pieceOwner) {
+		public King(Square startingPosition, Side color) : base(startingPosition, color) {
 			ID = ++instanceCounter;
 		}
 
@@ -14,7 +13,7 @@ namespace UnityChess {
 		}
 
 		public override void UpdateValidMoves(Board board, LinkedList<Turn> previousMoves) {
-			ValidMoves.Clear();
+			LegalMoves.Clear();
 
 			CheckSurroundingSquares(board);
 			CheckCastlingMoves(board);
@@ -29,46 +28,39 @@ namespace UnityChess {
 
 					Square testSquare = new Square(Position, fileOffset, rankOffset);
 					Movement testMove = new Movement(Position, testSquare);
-					Square enemyKingPosition = PieceOwner == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
-					if (testSquare.IsValid() && !testSquare.IsOccupiedBySide(board, PieceOwner) && Rules.MoveObeysRules(board, testMove, PieceOwner) && testSquare != enemyKingPosition)
-						ValidMoves.Add(new Movement(testMove));
+					Square enemyKingPosition = Color == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
+					if (testSquare.IsValid() && !testSquare.IsOccupiedBySide(board, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
+						LegalMoves.Add(new Movement(testMove));
 				}
 			}
 		}
 
 		private void CheckCastlingMoves(Board board) {
-			if (!HasMoved) {
-				bool kingSideCheck = true;
-				List<Square> inBtwnSquares = new List<Square>();
-				List<Movement> inBtwnMoves = new List<Movement>();
-				List<BasePiece> cornerPieces = new List<BasePiece> {
-					//kingside corner square
-					board.GetBasePiece(Position.File + 3, Position.Rank),
-					//queenside corner square
-					board.GetBasePiece(Position.File - 4, Position.Rank)
-				};
+			if (!HasMoved && !Rules.IsPlayerInCheck(board, Color)) {
+				int castlingRank = Color == Side.White ? 1 : 8;
+				List<Square> rookSquares = new List<Square> { new Square(1, castlingRank), new Square(8, castlingRank) };
+				List<Square> inBetweenSquares = new List<Square>();
+				List<Movement> inBetweenMoves = new List<Movement>();
 
-				foreach (Rook rook in cornerPieces.OfType<Rook>()) {
-					if (!rook.HasMoved && rook.PieceOwner == PieceOwner) {
-						inBtwnSquares.Add(new Square(Position.File + 1 * (kingSideCheck ? 1 : -1), Position.Rank));
-						inBtwnSquares.Add(new Square(Position.File + 2 * (kingSideCheck ? 1 : -1), Position.Rank));
-						if (!kingSideCheck) inBtwnSquares.Add(new Square(Position.File - 3, Position.Rank));
+				for (int rookSquareIndex = 0; rookSquareIndex < rookSquares.Count; rookSquareIndex++) {
+					if (board[rookSquares[rookSquareIndex]] is Rook rook && !rook.HasMoved && rook.Color == Color) {
+						bool checkingQueensideCastle = rookSquareIndex == 0;
+						inBetweenSquares.Add(new Square(checkingQueensideCastle ? 4 : 6, castlingRank));
+						inBetweenSquares.Add(new Square(checkingQueensideCastle ? 3 : 7, castlingRank));
+						if (checkingQueensideCastle) inBetweenSquares.Add(new Square(2, castlingRank));
 
-						if (!inBtwnSquares[0].IsOccupied(board) && !inBtwnSquares[1].IsOccupied(board) && (kingSideCheck || !inBtwnSquares[2].IsOccupied(board))) {
-							inBtwnMoves.Add(new Movement(Position, inBtwnSquares[0]));
-							inBtwnMoves.Add(new Movement(Position, inBtwnSquares[1]));
+						if (!inBetweenSquares[0].IsOccupied(board) && !inBetweenSquares[1].IsOccupied(board) && (!checkingQueensideCastle || !inBetweenSquares[2].IsOccupied(board))) {
+							inBetweenMoves.Add(new Movement(Position, inBetweenSquares[0]));
+							inBetweenMoves.Add(new Movement(Position, inBetweenSquares[1]));
 
-							if (Rules.MoveObeysRules(board, inBtwnMoves[0], PieceOwner) && Rules.MoveObeysRules(board, inBtwnMoves[1], PieceOwner)) {
-								ValidMoves.Add(new CastlingMove(Position, new Square(inBtwnSquares[1]), rook));
+							if (Rules.MoveObeysRules(board, inBetweenMoves[0], Color) && Rules.MoveObeysRules(board, inBetweenMoves[1], Color)) {
+								LegalMoves.Add(new CastlingMove(Position, new Square(inBetweenSquares[1]), rook));
 							}
-
-							inBtwnMoves.Clear();
 						}
 
-						inBtwnSquares.Clear();
+						inBetweenSquares.Clear();
+						inBetweenMoves.Clear();
 					}
-
-					kingSideCheck = false;
 				}
 			}
 		}

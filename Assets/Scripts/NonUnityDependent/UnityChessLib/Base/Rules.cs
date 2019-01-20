@@ -1,50 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace UnityChess {
 	/// <summary>Contains methods for checking legality of moves and board positions.</summary>
 	public static class Rules {
 		/// <summary>Checks if the player of the given side has been checkmated.</summary>
-		public static bool IsPlayerCheckmated(Board board, Side side) {
-			return IsTotalValidMovesZero(board, side) && IsPlayerInCheck(board, side);
-		}
+		public static bool IsPlayerCheckmated(Board board, Side player) => PlayerHasNoLegalMoves(player, board) && IsPlayerInCheck(board, player);
 
 		/// <summary>Checks if the player of the given side has been stalemated.</summary>
-		public static bool IsPlayerStalemated(Board board, Side side) {
-			return IsTotalValidMovesZero(board, side) && !IsPlayerInCheck(board, side);
-		}
+		public static bool IsPlayerStalemated(Board board, Side player) => PlayerHasNoLegalMoves(player, board) && !IsPlayerInCheck(board, player);
 
 		/// <summary>Checks if the player of the given side is in check.</summary>
-		public static bool IsPlayerInCheck(Board board, Side playerSide) => IsKingInCheck(board, playerSide == Side.White ? board.WhiteKing : board.BlackKing);
+		public static bool IsPlayerInCheck(Board board, Side player) => IsKingInCheck(board, player == Side.White ? board.WhiteKing : board.BlackKing);
 
-		internal static bool MoveObeysRules(Board board, Movement move, Side movedPieceSide) => !DoesMovePutMoverInCheck(board, move, movedPieceSide) && DoesMoveRemoveCheck(board, move, movedPieceSide);
+		internal static bool MoveObeysRules(Board board, Movement move, Side movedPieceSide) => !MovePutsMoverInCheck(board, move, movedPieceSide) && MoveRemovesCheckFromPlayerIfNeeded(board, move, movedPieceSide);
 
-		private static bool DoesMoveRemoveCheck(Board board, Movement move, Side side) {
+		private static bool MoveRemovesCheckFromPlayerIfNeeded(Board board, Movement move, Side side) {
 			if (!IsPlayerInCheck(board, side)) return true;
 
 			Board resultingBoard = new Board(board);
-			Piece resultingBoardAnalogPiece = resultingBoard.BasePieceList.Single(bp => bp is Piece piece && piece.Position == move.Start) as Piece;
-			resultingBoard.MovePiece(new Movement(resultingBoardAnalogPiece.Position, move.End));
+			resultingBoard.MovePiece(new Movement(move.Start, move.End));
 
 			return !IsPlayerInCheck(resultingBoard, side);
 		}
 
-		private static bool DoesMovePutMoverInCheck(Board board, Movement move, Side moverSide) {
+		private static bool MovePutsMoverInCheck(Board board, Movement move, Side moverSide) {
 			Board resultingBoard = new Board(board);
-			Piece resultingBoardAnalogPiece = resultingBoard.BasePieceList.Single(bp => bp is Piece piece && piece.Position == move.Start) as Piece;
-			resultingBoard.MovePiece(new Movement(resultingBoardAnalogPiece.Position, move.End));
+			resultingBoard.MovePiece(new Movement(move.Start, move.End));
 
 			return IsPlayerInCheck(resultingBoard, moverSide);
 		}
 
-		private static bool IsTotalValidMovesZero(Board board, Side side) {
-			int sumOfValidMoves = 0;
+		private static bool PlayerHasNoLegalMoves(Side player, Board board) {
+			int sumOfLegalMoves = 0;
 
-			foreach (Piece p in board.BasePieceList.OfType<Piece>().ToList().FindAll(p => p.PieceOwner == side))
-				sumOfValidMoves += p.ValidMoves.Count;
+			for (int file = 1; file <= 8; file++) {
+				for (int rank = 1; rank <= 8; rank++) {
+					Piece piece = board[file, rank];
+					if (piece != null && piece.Color == player) sumOfLegalMoves += piece.LegalMoves.Count;;
+				}
+			}
 
-			return sumOfValidMoves == 0;
+			return sumOfLegalMoves == 0;
 		}
 
 		private static bool IsKingInCheck(Board board, King king) => IsCheckedRoseDirections(board, king) || IsCheckedKnightDirections(board, king);
@@ -61,13 +58,13 @@ namespace UnityChess {
 
 					Square testSquare = new Square(king.Position, fileOffset, rankOffset);
 
-					while (testSquare.IsValid() && !testSquare.IsOccupiedBySide(board, king.PieceOwner)) {
-						if (testSquare.IsOccupiedBySide(board, king.PieceOwner.Complement())) {
-							Piece piece = board.GetPiece(testSquare);
+					while (testSquare.IsValid() && !testSquare.IsOccupiedBySide(board, king.Color)) {
+						if (testSquare.IsOccupiedBySide(board, king.Color.Complement())) {
+							Piece piece = board[testSquare];
 
 							//diagonal direction
 							if (Math.Abs(fileOffset) == Math.Abs(rankOffset)) {
-								if (piece is Bishop || piece is Queen || testSquare.Rank == king.Position.Rank + (king.PieceOwner == Side.White ? 1 : -1)
+								if (piece is Bishop || piece is Queen || testSquare.Rank == king.Position.Rank + (king.Color == Side.White ? 1 : -1)
 								    && (testSquare.File == king.Position.File + 1 || testSquare.File == king.Position.File - 1)
 								    && piece is Pawn) {
 									return true;
@@ -107,7 +104,7 @@ namespace UnityChess {
 				foreach (int rankOffset in knightRankOffset) {
 					Square testSquare = new Square(king.Position, fileOffset, rankOffset);
 
-					if (testSquare.IsValid() && testSquare.IsOccupiedBySide(board, king.PieceOwner.Complement()) && board.GetPiece(testSquare) is Knight)
+					if (testSquare.IsValid() && testSquare.IsOccupiedBySide(board, king.Color.Complement()) && board[testSquare] is Knight)
 						return true;
 				}
 			}
@@ -123,7 +120,7 @@ namespace UnityChess {
 					Square testSquare = new Square(king.Position, fileOffset, rankOffset);
 
 					if (testSquare.IsValid()) {
-						if ((fileOffset == 1 || fileOffset == -1) && rankOffset == (king.PieceOwner == Side.White ? 1 : -1))
+						if ((fileOffset == 1 || fileOffset == -1) && rankOffset == (king.Color == Side.White ? 1 : -1))
 							pawnAttackingSquares.Add(new Square(testSquare));
 						surroundingSquares.Add(new Square(testSquare));
 					}
