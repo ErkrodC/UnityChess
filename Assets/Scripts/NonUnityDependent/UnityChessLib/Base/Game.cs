@@ -28,11 +28,11 @@ namespace UnityChess {
 		/// <summary>Executes passed move and switches sides; also adds move to history.</summary>
 		public void ExecuteTurn(Movement move) {
 			//create new copy of previous current board, and execute the move on it
+			PreviousMoves.AddLast(new Turn(latestBoard.GetPiece(move.Start), move));
 			Board resultingBoard = new Board(latestBoard);
 			resultingBoard.MovePiece(move);
 
 			BoardList.AddLast(resultingBoard);
-			PreviousMoves.AddLast(new Turn(latestBoard.GetPiece(move.Start), move));
 			UpdateAllPiecesValidMoves(resultingBoard, PreviousMoves, CurrentTurnSide);
 
 			TurnCount++;

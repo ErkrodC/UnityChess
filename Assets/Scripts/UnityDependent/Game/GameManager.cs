@@ -7,12 +7,15 @@ using UnityEngine;
 public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public Game Game;
 	public Queue<Movement> MoveQueue;
-	[SerializeField] private GameEvent NewGameStarted;
-	[SerializeField] private PromotionUI promotionUI;
+	[SerializeField] private GameEvent NewGameStartedEvent;
+	[SerializeField] private GameEvent GameEndedEvent;
 	[SerializeField] private UnityChessDebug unityChessDebug;
 	public Piece[] CurrentPieces => Game.BoardList.Last.Value.BasePieceList.OfType<Piece>().ToArray();
 	public Board CurrentBoard => Game.BoardList.Last.Value;
 	public LinkedList<Turn> PreviousMoves => Game.PreviousMoves;
+	[HideInInspector] public bool checkmated;
+	[HideInInspector] public bool stalemated;
+	[HideInInspector] public bool @checked;
 	
 	public void Start() {
 		MoveQueue = new Queue<Movement>();
@@ -27,7 +30,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 
 	public void StartNewGame(Mode mode) {
 		Game = new Game(mode);
-		NewGameStarted.Raise();
+		NewGameStartedEvent.Raise();
 	}
 
 	public void OnPieceMoved() {
@@ -35,10 +38,9 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 
 		if (move is SpecialMove specialMove) {
 			HandleSpecialMoveExecution(specialMove);
-			return;
+		} else {
+			ExecuteTurn(move);
 		}
-			
-		Game.ExecuteTurn(move);
 	}
 
 	private async void HandleSpecialMoveExecution(SpecialMove specialMove) {
@@ -47,23 +49,39 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				BoardManager.Instance.CastleRook(castlingMove.AssociatedPiece.Position);
 				break;
 			case EnPassantMove enPassantMove:
+				BoardManager.Instance.DestroyPieceAtPosition(specialMove.AssociatedPiece.Position);
 				break;
 			case PromotionMove promotionMove:
-				promotionUI.ActivateUI();
+				UIManager.Instance.ActivatePromotionUI();
 				BoardManager.Instance.DisableAllPieces();
 				
-				Task<ElectedPiece> getUserChoiceTask = new Task<ElectedPiece>(promotionUI.GetUserSelection);
+				Task<ElectedPiece> getUserChoiceTask = new Task<ElectedPiece>(UIManager.Instance.GetUserPromotionPieceChoice);
 				getUserChoiceTask.Start();
 				ElectedPiece choice = await getUserChoiceTask;
 				promotionMove.AssociatedPiece = PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, Game.CurrentTurnSide);
 				BoardManager.Instance.DestroyPieceAtPosition(promotionMove.End);
 				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.AssociatedPiece);
 				
-				promotionUI.DeactivateUI();
+				UIManager.Instance.DeactivatePromotionUI();
 				BoardManager.Instance.EnableAllPieces();
 				break;
 		}
 		
-		Game.ExecuteTurn(specialMove);
+		ExecuteTurn(specialMove);
+	}
+
+	private void ExecuteTurn(Movement move) {
+		Game.ExecuteTurn(move);
+
+		Board currentBoard = CurrentBoard;
+		Side currentTurnSide = Game.CurrentTurnSide;
+		checkmated = Rules.IsPlayerCheckmated(currentBoard, currentTurnSide);
+		stalemated = Rules.IsPlayerStalemated(currentBoard, currentTurnSide);
+		@checked = Rules.IsPlayerInCheck(currentBoard, currentTurnSide);
+
+		if (checkmated || stalemated) {
+			BoardManager.Instance.DisableAllPieces();
+			GameEndedEvent.Raise();
+		}
 	}
 }

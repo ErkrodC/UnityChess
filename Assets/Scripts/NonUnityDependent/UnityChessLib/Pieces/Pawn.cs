@@ -70,12 +70,12 @@ namespace UnityChess {
 					if (testSquare.IsValid() && board.GetPiece(testSquare) is Pawn enemyLateralPawn && enemyLateralPawn.PieceOwner != PieceOwner) {
 						Piece lastMovedPiece = previousMoves.Last.Value.Piece;
 
-						// TODO verify Equals call works 
-						if (lastMovedPiece is Pawn pawn && Equals(pawn, enemyLateralPawn) && pawn.Position.Rank == (pawn.PieceOwner == Side.White ? 2 : 7)) {
-							EnPassantMove testMove = new EnPassantMove(Position, new Square(testSquare.Rank + (PieceOwner == Side.White ? 1 : -1)), enemyLateralPawn);
+						if (lastMovedPiece is Pawn pawn && pawn.ID == enemyLateralPawn.ID && pawn.Position.Rank == (pawn.PieceOwner == Side.White ? 2 : 7)) {
+							testSquare = new Square(testSquare, 0, PieceOwner == Side.White ? 1 : -1);
+							EnPassantMove testMove = new EnPassantMove(Position, testSquare, enemyLateralPawn);
 
 							if (Rules.MoveObeysRules(board, testMove, PieceOwner))
-								ValidMoves.Add(new EnPassantMove(Position, new Square(testSquare.Rank + (PieceOwner == Side.White ? 1 : -1)), enemyLateralPawn));
+								ValidMoves.Add(new EnPassantMove(Position, testSquare, enemyLateralPawn));
 						}
 					}
 				}
