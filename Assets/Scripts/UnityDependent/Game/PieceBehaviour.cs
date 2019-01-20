@@ -4,10 +4,12 @@ using UnityEngine;
 using static UnityChess.SquareUtil;
 
 public class PieceBehaviour : MonoBehaviour {
+	public Side PieceColor;
+	
+	private const float SquareCollisionRadius = 9f;
+	
 	[SerializeField] private GameEvent PieceMovedEvent;
 	private Camera boardCamera;
-
-	private const float SquareCollisionRadius = 9f;
 	private Square CurrentSquare => StringToSquare(transform.parent.name);
 	private Vector3 piecePositionSS;
 	private Vector2 mouseToPieceSS;

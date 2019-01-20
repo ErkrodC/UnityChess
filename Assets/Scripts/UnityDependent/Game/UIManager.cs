@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityChess;
+﻿using UnityChess;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +13,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	private bool userHasMadePromotionPieceChoice;
 	private ElectedPiece userPromotionPieceChoice = ElectedPiece.None;
 
-	private void Start() {
+	public void OnNewGameStarted() {
 		whiteTurnIndicator.enabled = true;
 		blackTurnIndicator.enabled = false;
 	}

@@ -91,6 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6380fa2984e0114fa9ccce22f8e273b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PieceColor: 0
   PieceMovedEvent: {fileID: 11400000, guid: d553e46b21b6dff4d9f6944a716e9691, type: 2}
 --- !u!135 &563021803
 SphereCollider:

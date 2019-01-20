@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public void Start() {
 		MoveQueue = new Queue<Movement>();
 #if GAME_TEST
-		StartNewGame(Mode.HvH);
+		StartNewGame(Mode.HumanVsHuman);
 #endif
 		
 #if DEBUG_VIEW
@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 #endif
 	}
 
+	public void StartNewGame(int mode) => StartNewGame((Mode) mode);
 	public void StartNewGame(Mode mode) {
 		Game = new Game(mode);
 		NewGameStartedEvent.Raise();
@@ -49,11 +50,11 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				BoardManager.Instance.CastleRook(castlingMove.AssociatedPiece.Position);
 				break;
 			case EnPassantMove enPassantMove:
-				BoardManager.Instance.DestroyPieceAtPosition(specialMove.AssociatedPiece.Position);
+				BoardManager.Instance.DestroyPieceAtPosition(enPassantMove.AssociatedPiece.Position);
 				break;
 			case PromotionMove promotionMove:
 				UIManager.Instance.ActivatePromotionUI();
-				BoardManager.Instance.DisableAllPieces();
+				BoardManager.Instance.SetActiveAllPieces(false);
 				
 				Task<ElectedPiece> getUserChoiceTask = new Task<ElectedPiece>(UIManager.Instance.GetUserPromotionPieceChoice);
 				getUserChoiceTask.Start();
@@ -63,7 +64,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.AssociatedPiece);
 				
 				UIManager.Instance.DeactivatePromotionUI();
-				BoardManager.Instance.EnableAllPieces();
+				BoardManager.Instance.SetActiveAllPieces(true);
 				break;
 		}
 		
@@ -80,8 +81,10 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		@checked = Rules.IsPlayerInCheck(currentBoard, currentTurnSide);
 
 		if (checkmated || stalemated) {
-			BoardManager.Instance.DisableAllPieces();
+			BoardManager.Instance.SetActiveAllPieces(false);
 			GameEndedEvent.Raise();
+		} else {
+			BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(Game.CurrentTurnSide);
 		}
 	}
 }

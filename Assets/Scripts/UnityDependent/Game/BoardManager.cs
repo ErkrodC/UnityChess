@@ -10,6 +10,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	private const float BoardPlaneSideLength = 14f; // measured from corner square center to corner square center, on same side.
 	private const float BoardPlaneSideHalfLength = BoardPlaneSideLength * 0.5f;
 	private const float BoardHeight = 1.6f;
+	private System.Random rng = new System.Random();
 
 	private void Start() {
 		positionMap = new Dictionary<Square, GameObject>(64);
@@ -29,9 +30,13 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		}
 	}
 
-	public void PopulateStartBoard() {
+	public void OnNewGameStarted() {
+		ClearBoard();
+		
 		foreach (Piece piece in GameManager.Instance.CurrentPieces)
 			CreateAndPlacePieceGO(piece);
+		
+		EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.Game.CurrentTurnSide);
 	}
 
 	public void CastleRook(Square rookPosition) {
@@ -60,7 +65,11 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 
 	public void CreateAndPlacePieceGO(Piece piece) {
 		string modelName = $"{piece.PieceOwner} {piece.GetType().Name}";
-		Instantiate(Resources.Load("PieceSets/Marble/" + modelName) as GameObject, positionMap[piece.Position].transform);
+		GameObject pieceGO = Instantiate(Resources.Load("PieceSets/Marble/" + modelName) as GameObject, positionMap[piece.Position].transform);
+
+		if (!(piece is Knight) && !(piece is King)) {
+			pieceGO.transform.Rotate(0f, (float) rng.NextDouble() * 360f, 0f);
+		}
 	}
 
 	public void GetSquareGOsWithinRadius(List<GameObject> squareGOs, Vector3 positionWS, float radius) {
@@ -71,17 +80,15 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		}
 	}
 
-	public void DisableAllPieces() {
-		foreach (GameObject squareGO in AllSquaresGO) {
-			PieceBehaviour pieceOnSquare = squareGO.GetComponentInChildren<PieceBehaviour>();
-			if (pieceOnSquare != null) pieceOnSquare.enabled = false;
-		}
+	public void SetActiveAllPieces(bool active) {
+		PieceBehaviour[] pieceBehaviours = GetComponentsInChildren<PieceBehaviour>(true);
+		foreach (PieceBehaviour pieceBehaviour in pieceBehaviours) pieceBehaviour.enabled = active;
 	}
 
-	public void EnableAllPieces() {
-		foreach (GameObject squareGO in AllSquaresGO) {
-			PieceBehaviour pieceOnSquare = squareGO.GetComponentInChildren<PieceBehaviour>(true);
-			if (pieceOnSquare != null) pieceOnSquare.enabled = true;
+	public void EnsureOnlyPiecesOfSideAreEnabled(Side side) {
+		PieceBehaviour[] pieceBehaviours = GetComponentsInChildren<PieceBehaviour>(true);
+		foreach (PieceBehaviour pieceBehaviour in pieceBehaviours) {
+			pieceBehaviour.enabled = pieceBehaviour.PieceColor == side;
 		}
 	}
 
@@ -94,6 +101,14 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	private static float FileOrRankToSidePosition(int index) {
 		float t = (index - 1) / 7f;
 		return Mathf.Lerp(-BoardPlaneSideHalfLength, BoardPlaneSideHalfLength, t);
+	}
+	
+	private void ClearBoard() {
+		PieceBehaviour[] pieceBehaviours = GetComponentsInChildren<PieceBehaviour>(true);
+
+		foreach (PieceBehaviour pieceBehaviour in pieceBehaviours) {
+			Destroy(pieceBehaviour.gameObject);
+		}
 	}
 	
 	private GameObject GetPieceGOAtPosition(Square position) {

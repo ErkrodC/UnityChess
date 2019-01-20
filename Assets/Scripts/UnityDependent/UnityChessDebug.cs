@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityChess;
+﻿using UnityChess;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +11,6 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 
 	private void Update() {
 		UpdateBoardDebugView(GameManager.Instance.CurrentBoard);
-		UpdateMoveHistoryDebugView(GameManager.Instance.PreviousMoves);
 	}
 
 	public static void ShowLegalMovesInLog(Piece piece) {
@@ -32,12 +30,5 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 				squareText.text = basePiece is Piece ? basePiece.ToString() : "";
 			}
 		}
-	}
-
-	private static void UpdateMoveHistoryDebugView(LinkedList<Turn> moveHistory) {
-		/*GameObject debugMoveHistory = GameManager.Instance.DebugView.transform.Find("MoveHistory").gameObject;
-		debugMoveHistory.SetActive(true);
-		
-		// TODO finish writing*/
 	}
 }

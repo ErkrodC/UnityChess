@@ -23,27 +23,27 @@ namespace UnityChess {
 		public LinkedList<Board> BoardList { get; }
 		public LinkedList<Turn> PreviousMoves { get; }
 
-		private Board latestBoard => BoardList.Last.Value;
+		private Board LatestBoard => BoardList.Last.Value;
 		
 		/// <summary>Executes passed move and switches sides; also adds move to history.</summary>
 		public void ExecuteTurn(Movement move) {
 			//create new copy of previous current board, and execute the move on it
-			PreviousMoves.AddLast(new Turn(latestBoard.GetPiece(move.Start), move));
-			Board resultingBoard = new Board(latestBoard);
+			PreviousMoves.AddLast(new Turn(LatestBoard.GetPiece(move.Start), move));
+			Board resultingBoard = new Board(LatestBoard);
 			resultingBoard.MovePiece(move);
 
 			BoardList.AddLast(resultingBoard);
-			UpdateAllPiecesValidMoves(resultingBoard, PreviousMoves, CurrentTurnSide);
 
 			TurnCount++;
 			CurrentTurnSide = CurrentTurnSide.Complement();
+			UpdateAllPiecesValidMoves(resultingBoard, PreviousMoves, CurrentTurnSide);
 		}
 
 		/// <summary>Checks whether a move is legal on a given board/turn.</summary>
 		/// <param name="baseMove">The base move used to search in the appropriate piece's ValidMovesList.</param>
 		/// <param name="foundValidMove">The move (potentially a special move) found in the pieces ValidMovesList that corresponds to the passed in baseMove</param>
 		public bool MoveIsLegal(Movement baseMove, out Movement foundValidMove) {
-			Piece movingPiece = latestBoard.GetPiece(baseMove.Start);
+			Piece movingPiece = LatestBoard.GetPiece(baseMove.Start);
 			if (movingPiece == null) {
 				foundValidMove = null;
 				return false;
@@ -54,9 +54,13 @@ namespace UnityChess {
 			return movingPiece.PieceOwner == CurrentTurnSide && actualMoveFound;
 		}
 
-		public static void UpdateAllPiecesValidMoves(Board board, LinkedList<Turn> previousMoves, Side turn) {
-			foreach (Piece piece in board.BasePieceList.OfType<Piece>())
-				piece.UpdateValidMoves(board, previousMoves);
+		private static void UpdateAllPiecesValidMoves(Board board, LinkedList<Turn> previousMoves, Side turn) {
+			foreach (BasePiece basePiece in board.BasePieceList) {
+				if (!(basePiece is Piece piece)) continue;
+				
+				if (piece.PieceOwner == turn) piece.UpdateValidMoves(board, previousMoves);
+				else piece.ValidMoves.Clear();
+			}
 		}
 	}
 }
