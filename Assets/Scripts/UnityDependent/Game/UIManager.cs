@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviourSingleton<UIManager> {
 	[SerializeField] private GameObject promotionUI = null;
 	[SerializeField] private Text resultText = null;
+	[SerializeField] private InputField GameStringInputField = null;
 	[SerializeField] private Image whiteTurnIndicator = null;
 	[SerializeField] private Image blackTurnIndicator = null;
 	[SerializeField] private GameObject moveHistoryContentParent = null;
@@ -31,6 +32,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	}
 
 	public void OnNewGameStarted() {
+		UpdateGameStringInputField();
 		ValidateIndicators();
 		
 		for (int i = 0; i < moveHistoryContentParent.transform.childCount; i++) {
@@ -43,22 +45,24 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	}
 
 	public void OnGameEnded() {
-		Turn latestTurn = GameManager.Instance.LatestTurn;
+		HalfMove latestHalfMove = GameManager.Instance.LatestHalfMove;
 
-		if (latestTurn.CausedCheckmate) resultText.text = $"{GameManager.Instance.Game.CurrentTurnSide.Complement()} Wins!";
-		else if (latestTurn.CausedStalemate) resultText.text = "Draw.";
+		if (latestHalfMove.CausedCheckmate) resultText.text = $"{GameManager.Instance.Game.CurrentTurnSide.Complement()} Wins!";
+		else if (latestHalfMove.CausedStalemate) resultText.text = "Draw.";
 
 		resultText.gameObject.SetActive(true);
 	}
 
 	public void OnPieceMoved() {
+		UpdateGameStringInputField();
 		whiteTurnIndicator.enabled = !whiteTurnIndicator.enabled;
 		blackTurnIndicator.enabled = !blackTurnIndicator.enabled;
 
-		AddMoveToHistory(GameManager.Instance.LatestTurn, GameManager.Instance.Game.CurrentTurnSide.Complement());
+		AddMoveToHistory(GameManager.Instance.LatestHalfMove, GameManager.Instance.Game.CurrentTurnSide.Complement());
 	}
 
 	public void OnGameResetToTurn() {
+		UpdateGameStringInputField();
 		moveUIs.HeadIndex = GameManager.Instance.Game.TurnCount / 2;
 		ValidateIndicators();
 	}
@@ -79,7 +83,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		userHasMadePromotionPieceChoice = true;
 	}
 
-	private void AddMoveToHistory(Turn latestTurn, Side latestTurnSide) {
+	private void AddMoveToHistory(HalfMove latestHalfMove, Side latestTurnSide) {
 		int turnCount = GameManager.Instance.Game.TurnCount;
 		if (moveUIs.HeadIndex < moveUIs.Count) {
 			List<MoveUI> poppedMoveUIs = moveUIs.PopRange(moveUIs.HeadIndex + 1, moveUIs.Count - (moveUIs.HeadIndex + 1));
@@ -89,7 +93,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		switch (latestTurnSide) {
 			case Side.Black:
 				MoveUI latestMoveUI = moveUIs.Last;
-				latestMoveUI.BlackMoveText.text = GetMoveText(latestTurn);
+				latestMoveUI.BlackMoveText.text = GetMoveText(latestHalfMove);
 				latestMoveUI.BlackMoveButton.enabled = true;
 				
 				break;
@@ -106,7 +110,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 				newMoveUI.TurnNumber = turnCount / 2 + 1;
 				if (newMoveUI.TurnNumber % 2 == 0) newMoveUI.SetAlternateColor(moveHistoryAlternateColorDarkenAmount);
 				newMoveUI.MoveNumberText.text = $"{newMoveUI.TurnNumber}.";
-				newMoveUI.WhiteMoveText.text = GetMoveText(latestTurn);
+				newMoveUI.WhiteMoveText.text = GetMoveText(latestHalfMove);
 				newMoveUI.BlackMoveText.text = "";
 				newMoveUI.BlackMoveButton.enabled = false;
 				newMoveUI.WhiteMoveButton.enabled = true;
@@ -116,31 +120,31 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		}
 	}
 
-	private static string GetMoveText(Turn turn) {
+	private static string GetMoveText(HalfMove halfMove) {
 		string moveText = "";
-		string captureText = turn.CapturedPiece ? "x" : "";
-		string suffix = turn.CausedCheckmate ? "#" :
-		                turn.CausedCheck     ? "+" : "";
-		switch (turn.Piece) {
+		string captureText = halfMove.CapturedPiece ? "x" : "";
+		string suffix = halfMove.CausedCheckmate ? "#" :
+		                halfMove.CausedCheck     ? "+" : "";
+		switch (halfMove.Piece) {
 			case Pawn _:
-				if (turn.CapturedPiece) moveText += $"{SquareUtil.FileIntToCharMap[turn.Move.Start.File]}x";
-				moveText += $"{SquareUtil.SquareToString(turn.Move.End)}{suffix}";
+				if (halfMove.CapturedPiece) moveText += $"{SquareUtil.FileIntToCharMap[halfMove.Move.Start.File]}x";
+				moveText += $"{SquareUtil.SquareToString(halfMove.Move.End)}{suffix}";
 				break;
 			case Knight _:
-				moveText += $"N{captureText}{SquareUtil.SquareToString(turn.Move.End)}{suffix}";
+				moveText += $"N{captureText}{SquareUtil.SquareToString(halfMove.Move.End)}{suffix}";
 				break;
 			case Bishop _:
-				moveText += $"B{captureText}{SquareUtil.SquareToString(turn.Move.End)}{suffix}";
+				moveText += $"B{captureText}{SquareUtil.SquareToString(halfMove.Move.End)}{suffix}";
 				break;
 			case Rook _:
-				moveText += $"R{captureText}{SquareUtil.SquareToString(turn.Move.End)}{suffix}";
+				moveText += $"R{captureText}{SquareUtil.SquareToString(halfMove.Move.End)}{suffix}";
 				break;
 			case Queen _:
-				moveText += $"Q{captureText}{SquareUtil.SquareToString(turn.Move.End)}{suffix}";
+				moveText += $"Q{captureText}{SquareUtil.SquareToString(halfMove.Move.End)}{suffix}";
 				break;
 			case King _:
-				if (turn.Move is CastlingMove) moveText += turn.Move.End.File == 3 ? $"O-O-O{suffix}" : $"O-O{suffix}";
-				else moveText += $"K{captureText}{SquareUtil.SquareToString(turn.Move.End)}{suffix}";
+				if (halfMove.Move is CastlingMove) moveText += halfMove.Move.End.File == 3 ? $"O-O-O{suffix}" : $"O-O{suffix}";
+				else moveText += $"K{captureText}{SquareUtil.SquareToString(halfMove.Move.End)}{suffix}";
 				break;
 		}
 
@@ -151,5 +155,9 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		Side currentTurnSide = GameManager.Instance.Game.CurrentTurnSide;
 		whiteTurnIndicator.enabled = currentTurnSide == Side.White;
 		blackTurnIndicator.enabled = currentTurnSide == Side.Black;
+	}
+
+	private void UpdateGameStringInputField() {
+		GameStringInputField.text = GameManager.Instance.Export();
 	}
 }

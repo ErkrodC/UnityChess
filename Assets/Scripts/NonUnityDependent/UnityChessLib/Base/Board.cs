@@ -9,12 +9,12 @@ namespace UnityChess {
 		
 		public Piece this[Square position] {
 			get {
-				if (position.IsValid()) return boardMatrix[position.File - 1, position.Rank - 1];
+				if (position.IsValid) return boardMatrix[position.File - 1, position.Rank - 1];
 				throw new ArgumentOutOfRangeException($"Position was out of range: {position}");
 			}
 
 			set {
-				if (position.IsValid()) boardMatrix[position.File - 1, position.Rank - 1] = value;
+				if (position.IsValid) boardMatrix[position.File - 1, position.Rank - 1] = value;
 				else throw new ArgumentOutOfRangeException($"Position was out of range: {position}");
 			}
 		}

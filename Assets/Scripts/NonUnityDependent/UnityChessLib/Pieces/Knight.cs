@@ -13,7 +13,7 @@ namespace UnityChess {
 			ID = knightCopy.ID;
 		}
 
-		public override void UpdateValidMoves(Board board, History<Turn> previousMoves) {
+		public override void UpdateValidMoves(Board board, History<HalfMove> previousMoves) {
 			LegalMoves.Clear();
 			CheckKnightCircleSquares(board);
 		}
@@ -27,7 +27,7 @@ namespace UnityChess {
 					Movement testMove = new Movement(Position, testSquare);
 
 					Square enemyKingPosition = Color == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
-					if (testSquare.IsValid() && !testSquare.IsOccupiedBySide(board, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
+					if (testSquare.IsValid && !testSquare.IsOccupiedBySide(board, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
 						LegalMoves.Add(new Movement(testMove));
 				}
 			}

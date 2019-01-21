@@ -22,14 +22,17 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 			return currentPiecesBacking;
 		}
 	}
-	private readonly List<Piece> currentPiecesBacking = new List<Piece>(); 
+	private readonly List<Piece> currentPiecesBacking = new List<Piece>();
+	private IGameExporter exporter;
+	private GameConditions startingGameConditions;
 	
 	public Board CurrentBoard => Game.BoardHistory.Last;
-	public History<Turn> PreviousMoves => Game.PreviousMoves;
-	public Turn LatestTurn => PreviousMoves.Last;
+	public History<HalfMove> PreviousMoves => Game.PreviousMoves;
+	public HalfMove LatestHalfMove => PreviousMoves.Last;
 	
 	public void Start() {
 		MoveQueue = new Queue<Movement>();
+		exporter = new FENExporter();
 #if GAME_TEST
 		StartNewGame(Mode.HumanVsHuman);
 #endif
@@ -42,6 +45,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public void StartNewGame(int mode) => StartNewGame((Mode) mode);
 	public void StartNewGame(Mode mode) {
 		Game = new Game(mode);
+		startingGameConditions = GameConditions.NormalStartingConditions;
 		NewGameStartedEvent.Raise();
 	}
 
@@ -54,6 +58,13 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 			ExecuteTurn(move);
 		}
 	}
+
+	public void ResetGameToTurn(int turnIndex) {
+		Game.ResetGameToTurn(turnIndex);
+		GameResetToTurnEvent.Raise();
+	}
+	
+	public string Export() => exporter.Export(CurrentBoard, PreviousMoves.GetCurrentBranch(), GameExporterUtil.GetEndingGameConditions(startingGameConditions, CurrentBoard, PreviousMoves.GetCurrentBranch()));
 
 	private async void HandleSpecialMoveExecution(SpecialMove specialMove) {
 		switch (specialMove) {
@@ -85,8 +96,8 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	private void ExecuteTurn(Movement move) {
 		Game.ExecuteTurn(move);
 
-		Turn latestTurn = LatestTurn;
-		if (latestTurn.CausedCheckmate || latestTurn.CausedStalemate) {
+		HalfMove latestHalfMove = LatestHalfMove;
+		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
 			BoardManager.Instance.SetActiveAllPieces(false);
 			GameEndedEvent.Raise();
 		} else {
@@ -94,8 +105,4 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		}
 	}
 
-	public void ResetGameToTurn(int turnIndex) {
-		Game.ResetGameToTurn(turnIndex);
-		GameResetToTurnEvent.Raise();
-	}
 }

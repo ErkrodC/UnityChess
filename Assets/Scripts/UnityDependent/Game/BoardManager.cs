@@ -45,8 +45,8 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		foreach (Piece piece in GameManager.Instance.CurrentPieces)
 			CreateAndPlacePieceGO(piece);
 
-		Turn latestTurn = GameManager.Instance.LatestTurn;
-		if (latestTurn.CausedCheckmate || latestTurn.CausedStalemate) SetActiveAllPieces(false);
+		HalfMove latestHalfMove = GameManager.Instance.LatestHalfMove;
+		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) SetActiveAllPieces(false);
 		else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.Game.CurrentTurnSide);
 	}
 

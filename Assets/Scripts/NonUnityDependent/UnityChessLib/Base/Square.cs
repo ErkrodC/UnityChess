@@ -3,6 +3,7 @@
 	public struct Square {
 		public readonly int File;
 		public readonly int Rank;
+		internal bool IsValid => 1 <= File && File <= 8 && 1 <= Rank && Rank <= 8;
 
 		/// <summary>Creates a new Square instance.</summary>
 		/// <param name="file">Column of the square.</param>
@@ -16,9 +17,7 @@
 			File = startPosition.File + fileOffset;
 			Rank = startPosition.Rank + rankOffset;
 		}
-
-		/// <summary>Checks if this Square is on the 8x8 center of a 120-length board array.</summary>
-		internal bool IsValid() => 1 <= File && File <= 8 && 1 <= Rank && Rank <= 8;
+		
 
 		internal bool IsOccupied(Board board) => board[this] != null;
 
@@ -34,6 +33,8 @@
 		public static bool operator !=(Square lhs, Square rhs) => !(lhs == rhs);
 		
 		public bool Equals(Square other) => File == other.File && Rank == other.Rank;
+
+		public bool Equals(int file, int rank) => File == file && Rank == rank;
 
 		public override bool Equals(object obj) {
 			if (ReferenceEquals(null, obj)) return false;

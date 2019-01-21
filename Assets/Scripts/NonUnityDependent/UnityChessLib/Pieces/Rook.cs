@@ -13,7 +13,7 @@ namespace UnityChess {
 			ID = rookCopy.ID;
 		}
 
-		public override void UpdateValidMoves(Board board, History<Turn> previousMoves) {
+		public override void UpdateValidMoves(Board board, History<HalfMove> previousMoves) {
 			LegalMoves.Clear();
 
 			CheckCardinalDirections(board);
@@ -25,7 +25,7 @@ namespace UnityChess {
 					Square testSquare = new Square(Position, fileOffset, rankOffset);
 					Movement testMove = new Movement(Position, testSquare);
 
-					while (testSquare.IsValid()) {
+					while (testSquare.IsValid) {
 						Square enemyKingPosition = Color == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
 						if (testSquare.IsOccupied(board)) {
 							if (!testSquare.IsOccupiedBySide(board, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)

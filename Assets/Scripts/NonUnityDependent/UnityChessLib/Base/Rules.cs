@@ -58,7 +58,7 @@ namespace UnityChess {
 
 					Square testSquare = new Square(king.Position, fileOffset, rankOffset);
 
-					while (testSquare.IsValid() && !testSquare.IsOccupiedBySide(board, king.Color)) {
+					while (testSquare.IsValid && !testSquare.IsOccupiedBySide(board, king.Color)) {
 						if (testSquare.IsOccupiedBySide(board, king.Color.Complement())) {
 							Piece piece = board[testSquare];
 
@@ -104,7 +104,7 @@ namespace UnityChess {
 				foreach (int rankOffset in knightRankOffset) {
 					Square testSquare = new Square(king.Position, fileOffset, rankOffset);
 
-					if (testSquare.IsValid() && testSquare.IsOccupiedBySide(board, king.Color.Complement()) && board[testSquare] is Knight)
+					if (testSquare.IsValid && testSquare.IsOccupiedBySide(board, king.Color.Complement()) && board[testSquare] is Knight)
 						return true;
 				}
 			}
@@ -119,7 +119,7 @@ namespace UnityChess {
 
 					Square testSquare = new Square(king.Position, fileOffset, rankOffset);
 
-					if (testSquare.IsValid()) {
+					if (testSquare.IsValid) {
 						if ((fileOffset == 1 || fileOffset == -1) && rankOffset == (king.Color == Side.White ? 1 : -1))
 							pawnAttackingSquares.Add(testSquare);
 						surroundingSquares.Add(testSquare);

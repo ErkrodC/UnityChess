@@ -35,5 +35,9 @@ namespace UnityChess {
 			list.RemoveRange(index, count);
 			return elementRange;
 		}
+
+		public List<T> GetCurrentBranch() => list.GetRange(0, headIndex + 1);
+
+		public T this[int i] => list[i];
 	}
 }

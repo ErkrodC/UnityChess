@@ -11,7 +11,7 @@ namespace UnityChess {
 			Mode = mode;
 			BoardHistory = new History<Board>();
 			BoardHistory.AddLast(new Board());
-			PreviousMoves = new History<Turn>();
+			PreviousMoves = new History<HalfMove>();
 
 			UpdateAllPiecesValidMoves(BoardHistory.Last, PreviousMoves, Side.White);
 		}
@@ -20,7 +20,7 @@ namespace UnityChess {
 		public int TurnCount { get; private set; }
 		public Mode Mode { get; }
 		public History<Board> BoardHistory { get; }
-		public History<Turn> PreviousMoves { get; }
+		public History<HalfMove> PreviousMoves { get; }
 
 		private Board LatestBoard => BoardHistory.Last;
 		
@@ -40,7 +40,7 @@ namespace UnityChess {
 			bool causedCheckmate = Rules.IsPlayerCheckmated(resultingBoard, CurrentTurnSide);
 			bool causedStalemate = Rules.IsPlayerStalemated(resultingBoard, CurrentTurnSide);
 			bool causedCheck = Rules.IsPlayerInCheck(resultingBoard, CurrentTurnSide) && !causedCheckmate;
-			PreviousMoves.AddLast(new Turn(boardBeforeMove[move.Start], move, boardBeforeMove[move.End] != null, causedCheck, causedStalemate , causedCheckmate));
+			PreviousMoves.AddLast(new HalfMove(boardBeforeMove[move.Start], move, boardBeforeMove[move.End] != null, causedCheck, causedStalemate , causedCheckmate));
 		}
 
 		/// <summary>Checks whether a move is legal on a given board/turn.</summary>
@@ -58,7 +58,7 @@ namespace UnityChess {
 			return movingPiece.Color == CurrentTurnSide && actualMoveFound;
 		}
 
-		public static void UpdateAllPiecesValidMoves(Board board, History<Turn> previousMoves, Side turn) {
+		public static void UpdateAllPiecesValidMoves(Board board, History<HalfMove> previousMoves, Side turn) {
 			for (int file = 1; file <= 8; file++)
 				for (int rank = 1; rank <= 8; rank++) {
 					Piece piece = board[file, rank];
