@@ -14,7 +14,7 @@ namespace UnityChess {
 			ID = pawnCopy.ID;
 		}
 
-		public override void UpdateValidMoves(Board board, LinkedList<Turn> previousMoves) {
+		public override void UpdateValidMoves(Board board, History<Turn> previousMoves) {
 			LegalMoves.Clear();
 
 			CheckForwardMovingSquares(board);
@@ -57,13 +57,13 @@ namespace UnityChess {
 			}
 		}
 
-		private void CheckEnPassantCaptures(Board board, LinkedList<Turn> previousMoves) {
+		private void CheckEnPassantCaptures(Board board, History<Turn> previousMoves) {
 			if (Color == Side.White ? Position.Rank == 5 : Position.Rank == 4) {
 				foreach (int fileOffset in new[] {-1, 1}) {
 					Square testSquare = new Square(Position, fileOffset, 0);
 
 					if (testSquare.IsValid() && board[testSquare] is Pawn enemyLateralPawn && enemyLateralPawn.Color != Color) {
-						Piece lastMovedPiece = previousMoves.Last.Value.Piece;
+						Piece lastMovedPiece = previousMoves.Last.Piece;
 
 						if (lastMovedPiece is Pawn pawn && pawn.ID == enemyLateralPawn.ID && pawn.Position.Rank == (pawn.Color == Side.White ? 2 : 7)) {
 							testSquare = new Square(testSquare, 0, Color == Side.White ? 1 : -1);

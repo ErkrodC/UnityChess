@@ -12,7 +12,7 @@ namespace UnityChess {
 			ID = bishopCopy.ID;
 		}
 
-		public override void UpdateValidMoves(Board board, LinkedList<Turn> previousMoves) {
+		public override void UpdateValidMoves(Board board, History<Turn> previousMoves) {
 			LegalMoves.Clear();
 			CheckDiagonalDirections(board);
 		}

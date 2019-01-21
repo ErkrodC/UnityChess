@@ -50,6 +50,8 @@ MonoBehaviour:
   NewGameStartedEvent: {fileID: 11400000, guid: 76828cd5e21f9b248b7b0498bc0e0880,
     type: 2}
   GameEndedEvent: {fileID: 11400000, guid: ef4aeb8b310afa945af768ce9a7d6a12, type: 2}
+  GameResetToTurnEvent: {fileID: 11400000, guid: 41789bf0676e7b945a3207aa0c10d8dd,
+    type: 2}
   unityChessDebug: {fileID: 608673176574255946}
   checkmated: 0
   stalemated: 0
@@ -150,15 +152,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7811870819948904897, guid: 83c7966038655f8408d2785254c8ed6b,
-        type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 7463109368315077787}
-    - target: {fileID: 1488521136, guid: 83c7966038655f8408d2785254c8ed6b, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 7463109367895200373}
     - target: {fileID: 3512658219551115803, guid: 83c7966038655f8408d2785254c8ed6b,
         type: 3}
       propertyPath: m_Name
@@ -167,8 +160,22 @@ PrefabInstance:
     - target: {fileID: 6262899371300633159, guid: 83c7966038655f8408d2785254c8ed6b,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00000338804
+      value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7811870819948904897, guid: 83c7966038655f8408d2785254c8ed6b,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 7463109368315077787}
+    - target: {fileID: 5323469260843955982, guid: 83c7966038655f8408d2785254c8ed6b,
+        type: 3}
+      propertyPath: m_Spacing
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1488521136, guid: 83c7966038655f8408d2785254c8ed6b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 7463109367895200373}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 83c7966038655f8408d2785254c8ed6b, type: 3}
 --- !u!4 &226956901521888357 stripped

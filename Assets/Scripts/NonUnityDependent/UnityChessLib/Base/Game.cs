@@ -9,20 +9,20 @@ namespace UnityChess {
 			CurrentTurnSide = Side.White;
 			TurnCount = 0;
 			Mode = mode;
-			BoardList = new LinkedList<Board>();
-			BoardList.AddLast(new Board());
-			PreviousMoves = new LinkedList<Turn>();
+			BoardHistory = new History<Board>();
+			BoardHistory.AddLast(new Board());
+			PreviousMoves = new History<Turn>();
 
-			UpdateAllPiecesValidMoves(BoardList.Last.Value, PreviousMoves, Side.White);
+			UpdateAllPiecesValidMoves(BoardHistory.Last, PreviousMoves, Side.White);
 		}
 
 		public Side CurrentTurnSide { get; private set; }
-		public int TurnCount { get; set; }
+		public int TurnCount { get; private set; }
 		public Mode Mode { get; }
-		public LinkedList<Board> BoardList { get; }
-		public LinkedList<Turn> PreviousMoves { get; }
+		public History<Board> BoardHistory { get; }
+		public History<Turn> PreviousMoves { get; }
 
-		private Board LatestBoard => BoardList.Last.Value;
+		private Board LatestBoard => BoardHistory.Last;
 		
 		/// <summary>Executes passed move and switches sides; also adds move to history.</summary>
 		public void ExecuteTurn(Movement move) {
@@ -31,7 +31,7 @@ namespace UnityChess {
 			Board resultingBoard = new Board(LatestBoard);
 			resultingBoard.MovePiece(move);
 
-			BoardList.AddLast(resultingBoard);
+			BoardHistory.AddLast(resultingBoard);
 
 			TurnCount++;
 			CurrentTurnSide = CurrentTurnSide.Complement();
@@ -57,7 +57,7 @@ namespace UnityChess {
 			return movingPiece.Color == CurrentTurnSide && actualMoveFound;
 		}
 
-		public static void UpdateAllPiecesValidMoves(Board board, LinkedList<Turn> previousMoves, Side turn) {
+		public static void UpdateAllPiecesValidMoves(Board board, History<Turn> previousMoves, Side turn) {
 			for (int file = 1; file <= 8; file++)
 				for (int rank = 1; rank <= 8; rank++) {
 					Piece piece = board[file, rank];
@@ -66,6 +66,15 @@ namespace UnityChess {
 					if (piece.Color == turn) piece.UpdateValidMoves(board, previousMoves);
 					else piece.LegalMoves.Clear();
 				}
+		}
+
+		public void ResetGameToTurn(int turnIndex) {
+			BoardHistory.HeadIndex = turnIndex;
+			PreviousMoves.HeadIndex = turnIndex;
+			TurnCount = turnIndex;
+			CurrentTurnSide = TurnCount % 2 == 0 ? Side.White : Side.Black;
+			
+			UpdateAllPiecesValidMoves(BoardHistory.Last, PreviousMoves, CurrentTurnSide);
 		}
 	}
 }

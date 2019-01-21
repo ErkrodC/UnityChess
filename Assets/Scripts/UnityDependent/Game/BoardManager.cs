@@ -10,7 +10,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	private const float BoardPlaneSideLength = 14f; // measured from corner square center to corner square center, on same side.
 	private const float BoardPlaneSideHalfLength = BoardPlaneSideLength * 0.5f;
 	private const float BoardHeight = 1.6f;
-	private System.Random rng = new System.Random();
+	private readonly System.Random rng = new System.Random();
 
 	private void Start() {
 		positionMap = new Dictionary<Square, GameObject>(64);
@@ -37,6 +37,10 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 			CreateAndPlacePieceGO(piece);
 		
 		EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.Game.CurrentTurnSide);
+	}
+
+	public void OnGameResetToTurn() {
+		
 	}
 
 	public void CastleRook(Square rookPosition) {

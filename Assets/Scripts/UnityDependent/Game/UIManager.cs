@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityChess;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,6 +42,10 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		AddMoveToHistory(GameManager.Instance.LatestTurn, GameManager.Instance.Game.CurrentTurnSide.Complement());
 	}
 
+	public void OnGameResetToTurn() {
+		
+	}
+
 	public void ActivatePromotionUI() => promotionUI.gameObject.SetActive(true);
 
 	public void DeactivatePromotionUI() => promotionUI.gameObject.SetActive(false);
@@ -72,6 +75,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 				MoveUI newMoveUI = newMoveUIGO.GetComponent<MoveUI>();
 
 				newMoveUI.TurnNumber = GameManager.Instance.Game.TurnCount / 2 + 1;
+				if (newMoveUI.TurnNumber % 2 == 0) newMoveUI.SetAlternateColor();
 				newMoveUI.MoveNumberText.text = $"{newMoveUI.TurnNumber}.";
 				newMoveUI.WhiteMoveText.text = GetMoveText(latestTurn);
 				newMoveUI.WhiteMoveButton.enabled = true;

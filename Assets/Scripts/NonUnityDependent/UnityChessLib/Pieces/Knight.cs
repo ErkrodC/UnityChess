@@ -13,7 +13,7 @@ namespace UnityChess {
 			ID = knightCopy.ID;
 		}
 
-		public override void UpdateValidMoves(Board board, LinkedList<Turn> previousMoves) {
+		public override void UpdateValidMoves(Board board, History<Turn> previousMoves) {
 			LegalMoves.Clear();
 			CheckKnightCircleSquares(board);
 		}

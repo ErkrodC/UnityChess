@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public Queue<Movement> MoveQueue;
 	[SerializeField] private GameEvent NewGameStartedEvent = null;
 	[SerializeField] private GameEvent GameEndedEvent = null;
+	[SerializeField] private GameEvent GameResetToTurnEvent = null;
 	[SerializeField] private UnityChessDebug unityChessDebug = null;
 	public List<Piece> CurrentPieces {
 		get {
@@ -23,9 +24,9 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	}
 	private readonly List<Piece> currentPiecesBacking = new List<Piece>(); 
 	
-	public Board CurrentBoard => Game.BoardList.Last.Value;
-	public LinkedList<Turn> PreviousMoves => Game.PreviousMoves;
-	public Turn LatestTurn => PreviousMoves.Last.Value;
+	public Board CurrentBoard => Game.BoardHistory.Last;
+	public History<Turn> PreviousMoves => Game.PreviousMoves;
+	public Turn LatestTurn => PreviousMoves.Last;
 	[HideInInspector] public bool checkmated;
 	[HideInInspector] public bool stalemated;
 	[HideInInspector] public bool @checked;
@@ -99,5 +100,10 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		} else {
 			BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(Game.CurrentTurnSide);
 		}
+	}
+
+	public void ResetGameToTurn(int turnIndex) {
+		Game.ResetGameToTurn(turnIndex);
+		GameResetToTurnEvent.Raise();
 	}
 }
