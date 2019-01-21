@@ -40,7 +40,12 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	}
 
 	public void OnGameResetToTurn() {
-		
+		ClearBoard();
+
+		foreach (Piece piece in GameManager.Instance.CurrentPieces)
+			CreateAndPlacePieceGO(piece);
+
+		EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.Game.CurrentTurnSide);
 	}
 
 	public void CastleRook(Square rookPosition) {
@@ -71,9 +76,9 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		string modelName = $"{piece.Color} {piece.GetType().Name}";
 		GameObject pieceGO = Instantiate(Resources.Load("PieceSets/Marble/" + modelName) as GameObject, positionMap[piece.Position].transform);
 
-		if (!(piece is Knight) && !(piece is King)) {
+		/*if (!(piece is Knight) && !(piece is King)) {
 			pieceGO.transform.Rotate(0f, (float) rng.NextDouble() * 360f, 0f);
-		}
+		}*/
 	}
 
 	public void GetSquareGOsWithinRadius(List<GameObject> squareGOs, Vector3 positionWS, float radius) {

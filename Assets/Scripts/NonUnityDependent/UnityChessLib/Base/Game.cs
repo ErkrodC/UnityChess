@@ -69,10 +69,10 @@ namespace UnityChess {
 		}
 
 		public void ResetGameToTurn(int turnIndex) {
-			BoardHistory.HeadIndex = turnIndex;
+			BoardHistory.HeadIndex = turnIndex + 1;
 			PreviousMoves.HeadIndex = turnIndex;
 			TurnCount = turnIndex;
-			CurrentTurnSide = TurnCount % 2 == 0 ? Side.White : Side.Black;
+			CurrentTurnSide = TurnCount % 2 == 0 ? Side.Black : Side.White;
 			
 			UpdateAllPiecesValidMoves(BoardHistory.Last, PreviousMoves, CurrentTurnSide);
 		}

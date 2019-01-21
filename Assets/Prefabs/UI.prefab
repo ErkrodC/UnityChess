@@ -969,7 +969,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.00012207095}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5323469260843955982
@@ -1132,8 +1132,29 @@ MonoBehaviour:
   whiteTurnIndicator: {fileID: 6158984369930586804}
   blackTurnIndicator: {fileID: 6158984369810373482}
   moveHistoryContentParent: {fileID: 457300157029586714}
-  MoveUIPrefab: {fileID: 177856138113145977, guid: 4bd9242ea4e56ba4cac01c9dbabb2342,
+  moveUIPrefab: {fileID: 177856138113145977, guid: 4bd9242ea4e56ba4cac01c9dbabb2342,
     type: 3}
+  boardInfoTexts:
+  - {fileID: 6158984370140819588}
+  - {fileID: 6158984370639179013}
+  - {fileID: 6158984370720092036}
+  - {fileID: 6158984370351354124}
+  - {fileID: 6158984369896139785}
+  - {fileID: 6158984369834259170}
+  - {fileID: 6158984370643272960}
+  - {fileID: 6158984369496233033}
+  - {fileID: 6158984370288245353}
+  - {fileID: 6158984370243760304}
+  - {fileID: 6158984369585575812}
+  - {fileID: 6158984370364361514}
+  - {fileID: 6158984371142624072}
+  - {fileID: 6158984370228125569}
+  - {fileID: 6158984370416316237}
+  - {fileID: 6158984370757633982}
+  backgroundColor: {r: 0.39, g: 0.39, b: 0.39, a: 1}
+  textColor: {r: 1, g: 0.71, b: 0.18, a: 1}
+  buttonColorDarkenAmount: 0.09
+  moveHistoryAlternateColorDarkenAmount: 0.1
 --- !u!114 &7773827470898497300
 MonoBehaviour:
   m_ObjectHideFlags: 0

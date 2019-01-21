@@ -157,11 +157,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Camera Space
       objectReference: {fileID: 0}
-    - target: {fileID: 6262899371300633159, guid: 83c7966038655f8408d2785254c8ed6b,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7811870819948904897, guid: 83c7966038655f8408d2785254c8ed6b,
         type: 3}
       propertyPath: m_Camera

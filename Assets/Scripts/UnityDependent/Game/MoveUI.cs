@@ -16,17 +16,16 @@ public class MoveUI : MonoBehaviour {
 	public Image BlackAnalysisFillImage;
 
 	[Header("Colored Images")]
-	[SerializeField] private Image backgroundImage;
-	[SerializeField] private Image whiteMoveButtonImage;
-	[SerializeField] private Image blackMoveButtonImage;
+	public Image backgroundImage;
+	public Image whiteMoveButtonImage;
+	public Image blackMoveButtonImage;
 	
 	[HideInInspector] public int TurnNumber;
-	private const float AlternateColorDarkenDifference = 0.1f;
 
-	public void SetAlternateColor() {
+	public void SetAlternateColor(float darkenAmount) {
 		foreach (Image image in new []{ backgroundImage, whiteMoveButtonImage, blackMoveButtonImage }) {
 			Color lightColor = image.color;
-			image.color = new Color(lightColor.r - AlternateColorDarkenDifference, lightColor.g - AlternateColorDarkenDifference, lightColor.b - AlternateColorDarkenDifference);
+			image.color = new Color(lightColor.r - darkenAmount, lightColor.g - darkenAmount, lightColor.b - darkenAmount);
 		}
 	}
 
