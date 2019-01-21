@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviourSingleton<UIManager> {
 	[SerializeField] private GameObject promotionUI = null;
-	[SerializeField] private GameObject gameEndUI = null;
 	[SerializeField] private Text resultText = null;
 	[SerializeField] private Image whiteTurnIndicator = null;
 	[SerializeField] private Image blackTurnIndicator = null;
@@ -34,19 +33,22 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	public void OnNewGameStarted() {
 		ValidateIndicators();
 		
-		moveUIs.Clear();
 		for (int i = 0; i < moveHistoryContentParent.transform.childCount; i++) {
-			Destroy(moveHistoryContentParent.transform.GetChild(i));
+			Destroy(moveHistoryContentParent.transform.GetChild(i).gameObject);
 		}
+		
+		moveUIs.Clear();
+
+		resultText.gameObject.SetActive(false);
 	}
 
 	public void OnGameEnded() {
-		bool checkMated = GameManager.Instance.checkmated;
-		bool staleMated = GameManager.Instance.stalemated;
+		Turn latestTurn = GameManager.Instance.LatestTurn;
 
-		if (checkMated) resultText.text = $"{GameManager.Instance.Game.CurrentTurnSide.Complement()} Wins!";
-		else if (staleMated) resultText.text = "Draw.";
-		gameEndUI.SetActive(true);
+		if (latestTurn.CausedCheckmate) resultText.text = $"{GameManager.Instance.Game.CurrentTurnSide.Complement()} Wins!";
+		else if (latestTurn.CausedStalemate) resultText.text = "Draw.";
+
+		resultText.gameObject.SetActive(true);
 	}
 
 	public void OnPieceMoved() {

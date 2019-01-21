@@ -27,9 +27,6 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public Board CurrentBoard => Game.BoardHistory.Last;
 	public History<Turn> PreviousMoves => Game.PreviousMoves;
 	public Turn LatestTurn => PreviousMoves.Last;
-	[HideInInspector] public bool checkmated;
-	[HideInInspector] public bool stalemated;
-	[HideInInspector] public bool @checked;
 	
 	public void Start() {
 		MoveQueue = new Queue<Movement>();
@@ -88,13 +85,8 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	private void ExecuteTurn(Movement move) {
 		Game.ExecuteTurn(move);
 
-		Board currentBoard = CurrentBoard;
-		Side currentTurnSide = Game.CurrentTurnSide;
-		checkmated = Rules.IsPlayerCheckmated(currentBoard, currentTurnSide);
-		stalemated = Rules.IsPlayerStalemated(currentBoard, currentTurnSide);
-		@checked = Rules.IsPlayerInCheck(currentBoard, currentTurnSide);
-
-		if (checkmated || stalemated) {
+		Turn latestTurn = LatestTurn;
+		if (latestTurn.CausedCheckmate || latestTurn.CausedStalemate) {
 			BoardManager.Instance.SetActiveAllPieces(false);
 			GameEndedEvent.Raise();
 		} else {

@@ -45,7 +45,9 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		foreach (Piece piece in GameManager.Instance.CurrentPieces)
 			CreateAndPlacePieceGO(piece);
 
-		EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.Game.CurrentTurnSide);
+		Turn latestTurn = GameManager.Instance.LatestTurn;
+		if (latestTurn.CausedCheckmate || latestTurn.CausedStalemate) SetActiveAllPieces(false);
+		else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.Game.CurrentTurnSide);
 	}
 
 	public void CastleRook(Square rookPosition) {
@@ -97,7 +99,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	public void EnsureOnlyPiecesOfSideAreEnabled(Side side) {
 		PieceBehaviour[] pieceBehaviours = GetComponentsInChildren<PieceBehaviour>(true);
 		foreach (PieceBehaviour pieceBehaviour in pieceBehaviours) {
-			pieceBehaviour.enabled = pieceBehaviour.PieceColor == side;
+			pieceBehaviour.enabled = pieceBehaviour.PieceColor == side && GameManager.Instance.CurrentBoard[pieceBehaviour.CurrentSquare].LegalMoves.Count > 0;
 		}
 	}
 
@@ -116,7 +118,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		PieceBehaviour[] pieceBehaviours = GetComponentsInChildren<PieceBehaviour>(true);
 
 		foreach (PieceBehaviour pieceBehaviour in pieceBehaviours) {
-			Destroy(pieceBehaviour.gameObject);
+			DestroyImmediate(pieceBehaviour.gameObject);
 		}
 	}
 	

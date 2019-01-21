@@ -38,8 +38,9 @@ namespace UnityChess {
 			UpdateAllPiecesValidMoves(resultingBoard, PreviousMoves, CurrentTurnSide);
 			
 			bool causedCheckmate = Rules.IsPlayerCheckmated(resultingBoard, CurrentTurnSide);
-			bool causedCheck = Rules.IsPlayerInCheck(resultingBoard, CurrentTurnSide);
-			PreviousMoves.AddLast(new Turn(boardBeforeMove[move.Start], move, boardBeforeMove[move.End] != null, causedCheck && !causedCheckmate, causedCheckmate));
+			bool causedStalemate = Rules.IsPlayerStalemated(resultingBoard, CurrentTurnSide);
+			bool causedCheck = Rules.IsPlayerInCheck(resultingBoard, CurrentTurnSide) && !causedCheckmate;
+			PreviousMoves.AddLast(new Turn(boardBeforeMove[move.Start], move, boardBeforeMove[move.End] != null, causedCheck, causedStalemate , causedCheckmate));
 		}
 
 		/// <summary>Checks whether a move is legal on a given board/turn.</summary>
