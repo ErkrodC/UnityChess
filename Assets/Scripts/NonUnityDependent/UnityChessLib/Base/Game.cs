@@ -27,7 +27,7 @@ namespace UnityChess {
 		/// <summary>Executes passed move and switches sides; also adds move to history.</summary>
 		public void ExecuteTurn(Movement move) {
 			//create new copy of previous current board, and execute the move on it
-			PreviousMoves.AddLast(new Turn(LatestBoard[move.Start], move));
+			Board boardBeforeMove = LatestBoard;
 			Board resultingBoard = new Board(LatestBoard);
 			resultingBoard.MovePiece(move);
 
@@ -36,6 +36,10 @@ namespace UnityChess {
 			TurnCount++;
 			CurrentTurnSide = CurrentTurnSide.Complement();
 			UpdateAllPiecesValidMoves(resultingBoard, PreviousMoves, CurrentTurnSide);
+			
+			bool causedCheckmate = Rules.IsPlayerCheckmated(resultingBoard, CurrentTurnSide);
+			bool causedCheck = Rules.IsPlayerInCheck(resultingBoard, CurrentTurnSide);
+			PreviousMoves.AddLast(new Turn(boardBeforeMove[move.Start], move, boardBeforeMove[move.End] != null, causedCheck && !causedCheckmate, causedCheckmate));
 		}
 
 		/// <summary>Checks whether a move is legal on a given board/turn.</summary>

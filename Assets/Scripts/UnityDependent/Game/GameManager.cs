@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	
 	public Board CurrentBoard => Game.BoardList.Last.Value;
 	public LinkedList<Turn> PreviousMoves => Game.PreviousMoves;
+	public Turn LatestTurn => PreviousMoves.Last.Value;
 	[HideInInspector] public bool checkmated;
 	[HideInInspector] public bool stalemated;
 	[HideInInspector] public bool @checked;

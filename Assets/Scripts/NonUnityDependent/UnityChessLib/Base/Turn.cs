@@ -1,11 +1,17 @@
 ﻿namespace UnityChess {
 	public struct Turn {
 		public readonly Piece Piece;
-		public readonly Movement Movement;
+		public readonly Movement Move;
+		public readonly bool CapturedPiece;
+		public readonly bool CausedCheck;
+		public readonly bool CausedCheckmate;
 
-		public Turn(Piece piece, Movement movement) {
+		public Turn(Piece piece, Movement move, bool capturedPiece, bool causedCheck, bool causedCheckmate) {
 			Piece = piece;
-			Movement = movement;
+			Move = move;
+			CapturedPiece = capturedPiece;
+			CausedCheck = causedCheck;
+			CausedCheckmate = causedCheckmate;
 		}
 	}
 }
