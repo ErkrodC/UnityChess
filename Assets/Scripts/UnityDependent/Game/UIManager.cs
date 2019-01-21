@@ -47,7 +47,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	public void OnGameEnded() {
 		HalfMove latestHalfMove = GameManager.Instance.LatestHalfMove;
 
-		if (latestHalfMove.CausedCheckmate) resultText.text = $"{GameManager.Instance.Game.CurrentTurnSide.Complement()} Wins!";
+		if (latestHalfMove.CausedCheckmate) resultText.text = $"{latestHalfMove.Piece.Color} Wins!";
 		else if (latestHalfMove.CausedStalemate) resultText.text = "Draw.";
 
 		resultText.gameObject.SetActive(true);
@@ -85,7 +85,8 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	private void AddMoveToHistory(HalfMove latestHalfMove, Side latestTurnSide) {
 		int turnCount = GameManager.Instance.Game.TurnCount;
-		if (moveUIs.HeadIndex < moveUIs.Count) {
+		if (moveUIs.HeadIndex + 1 < moveUIs.Count) {
+			resultText.gameObject.SetActive(false);
 			List<MoveUI> poppedMoveUIs = moveUIs.PopRange(moveUIs.HeadIndex + 1, moveUIs.Count - (moveUIs.HeadIndex + 1));
 			foreach (MoveUI poppedMoveUI in poppedMoveUIs) Destroy(poppedMoveUI.gameObject);
 		}
