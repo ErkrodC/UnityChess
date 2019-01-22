@@ -1,26 +1,27 @@
-﻿using System.Collections.Generic;
-
-namespace UnityChess {
+﻿namespace UnityChess {
 	/// <summary>Representation of a standard chess game including a history of moves made.</summary>
 	public class Game {
-		/// <summary>Creates a Game instance of a given mode with a standard starting Board.</summary>
-		/// <param name="mode">Describes which players are human or AI.</param>
-		public Game(Mode mode) {
-			CurrentTurnSide = Side.White;
-			TurnCount = 0;
-			Mode = mode;
-			BoardHistory = new History<Board>();
-			BoardHistory.AddLast(new Board());
-			PreviousMoves = new History<HalfMove>();
-
-			UpdateAllPiecesValidMoves(BoardHistory.Last, PreviousMoves, Side.White);
-		}
-
+		public Mode Mode { get; }
 		public Side CurrentTurnSide { get; private set; }
 		public int TurnCount { get; private set; }
-		public Mode Mode { get; }
+		public GameConditions StartingConditions { get; }
 		public History<Board> BoardHistory { get; }
 		public History<HalfMove> PreviousMoves { get; }
+
+		/// <summary>Creates a Game instance of a given mode with a standard starting Board.</summary>
+		/// <param name="mode">Describes which players are human or AI.</param>
+		/// <param name="startingConditions">Conditions at the time the board was set up.</param>
+		public Game(Mode mode, GameConditions startingConditions) {
+			Mode = mode;
+			CurrentTurnSide = Side.White;
+			TurnCount = 0;
+			StartingConditions = startingConditions;
+			BoardHistory = new History<Board>();
+			PreviousMoves = new History<HalfMove>();
+
+			BoardHistory.AddLast(new Board());
+			UpdateAllPiecesValidMoves(BoardHistory.Last, PreviousMoves, Side.White);
+		}
 
 		private Board LatestBoard => BoardHistory.Last;
 		
@@ -45,16 +46,16 @@ namespace UnityChess {
 
 		/// <summary>Checks whether a move is legal on a given board/turn.</summary>
 		/// <param name="baseMove">The base move used to search in the appropriate piece's ValidMovesList.</param>
-		/// <param name="foundValidMove">The move (potentially a special move) found in the pieces ValidMovesList that corresponds to the passed in baseMove</param>
-		public bool MoveIsLegal(Movement baseMove, out Movement foundValidMove) {
+		/// <param name="foundLegalMove">The move (potentially a special move) found in the pieces ValidMovesList that corresponds to the passed in baseMove</param>
+		public bool MoveIsLegal(Movement baseMove, out Movement foundLegalMove) {
 			Piece movingPiece = LatestBoard[baseMove.Start];
 			if (movingPiece == null) {
-				foundValidMove = null;
+				foundLegalMove = null;
 				return false;
 			}
 
 			bool actualMoveFound = movingPiece.LegalMoves.FindLegalMoveUsingBaseMove(baseMove, out Movement foundMove);
-			foundValidMove = foundMove;
+			foundLegalMove = foundMove;
 			return movingPiece.Color == CurrentTurnSide && actualMoveFound;
 		}
 

@@ -70,7 +70,7 @@ public class PieceBehaviour : MonoBehaviour {
 		Square closestSquare = StringToSquare(closestSquareTransform.name);
 		
 		Movement baseMove = new Movement(CurrentSquare, closestSquare);
-		if (GameManager.Instance.Game.MoveIsLegal(baseMove, out Movement foundValidMove)) {
+		if (GameManager.Instance.MoveIsLegal(baseMove, out Movement foundValidMove)) {
 			BoardManager.Instance.DestroyPieceAtPosition(closestSquare);
 			thisTransform.parent = closestSquareTransform;
 			thisTransform.position = closestSquareTransform.position;

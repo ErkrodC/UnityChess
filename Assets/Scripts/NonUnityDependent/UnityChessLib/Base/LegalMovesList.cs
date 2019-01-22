@@ -14,15 +14,15 @@ namespace UnityChess {
 		public void Clear() => list.Clear();
 		public LegalMovesList DeepCopy() => new LegalMovesList(list.ConvertAll(move => new Movement(move)));
 
-		internal bool FindLegalMoveUsingBaseMove(Movement baseMove, out Movement actualMove) {
+		internal bool FindLegalMoveUsingBaseMove(Movement baseMove, out Movement foundMove) {
 			foreach (Movement validMove in list) {
 				if (validMove.Start == baseMove.Start && validMove.End == baseMove.End) {
-					actualMove = validMove;
+					foundMove = validMove;
 					return true;
 				}
 			}
 
-			actualMove = null;
+			foundMove = null;
 			return false;
 		}
 		

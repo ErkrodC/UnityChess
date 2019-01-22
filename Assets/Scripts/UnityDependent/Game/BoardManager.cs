@@ -36,7 +36,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		foreach (Piece piece in GameManager.Instance.CurrentPieces)
 			CreateAndPlacePieceGO(piece);
 		
-		EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.Game.CurrentTurnSide);
+		EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.CurrentTurnSide);
 	}
 
 	public void OnGameResetToTurn() {
@@ -45,9 +45,9 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		foreach (Piece piece in GameManager.Instance.CurrentPieces)
 			CreateAndPlacePieceGO(piece);
 
-		HalfMove latestHalfMove = GameManager.Instance.LatestHalfMove;
+		HalfMove latestHalfMove = GameManager.Instance.PreviousMoves.Last;
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) SetActiveAllPieces(false);
-		else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.Game.CurrentTurnSide);
+		else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.CurrentTurnSide);
 	}
 
 	public void CastleRook(Square rookPosition) {

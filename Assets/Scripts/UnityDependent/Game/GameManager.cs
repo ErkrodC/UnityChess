@@ -4,8 +4,13 @@ using UnityChess;
 using UnityEngine;
 
 public class GameManager : MonoBehaviourSingleton<GameManager> {
-	public Game Game;
-	public Queue<Movement> MoveQueue;
+	public Board CurrentBoard => game.BoardHistory.Last;
+	public Side CurrentTurnSide => game.CurrentTurnSide;
+	public History<HalfMove> PreviousMoves => game.PreviousMoves;
+	public int TurnCount => game.TurnCount;
+	
+	public Queue<Movement> MoveQueue { get; private set; }
+	
 	[SerializeField] private GameEvent NewGameStartedEvent = null;
 	[SerializeField] private GameEvent GameEndedEvent = null;
 	[SerializeField] private GameEvent GameResetToTurnEvent = null;
@@ -23,16 +28,14 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		}
 	}
 	private readonly List<Piece> currentPiecesBacking = new List<Piece>();
-	private IGameExporter exporter;
-	private GameConditions startingGameConditions;
-	
-	public Board CurrentBoard => Game.BoardHistory.Last;
-	public History<HalfMove> PreviousMoves => Game.PreviousMoves;
-	public HalfMove LatestHalfMove => PreviousMoves.Last;
+	private FENInterchanger fenInterchanger;
+	private PGNInterchanger pgnInterchanger;
+	private Game game;
 	
 	public void Start() {
 		MoveQueue = new Queue<Movement>();
-		exporter = new FENExporter();
+		fenInterchanger = new FENInterchanger();
+		pgnInterchanger = new PGNInterchanger();
 #if GAME_TEST
 		StartNewGame(Mode.HumanVsHuman);
 #endif
@@ -44,8 +47,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 
 	public void StartNewGame(int mode) => StartNewGame((Mode) mode);
 	public void StartNewGame(Mode mode) {
-		Game = new Game(mode);
-		startingGameConditions = GameConditions.NormalStartingConditions;
+		game = new Game(mode, GameConditions.NormalStartingConditions);
 		NewGameStartedEvent.Raise();
 	}
 
@@ -60,11 +62,12 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	}
 
 	public void ResetGameToTurn(int turnIndex) {
-		Game.ResetGameToTurn(turnIndex);
+		game.ResetGameToTurn(turnIndex);
 		GameResetToTurnEvent.Raise();
 	}
 	
-	public string Export() => exporter.Export(CurrentBoard, PreviousMoves.GetCurrentBranch(), GameExporterUtil.GetEndingGameConditions(startingGameConditions, CurrentBoard, PreviousMoves.GetCurrentBranch()));
+	public string ExportToFEN() => fenInterchanger.Export(game);
+	public string ExportToPGN() => pgnInterchanger.Export(game);
 
 	private async void HandleSpecialMoveExecution(SpecialMove specialMove) {
 		switch (specialMove) {
@@ -81,7 +84,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				Task<ElectedPiece> getUserChoiceTask = new Task<ElectedPiece>(UIManager.Instance.GetUserPromotionPieceChoice);
 				getUserChoiceTask.Start();
 				ElectedPiece choice = await getUserChoiceTask;
-				promotionMove.AssociatedPiece = PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, Game.CurrentTurnSide);
+				promotionMove.AssociatedPiece = PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, game.CurrentTurnSide);
 				BoardManager.Instance.DestroyPieceAtPosition(promotionMove.End);
 				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.AssociatedPiece);
 				
@@ -94,15 +97,16 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	}
 
 	private void ExecuteTurn(Movement move) {
-		Game.ExecuteTurn(move);
+		game.ExecuteTurn(move);
 
-		HalfMove latestHalfMove = LatestHalfMove;
+		HalfMove latestHalfMove = PreviousMoves.Last;
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
 			BoardManager.Instance.SetActiveAllPieces(false);
 			GameEndedEvent.Raise();
 		} else {
-			BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(Game.CurrentTurnSide);
+			BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(game.CurrentTurnSide);
 		}
 	}
 
+	public bool MoveIsLegal(Movement baseMove, out Movement foundLegalMove) => game.MoveIsLegal(baseMove, out foundLegalMove);
 }
