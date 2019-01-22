@@ -2,7 +2,7 @@
 
 namespace UnityChess {
 	public struct GameConditions {
-		public static GameConditions NormalStartingConditions = new GameConditions(true, true, true, true, true, new Square(-1, -1), 0, 1);
+		public static GameConditions NormalStartingConditions = new GameConditions(true, true, true, true, true, Square.Invalid, 0, 1);
 		public readonly bool WhiteToMove;
 		public readonly bool WhiteCanCastleKingside;
 		public readonly bool WhiteCanCastleQueenside;
@@ -51,13 +51,12 @@ namespace UnityChess {
 				turnNumber += (movesFromStart.Count + 1) / 2;
 			}
 
-			Square enPassantSquare = new Square(-1, -1);
-
 			HalfMove lastHalfMove = movesFromStart[movesFromStart.Count - 1];
 			Side lastTurnPieceColor = lastHalfMove.Piece.Color;
 			int pawnStartingRank = lastTurnPieceColor == Side.White ? 2 : 7;
 			int pawnEndingRank = lastTurnPieceColor == Side.White ? 4 : 5;
 
+			Square enPassantSquare = Square.Invalid;
 			if (lastHalfMove.Piece is Pawn && lastHalfMove.Move.Start.Rank == pawnStartingRank && lastHalfMove.Move.End.Rank == pawnEndingRank) {
 				int rankOffset = lastTurnPieceColor == Side.White ? -1 : 1;
 				enPassantSquare = new Square(lastHalfMove.Move.End, 0, rankOffset);

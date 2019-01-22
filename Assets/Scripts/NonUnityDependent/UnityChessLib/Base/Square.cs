@@ -1,6 +1,7 @@
 ﻿namespace UnityChess {
 	/// <summary>Representation of a square on a chessboard.</summary>
 	public struct Square {
+		public static readonly Square Invalid = new Square(-1, -1);
 		public readonly int File;
 		public readonly int Rank;
 		internal bool IsValid => 1 <= File && File <= 8 && 1 <= Rank && Rank <= 8;

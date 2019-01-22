@@ -13,7 +13,7 @@ namespace UnityChess {
 			ID = rookCopy.ID;
 		}
 
-		public override void UpdateValidMoves(Board board, History<HalfMove> previousMoves) {
+		public override void UpdateLegalMoves(Board board, Square enPassantEligibleSquare) {
 			LegalMoves.Clear();
 
 			CheckCardinalDirections(board);

@@ -12,7 +12,7 @@ namespace UnityChess {
 			ID = kingCopy.ID;
 		}
 
-		public override void UpdateValidMoves(Board board, History<HalfMove> previousMoves) {
+		public override void UpdateLegalMoves(Board board, Square enPassantEligibleSquare) {
 			LegalMoves.Clear();
 
 			CheckSurroundingSquares(board);

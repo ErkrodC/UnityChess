@@ -105,8 +105,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 
 	public void DestroyPieceAtPosition(Square position) {
 		PieceBehaviour pieceBehaviour = positionMap[position].GetComponentInChildren<PieceBehaviour>();
-		if (pieceBehaviour == null) return;
-		Destroy(pieceBehaviour.gameObject);
+		DestroyImmediate(pieceBehaviour.gameObject);
 	}
 	
 	private static float FileOrRankToSidePosition(int index) {

@@ -968,7 +968,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000023284822}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5323469260843955982
@@ -1421,10 +1421,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1616111626470204634}
   - component: {fileID: 6936444665825171844}
-  - component: {fileID: 7773827470898497300}
   - component: {fileID: 5562961940443843058}
   - component: {fileID: 866424012871018699}
   - component: {fileID: 5281013357309447389}
+  - component: {fileID: 347750283195604247}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -1489,35 +1489,6 @@ MonoBehaviour:
   textColor: {r: 1, g: 0.71, b: 0.18, a: 1}
   buttonColorDarkenAmount: 0.09
   moveHistoryAlternateColorDarkenAmount: 0.1
---- !u!114 &7773827470898497300
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4675755410782334039}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcb3c390421157f49970ebe5c6dade88, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Event: {fileID: 11400000, guid: d553e46b21b6dff4d9f6944a716e9691, type: 2}
-  Response:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 6936444665825171844}
-        m_MethodName: OnPieceMoved
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &5562961940443843058
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1594,6 +1565,35 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6936444665825171844}
         m_MethodName: OnGameResetToHalfMove
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &347750283195604247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4675755410782334039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcb3c390421157f49970ebe5c6dade88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: 0994079fda7012044984e04c9ae2c8ba, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6936444665825171844}
+        m_MethodName: OnMoveExecuted
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -26,7 +26,7 @@ namespace UnityChess {
 
 		public abstract Piece Clone();
 
-		public abstract void UpdateValidMoves(Board board, History<HalfMove> previousMoves);
+		public abstract void UpdateLegalMoves(Board board, Square enPassantEligibleSquare);
 
 		// override object.Equals
 		public override bool Equals(object obj) {

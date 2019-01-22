@@ -1,4 +1,7 @@
-﻿namespace UnityChess {
+﻿using System;
+using System.Collections.Generic;
+
+namespace UnityChess {
 	public struct HalfMove {
 		public readonly Piece Piece;
 		public readonly Movement Move;
@@ -6,6 +9,15 @@
 		public readonly bool CausedCheck;
 		public readonly bool CausedStalemate;
 		public readonly bool CausedCheckmate;
+		
+		private static readonly Dictionary<Type, string> pieceTypeToANSymbolMap = new Dictionary<Type, string> {
+			{ typeof(Pawn), "" },
+			{ typeof(Knight), "N" },
+			{ typeof(Bishop), "B" },
+			{ typeof(Rook), "R" },
+			{ typeof(Queen), "Q" },
+			{ typeof(King), "K" },		
+		};
 
 		public HalfMove(Piece piece, Movement move, bool capturedPiece, bool causedCheck, bool causedStalemate, bool causedCheckmate) {
 			Piece = piece;
@@ -16,32 +28,31 @@
 			CausedStalemate = causedStalemate;
 		}
 		
-		// TODO handle promotion and ambiguous piece moves.
+		// TODO handle ambiguous piece moves.
 		public string ToAlgebraicNotation() {
 			string moveText = "";
+			string pieceSymbol = Piece is Pawn ?
+				                     CapturedPiece ? SquareUtil.FileIntToCharMap[Move.Start.File] : "" :
+				                     pieceTypeToANSymbolMap[Piece.GetType()];
 			string captureText = CapturedPiece ? "x" : "";
+			string endSquareString = SquareUtil.SquareToString(Move.End);
 			string suffix = CausedCheckmate ? "#" :
 			                CausedCheck     ? "+" : "";
+			
 			switch (Piece) {
-				case Pawn _:
-					if (CapturedPiece) moveText += $"{SquareUtil.FileIntToCharMap[Move.Start.File]}x";
-					moveText += $"{SquareUtil.SquareToString(Move.End)}{suffix}";
-					break;
-				case Knight _:
-					moveText += $"N{captureText}{SquareUtil.SquareToString(Move.End)}{suffix}";
-					break;
-				case Bishop _:
-					moveText += $"B{captureText}{SquareUtil.SquareToString(Move.End)}{suffix}";
-					break;
-				case Rook _:
-					moveText += $"R{captureText}{SquareUtil.SquareToString(Move.End)}{suffix}";
-					break;
-				case Queen _:
-					moveText += $"Q{captureText}{SquareUtil.SquareToString(Move.End)}{suffix}";
-					break;
 				case King _:
 					if (Move is CastlingMove) moveText += Move.End.File == 3 ? $"O-O-O{suffix}" : $"O-O{suffix}";
-					else moveText += $"K{captureText}{SquareUtil.SquareToString(Move.End)}{suffix}";
+					else moveText += $"{pieceSymbol}{captureText}{endSquareString}{suffix}";
+					break;
+				case Pawn _:
+					string pawnPromotionPieceSymbol = Move is PromotionMove promotionMove ? pieceTypeToANSymbolMap[promotionMove.AssociatedPiece.GetType()] : "";
+					moveText += $"{pieceSymbol}{captureText}{endSquareString}{pawnPromotionPieceSymbol}{suffix}";
+					break;
+				case Knight _:
+				case Bishop _:
+				case Rook _:
+				case Queen _:
+					moveText += $"{pieceSymbol}{captureText}{endSquareString}{suffix}";
 					break;
 			}
 

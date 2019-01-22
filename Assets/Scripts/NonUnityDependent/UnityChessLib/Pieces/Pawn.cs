@@ -14,12 +14,12 @@ namespace UnityChess {
 			ID = pawnCopy.ID;
 		}
 
-		public override void UpdateValidMoves(Board board, History<HalfMove> previousMoves) {
+		public override void UpdateLegalMoves(Board board, Square enPassantEligibleSquare) {
 			LegalMoves.Clear();
 
 			CheckForwardMovingSquares(board);
 			CheckAttackingSquares(board);
-			CheckEnPassantCaptures(board, previousMoves);
+			CheckEnPassantCaptures(board, enPassantEligibleSquare);
 		}
 
 		private void CheckForwardMovingSquares(Board board) {
@@ -57,20 +57,18 @@ namespace UnityChess {
 			}
 		}
 
-		private void CheckEnPassantCaptures(Board board, History<HalfMove> previousMoves) {
+		private void CheckEnPassantCaptures(Board board, Square enPassantEligibleSquare) {
 			if (Color == Side.White ? Position.Rank == 5 : Position.Rank == 4) {
 				foreach (int fileOffset in new[] {-1, 1}) {
-					Square testSquare = new Square(Position, fileOffset, 0);
+					Square lateralSquare = new Square(Position, fileOffset, 0);
 
-					if (testSquare.IsValid && board[testSquare] is Pawn enemyLateralPawn && enemyLateralPawn.Color != Color) {
-						Piece lastMovedPiece = previousMoves.Last.Piece;
-
-						if (lastMovedPiece is Pawn pawn && pawn.ID == enemyLateralPawn.ID && pawn.Position.Rank == (pawn.Color == Side.White ? 2 : 7)) {
-							testSquare = new Square(testSquare, 0, Color == Side.White ? 1 : -1);
-							EnPassantMove testMove = new EnPassantMove(Position, testSquare, enemyLateralPawn);
+					if (lateralSquare.IsValid && board[lateralSquare] is Pawn enemyLateralPawn && enemyLateralPawn.Color != Color) {
+						Square squareToCheckWithEligibleSquare = new Square(enemyLateralPawn.Position, 0, enemyLateralPawn.Color == Side.White ? -1 : 1);
+						if (squareToCheckWithEligibleSquare.Equals(enPassantEligibleSquare)) {
+							EnPassantMove testMove = new EnPassantMove(Position, enPassantEligibleSquare, enemyLateralPawn);
 
 							if (Rules.MoveObeysRules(board, testMove, Color))
-								LegalMoves.Add(new EnPassantMove(Position, testSquare, enemyLateralPawn));
+								LegalMoves.Add(new EnPassantMove(Position, enPassantEligibleSquare, enemyLateralPawn));
 						}
 					}
 				}

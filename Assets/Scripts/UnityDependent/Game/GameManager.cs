@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	[SerializeField] private GameEvent NewGameStartedEvent = null;
 	[SerializeField] private GameEvent GameEndedEvent = null;
 	[SerializeField] private GameEvent GameResetToHalfMoveEvent = null;
+	[SerializeField] private GameEvent MoveExecutedEvent = null;
 	[SerializeField] private UnityChessDebug unityChessDebug = null;
 	public List<Piece> CurrentPieces {
 		get {
@@ -106,6 +107,8 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		} else {
 			BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(game.CurrentTurnSide);
 		}
+
+		MoveExecutedEvent.Raise();
 	}
 
 	public bool MoveIsLegal(Movement baseMove, out Movement foundLegalMove) => game.MoveIsLegal(baseMove, out foundLegalMove);

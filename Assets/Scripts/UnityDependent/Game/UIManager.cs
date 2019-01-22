@@ -53,7 +53,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		resultText.gameObject.SetActive(true);
 	}
 
-	public void OnPieceMoved() {
+	public void OnMoveExecuted() {
 		UpdateGameStringInputField();
 		whiteTurnIndicator.enabled = !whiteTurnIndicator.enabled;
 		blackTurnIndicator.enabled = !blackTurnIndicator.enabled;
