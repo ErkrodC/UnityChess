@@ -9,10 +9,9 @@ The project uses Git LFS, so you will need to install Git LFS on your machine. D
 
 Please follow the collaborative github workflow, well described [here](https://github.com/asmeurer/git-workflow/blob/master/README.md).
 
+The project is using the following version of Unity: [Unity 2018.3.1f1](https://unity3d.com/get-unity/download/archive)
 
-The project is using the following version of Unity:
-
-* [Unity 2018.3.1f1](https://unity3d.com/get-unity/download/archive) - A free to download game engine.
+It's recommended you use [Unity Hub](https://unity3d.com/get-unity/download) to manage Unity versions as it's likely the project will be upgraded as new versions come out.
 
 ### Installation
 
