@@ -4,12 +4,11 @@ using System.Collections.Generic;
 namespace UnityChess {
 	public class History<T> {
 		public T Last => list[headIndex];
-		public int Count => list.Count;
+		public bool IsUpToDate => headIndex == list.Count - 1;
+		public int HeadIndex { set => headIndex = Math.Min(value, list.Count - 1); }
 		
-		public int HeadIndex {
-			get => headIndex;
-			set => headIndex = Math.Min(value, list.Count - 1);
-		}
+		private int FutureElementsStartIndex => headIndex + 1;
+		private int NumFutureElements => list.Count - FutureElementsStartIndex;
 		
 		private int headIndex;
 		private readonly List<T> list;
@@ -18,26 +17,29 @@ namespace UnityChess {
 			headIndex = -1;
 			list = new List<T>();
 		}
+		
+		public List<T> GetCurrent() => list.GetRange(0, headIndex + 1);
+
+		public List<T> PopFuture() {
+			List<T> elementRange = list.GetRange(FutureElementsStartIndex, NumFutureElements);
+			list.RemoveRange(FutureElementsStartIndex, NumFutureElements);
+			return elementRange;
+		}
 
 		public void AddLast(T element) {
-			if (headIndex < list.Count - 1) list.RemoveRange(headIndex + 1, list.Count - 1 - headIndex);
+			Prune();
 			list.Add(element);
 			headIndex++;
 		}
 
+		private void Prune() {
+			if (IsUpToDate) return;
+			list.RemoveRange(FutureElementsStartIndex, NumFutureElements);
+		}
+		
 		public void Clear() {
 			list.Clear();
 			headIndex = -1;
 		}
-
-		public List<T> PopRange(int index, int count) {
-			List<T> elementRange = list.GetRange(index, count);
-			list.RemoveRange(index, count);
-			return elementRange;
-		}
-
-		public List<T> GetCurrentBranch() => list.GetRange(0, headIndex + 1);
-
-		public T this[int i] => list[i];
 	}
 }

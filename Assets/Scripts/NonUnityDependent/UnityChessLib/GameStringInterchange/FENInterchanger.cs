@@ -4,7 +4,7 @@ namespace UnityChess {
 	public class FENInterchanger : IGameStringInterchanger {
 		public string Export(Game game) {
 			Board currentBoard = game.BoardHistory.Last;
-			GameConditions endingConditions = game.StartingConditions.GetEndingGameConditions(currentBoard, game.PreviousMoves.GetCurrentBranch());
+			GameConditions endingConditions = game.StartingConditions.GetEndingGameConditions(currentBoard, game.PreviousMoves.GetCurrent());
 			
 			string[] rankStrings = new string[8];
 			for (int rank = 1; rank <= 8; rank++) {

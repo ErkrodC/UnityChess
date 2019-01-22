@@ -84,12 +84,8 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	}
 
 	private void AddMoveToHistory(HalfMove latestHalfMove, Side latestTurnSide) {
+		RemoveAlternateHistory();
 		int turnCount = GameManager.Instance.TurnCount;
-		if (moveUIs.HeadIndex + 1 < moveUIs.Count) {
-			resultText.gameObject.SetActive(false);
-			List<MoveUI> poppedMoveUIs = moveUIs.PopRange(moveUIs.HeadIndex + 1, moveUIs.Count - (moveUIs.HeadIndex + 1));
-			foreach (MoveUI poppedMoveUI in poppedMoveUIs) Destroy(poppedMoveUI.gameObject);
-		}
 		
 		switch (latestTurnSide) {
 			case Side.Black:
@@ -118,6 +114,14 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 				
 				moveUIs.AddLast(newMoveUI);
 				break;
+		}
+	}
+
+	private void RemoveAlternateHistory() {
+		if (!moveUIs.IsUpToDate) {
+			resultText.gameObject.SetActive(false);
+			List<MoveUI> alternateHistoryMoves = moveUIs.PopFuture();
+			foreach (MoveUI alternateHistoryMove in alternateHistoryMoves) Destroy(alternateHistoryMove.gameObject);
 		}
 	}
 
