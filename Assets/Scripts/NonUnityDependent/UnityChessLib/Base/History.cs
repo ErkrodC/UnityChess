@@ -5,8 +5,11 @@ namespace UnityChess {
 	public class History<T> {
 		public T Last => list[headIndex];
 		public bool IsUpToDate => headIndex == list.Count - 1;
-		public int HeadIndex { set => headIndex = Math.Min(value, list.Count - 1); }
-		
+		public int HeadIndex {
+			get => headIndex;
+			set => headIndex = Math.Min(value, list.Count - 1);
+		}
+
 		private int FutureElementsStartIndex => headIndex + 1;
 		private int NumFutureElements => list.Count - FutureElementsStartIndex;
 		

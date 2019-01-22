@@ -3,7 +3,7 @@
 	public class Game {
 		public Mode Mode { get; }
 		public Side CurrentTurnSide { get; private set; }
-		public int TurnCount { get; private set; }
+		public int HalfMoveCount => PreviousMoves.HeadIndex;
 		public GameConditions StartingConditions { get; }
 		public History<Board> BoardHistory { get; }
 		public History<HalfMove> PreviousMoves { get; }
@@ -14,7 +14,6 @@
 		public Game(Mode mode, GameConditions startingConditions) {
 			Mode = mode;
 			CurrentTurnSide = Side.White;
-			TurnCount = 0;
 			StartingConditions = startingConditions;
 			BoardHistory = new History<Board>();
 			PreviousMoves = new History<HalfMove>();
@@ -34,7 +33,6 @@
 
 			BoardHistory.AddLast(resultingBoard);
 
-			TurnCount++;
 			CurrentTurnSide = CurrentTurnSide.Complement();
 			UpdateAllPiecesValidMoves(resultingBoard, PreviousMoves, CurrentTurnSide);
 			
@@ -59,7 +57,15 @@
 			return movingPiece.Color == CurrentTurnSide && actualMoveFound;
 		}
 
-		public static void UpdateAllPiecesValidMoves(Board board, History<HalfMove> previousMoves, Side turn) {
+		public void ResetGameToTurn(int halfMoveIndex) {
+			BoardHistory.HeadIndex = halfMoveIndex + 1;
+			PreviousMoves.HeadIndex = halfMoveIndex;
+			CurrentTurnSide = halfMoveIndex % 2 == 0 ? Side.Black : Side.White;
+			
+			UpdateAllPiecesValidMoves(BoardHistory.Last, PreviousMoves, CurrentTurnSide);
+		}
+
+		private static void UpdateAllPiecesValidMoves(Board board, History<HalfMove> previousMoves, Side turn) {
 			for (int file = 1; file <= 8; file++)
 				for (int rank = 1; rank <= 8; rank++) {
 					Piece piece = board[file, rank];
@@ -68,15 +74,6 @@
 					if (piece.Color == turn) piece.UpdateValidMoves(board, previousMoves);
 					else piece.LegalMoves.Clear();
 				}
-		}
-
-		public void ResetGameToTurn(int turnIndex) {
-			BoardHistory.HeadIndex = turnIndex + 1;
-			PreviousMoves.HeadIndex = turnIndex;
-			TurnCount = turnIndex;
-			CurrentTurnSide = TurnCount % 2 == 0 ? Side.Black : Side.White;
-			
-			UpdateAllPiecesValidMoves(BoardHistory.Last, PreviousMoves, CurrentTurnSide);
 		}
 	}
 }

@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public Board CurrentBoard => game.BoardHistory.Last;
 	public Side CurrentTurnSide => game.CurrentTurnSide;
 	public History<HalfMove> PreviousMoves => game.PreviousMoves;
-	public int TurnCount => game.TurnCount;
+	public int TurnCount => game.HalfMoveCount;
 	
 	public Queue<Movement> MoveQueue { get; private set; }
 	
