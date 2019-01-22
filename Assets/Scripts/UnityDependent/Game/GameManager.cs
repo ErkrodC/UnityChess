@@ -7,13 +7,13 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public Board CurrentBoard => game.BoardHistory.Last;
 	public Side CurrentTurnSide => game.CurrentTurnSide;
 	public History<HalfMove> PreviousMoves => game.PreviousMoves;
-	public int TurnCount => game.HalfMoveCount;
+	public int HalfMoveCount => game.HalfMoveCount;
 	
 	public Queue<Movement> MoveQueue { get; private set; }
 	
 	[SerializeField] private GameEvent NewGameStartedEvent = null;
 	[SerializeField] private GameEvent GameEndedEvent = null;
-	[SerializeField] private GameEvent GameResetToTurnEvent = null;
+	[SerializeField] private GameEvent GameResetToHalfMoveEvent = null;
 	[SerializeField] private UnityChessDebug unityChessDebug = null;
 	public List<Piece> CurrentPieces {
 		get {
@@ -61,9 +61,9 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		}
 	}
 
-	public void ResetGameToTurn(int turnIndex) {
-		game.ResetGameToTurn(turnIndex);
-		GameResetToTurnEvent.Raise();
+	public void ResetGameToHalfMoveIndex(int halfMoveIndex) {
+		game.ResetGameToHalfMoveIndex(halfMoveIndex);
+		GameResetToHalfMoveEvent.Raise();
 	}
 	
 	public string ExportToFEN() => fenInterchanger.Export(game);

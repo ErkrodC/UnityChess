@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7282173014436689762}
   - component: {fileID: 7458786860114736984}
   m_Layer: 0
-  m_Name: MoveUI
+  m_Name: FullMoveUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -127,7 +127,7 @@ MonoBehaviour:
   backgroundImage: {fileID: 249625834632606321}
   whiteMoveButtonImage: {fileID: 8094841438794260989}
   blackMoveButtonImage: {fileID: 8937628373408951352}
-  TurnNumber: 0
+  FullMoveNumber: 0
 --- !u!1 &326170100916112759
 GameObject:
   m_ObjectHideFlags: 0

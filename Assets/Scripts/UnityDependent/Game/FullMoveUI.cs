@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class MoveUI : MonoBehaviour {
+public class FullMoveUI : MonoBehaviour {
 	[Header("Moves")]
 	public Text MoveNumberText;
 	public Text WhiteMoveText;
@@ -20,7 +20,7 @@ public class MoveUI : MonoBehaviour {
 	public Image whiteMoveButtonImage;
 	public Image blackMoveButtonImage;
 	
-	[HideInInspector] public int TurnNumber;
+	[HideInInspector] public int FullMoveNumber;
 
 	public void SetAlternateColor(float darkenAmount) {
 		foreach (Image image in new []{ backgroundImage, whiteMoveButtonImage, blackMoveButtonImage }) {
@@ -30,12 +30,12 @@ public class MoveUI : MonoBehaviour {
 	}
 
 	public void ResetBoardToWhiteMove() {
-		int turnIndex = (TurnNumber - 1) * 2;
-		GameManager.Instance.ResetGameToTurn(turnIndex);
+		int halfMoveIndex = (FullMoveNumber - 1) * 2;
+		GameManager.Instance.ResetGameToHalfMoveIndex(halfMoveIndex);
 	}
 
 	public void ResetBoardToBlackMove() {
-		int turnIndex = (TurnNumber - 1) * 2 + 1;
-		GameManager.Instance.ResetGameToTurn(turnIndex);
+		int halfMoveIndex = (FullMoveNumber - 1) * 2 + 1;
+		GameManager.Instance.ResetGameToHalfMoveIndex(halfMoveIndex);
 	}
 }

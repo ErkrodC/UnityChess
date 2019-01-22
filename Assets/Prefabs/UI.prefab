@@ -968,7 +968,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.000023284822}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5323469260843955982
@@ -989,7 +989,7 @@ MonoBehaviour:
     m_Top: 1
     m_Bottom: 1
   m_ChildAlignment: 1
-  m_Spacing: 0
+  m_Spacing: -2
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -1341,7 +1341,7 @@ GameObject:
   - component: {fileID: 7811870819948904897}
   - component: {fileID: 3512658219551115802}
   m_Layer: 0
-  m_Name: Screen Space
+  m_Name: Camera Space
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1593,7 +1593,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6936444665825171844}
-        m_MethodName: OnGameResetToTurn
+        m_MethodName: OnGameResetToHalfMove
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

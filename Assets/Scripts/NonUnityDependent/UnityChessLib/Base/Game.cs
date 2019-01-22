@@ -57,7 +57,7 @@
 			return movingPiece.Color == CurrentTurnSide && actualMoveFound;
 		}
 
-		public void ResetGameToTurn(int halfMoveIndex) {
+		public void ResetGameToHalfMoveIndex(int halfMoveIndex) {
 			BoardHistory.HeadIndex = halfMoveIndex + 1;
 			PreviousMoves.HeadIndex = halfMoveIndex;
 			CurrentTurnSide = halfMoveIndex % 2 == 0 ? Side.Black : Side.White;

@@ -39,7 +39,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.CurrentTurnSide);
 	}
 
-	public void OnGameResetToTurn() {
+	public void OnGameResetToHalfMove() {
 		ClearBoard();
 
 		foreach (Piece piece in GameManager.Instance.CurrentPieces)

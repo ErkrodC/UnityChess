@@ -19,11 +19,11 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	
 	private bool userHasMadePromotionPieceChoice;
 	private ElectedPiece userPromotionPieceChoice = ElectedPiece.None;
-	private History<MoveUI> moveUIs;
+	private History<FullMoveUI> moveUIs;
 	private Color buttonColor;
 
 	private void Start() {
-		moveUIs = new History<MoveUI>();
+		moveUIs = new History<FullMoveUI>();
 		foreach (Text boardInfoText in boardInfoTexts) {
 			boardInfoText.color = textColor;
 		}
@@ -61,9 +61,9 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		AddMoveToHistory(GameManager.Instance.PreviousMoves.Last, GameManager.Instance.CurrentTurnSide.Complement());
 	}
 
-	public void OnGameResetToTurn() {
+	public void OnGameResetToHalfMove() {
 		UpdateGameStringInputField();
-		moveUIs.HeadIndex = GameManager.Instance.TurnCount / 2;
+		moveUIs.HeadIndex = GameManager.Instance.HalfMoveCount / 2;
 		ValidateIndicators();
 	}
 
@@ -85,34 +85,34 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	private void AddMoveToHistory(HalfMove latestHalfMove, Side latestTurnSide) {
 		RemoveAlternateHistory();
-		int turnCount = GameManager.Instance.TurnCount;
+		int turnCount = GameManager.Instance.HalfMoveCount;
 		
 		switch (latestTurnSide) {
 			case Side.Black:
-				MoveUI latestMoveUI = moveUIs.Last;
-				latestMoveUI.BlackMoveText.text = latestHalfMove.ToAlgebraicNotation();
-				latestMoveUI.BlackMoveButton.enabled = true;
+				FullMoveUI latestFullMoveUI = moveUIs.Last;
+				latestFullMoveUI.BlackMoveText.text = latestHalfMove.ToAlgebraicNotation();
+				latestFullMoveUI.BlackMoveButton.enabled = true;
 				
 				break;
 			case Side.White:
 				GameObject newMoveUIGO = Instantiate(moveUIPrefab, moveHistoryContentParent.transform);
-				MoveUI newMoveUI = newMoveUIGO.GetComponent<MoveUI>();
-				newMoveUI.backgroundImage.color = backgroundColor;
-				newMoveUI.whiteMoveButtonImage.color = buttonColor;
-				newMoveUI.blackMoveButtonImage.color = buttonColor;
-				newMoveUI.MoveNumberText.color = textColor;
-				newMoveUI.WhiteMoveText.color = textColor;
-				newMoveUI.BlackMoveText.color = textColor;
+				FullMoveUI newFullMoveUI = newMoveUIGO.GetComponent<FullMoveUI>();
+				newFullMoveUI.backgroundImage.color = backgroundColor;
+				newFullMoveUI.whiteMoveButtonImage.color = buttonColor;
+				newFullMoveUI.blackMoveButtonImage.color = buttonColor;
+				newFullMoveUI.MoveNumberText.color = textColor;
+				newFullMoveUI.WhiteMoveText.color = textColor;
+				newFullMoveUI.BlackMoveText.color = textColor;
 
-				newMoveUI.TurnNumber = turnCount / 2 + 1;
-				if (newMoveUI.TurnNumber % 2 == 0) newMoveUI.SetAlternateColor(moveHistoryAlternateColorDarkenAmount);
-				newMoveUI.MoveNumberText.text = $"{newMoveUI.TurnNumber}.";
-				newMoveUI.WhiteMoveText.text = latestHalfMove.ToAlgebraicNotation();
-				newMoveUI.BlackMoveText.text = "";
-				newMoveUI.BlackMoveButton.enabled = false;
-				newMoveUI.WhiteMoveButton.enabled = true;
+				newFullMoveUI.FullMoveNumber = turnCount / 2 + 1;
+				if (newFullMoveUI.FullMoveNumber % 2 == 0) newFullMoveUI.SetAlternateColor(moveHistoryAlternateColorDarkenAmount);
+				newFullMoveUI.MoveNumberText.text = $"{newFullMoveUI.FullMoveNumber}.";
+				newFullMoveUI.WhiteMoveText.text = latestHalfMove.ToAlgebraicNotation();
+				newFullMoveUI.BlackMoveText.text = "";
+				newFullMoveUI.BlackMoveButton.enabled = false;
+				newFullMoveUI.WhiteMoveButton.enabled = true;
 				
-				moveUIs.AddLast(newMoveUI);
+				moveUIs.AddLast(newFullMoveUI);
 				break;
 		}
 	}
@@ -120,8 +120,8 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	private void RemoveAlternateHistory() {
 		if (!moveUIs.IsUpToDate) {
 			resultText.gameObject.SetActive(false);
-			List<MoveUI> alternateHistoryMoves = moveUIs.PopFuture();
-			foreach (MoveUI alternateHistoryMove in alternateHistoryMoves) Destroy(alternateHistoryMove.gameObject);
+			List<FullMoveUI> alternateHistoryMoves = moveUIs.PopFuture();
+			foreach (FullMoveUI alternateHistoryMove in alternateHistoryMoves) Destroy(alternateHistoryMove.gameObject);
 		}
 	}
 
