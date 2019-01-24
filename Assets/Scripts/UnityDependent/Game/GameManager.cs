@@ -4,9 +4,9 @@ using UnityChess;
 using UnityEngine;
 
 public class GameManager : MonoBehaviourSingleton<GameManager> {
-	public Board CurrentBoard => game.BoardHistory.Last;
+	public Board CurrentBoard => game.BoardTimeline.Current;
 	public Side CurrentTurnSide => game.CurrentTurnSide;
-	public History<HalfMove> PreviousMoves => game.PreviousMoves;
+	public Timeline<HalfMove> PreviousMoves => game.PreviousMoves;
 	public int HalfMoveCount => game.HalfMoveCount;
 	
 	public Queue<Movement> MoveQueue { get; private set; }
@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	private void ExecuteTurn(Movement move) {
 		game.ExecuteTurn(move);
 
-		HalfMove latestHalfMove = PreviousMoves.Last;
+		HalfMove latestHalfMove = PreviousMoves.Current;
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
 			BoardManager.Instance.SetActiveAllPieces(false);
 			GameEndedEvent.Raise();

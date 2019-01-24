@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace UnityChess {
 	public class Rook : Piece {
-		private static int instanceCounter;
-
-		public Rook(Square startingPosition, Side color) : base(startingPosition, color) {
-			ID = ++instanceCounter;
-		}
-
-		private Rook(Rook rookCopy) : base(rookCopy) {
-			ID = rookCopy.ID;
-		}
-
+		public Rook(Square startingPosition, Side color) : base(startingPosition, color) {}
+		public Rook(Rook rookCopy) : base(rookCopy) {}
+		
 		public override void UpdateLegalMoves(Board board, Square enPassantEligibleSquare) {
 			LegalMoves.Clear();
 
@@ -27,8 +19,8 @@ namespace UnityChess {
 
 					while (testSquare.IsValid) {
 						Square enemyKingPosition = Color == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
-						if (testSquare.IsOccupied(board)) {
-							if (!testSquare.IsOccupiedBySide(board, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
+						if (board.IsOccupied(testSquare)) {
+							if (!board.IsOccupiedBySide(testSquare, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
 								LegalMoves.Add(new Movement(testMove));
 
 							break;
@@ -43,7 +35,5 @@ namespace UnityChess {
 				}
 			}
 		}
-
-		public override Piece Clone() => new Rook(this);
 	}
 }

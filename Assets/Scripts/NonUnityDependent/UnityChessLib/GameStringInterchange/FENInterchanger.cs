@@ -3,8 +3,8 @@
 namespace UnityChess {
 	public class FENInterchanger : IGameStringInterchanger {
 		public string Export(Game game) {
-			Board currentBoard = game.BoardHistory.Last;
-			GameConditions endingConditions = game.StartingConditions.GetEndingGameConditions(currentBoard, game.PreviousMoves.GetCurrent());
+			Board currentBoard = game.BoardTimeline.Current;
+			GameConditions endingConditions = game.StartingConditions.GetEndingGameConditions(currentBoard, game.PreviousMoves.GetStartToCurrent());
 			
 			string[] rankStrings = new string[8];
 			for (int rank = 1; rank <= 8; rank++) {

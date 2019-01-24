@@ -32,26 +32,23 @@ namespace UnityChess {
 
 		/// <summary>Creates a deep copy of the passed Board.</summary>
 		public Board(Board board) {
-			boardMatrix = new Piece[8, 8];
-			SetBlankBoard();
-
-			//creates deep copy (makes copy of each piece and deep copy of their respective ValidMoves lists) of board (list of BasePiece's)
-			//this may be a memory hog since each Board has a list of Piece's, and each piece has a list of Movement's
-			//avg number turns/Board's per game should be around ~80. usual max number of pieces per board is 32
 			// TODO optimize this method
+			// Creates deep copy (makes copy of each piece and deep copy of their respective ValidMoves lists) of board (list of BasePiece's)
+			// this may be a memory hog since each Board has a list of Piece's, and each piece has a list of Movement's
+			// avg number turns/Board's per game should be around ~80. usual max number of pieces per board is 32
+			boardMatrix = new Piece[8, 8];
 			for (int file = 1; file <= 8; file++)
 				for (int rank = 1; rank <= 8; rank++) {
-					Piece pieceToClone = board[file, rank];
-					if (pieceToClone == null) continue;
+					Piece pieceToCopy = board[file, rank];
+					if (pieceToCopy == null) continue;
 
-					this[file, rank] = pieceToClone.Clone();
+					this[file, rank] = pieceToCopy.DeepCopy();
 				}
 
 			InitKings();
 		}
 
-		/// <summary>Used to remove all pieces from the board.</summary>
-		public void SetBlankBoard() {
+		public void ClearBoard() {
 			for (int file = 1; file <= 8; file++)
 				for (int rank = 1; rank <= 8; rank++)
 					this[file, rank] = null;
@@ -60,9 +57,8 @@ namespace UnityChess {
 			BlackKing = null;
 		}
 
-		/// <summary>Used to reset the Board to initial chess game position.</summary>
 		public void SetStartingPosition() {
-			SetBlankBoard();
+			ClearBoard();
 
 			//Row 2/Rank 7 and Row 7/Rank 2, both rows of pawns
 			for (int file = 1; file <= 8; file++)
@@ -103,7 +99,6 @@ namespace UnityChess {
 			BlackKing = (King) this[5, 8];
 		}
 
-		/// <summary>Used to execute a move.</summary>
 		public void MovePiece(Movement move) {
 			if (!(this[move.Start] is Piece pieceToMove)) throw new ArgumentException($"No piece was found at the given position: {move.Start}");
 			
@@ -115,6 +110,10 @@ namespace UnityChess {
 
 			(move as SpecialMove)?.HandleAssociatedPiece(this);
 		}
+		
+		internal bool IsOccupied(Square position) => this[position] != null;
+
+		internal bool IsOccupiedBySide(Square position, Side side) => this[position] is Piece piece && piece.Color == side;
 
 		public void InitKings() {
 			for (int file = 1; file <= 8; file++) {

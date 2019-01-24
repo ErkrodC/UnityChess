@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace UnityChess {
 	public class Knight : Piece {
-		private static int instanceCounter;
-
-		public Knight(Square startingPosition, Side color) : base(startingPosition, color) {
-			ID = ++instanceCounter;
-		}
-
-		private Knight(Knight knightCopy) : base(knightCopy) {
-			ID = knightCopy.ID;
-		}
+		public Knight(Square startingPosition, Side color) : base(startingPosition, color) {}
+		public Knight(Knight knightCopy) : base(knightCopy) {}
 
 		public override void UpdateLegalMoves(Board board, Square enPassantEligibleSquare) {
 			LegalMoves.Clear();
@@ -27,12 +19,10 @@ namespace UnityChess {
 					Movement testMove = new Movement(Position, testSquare);
 
 					Square enemyKingPosition = Color == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
-					if (testSquare.IsValid && !testSquare.IsOccupiedBySide(board, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
+					if (testSquare.IsValid && !board.IsOccupiedBySide(testSquare, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
 						LegalMoves.Add(new Movement(testMove));
 				}
 			}
 		}
-
-		public override Piece Clone() => new Knight(this);
 	}
 }

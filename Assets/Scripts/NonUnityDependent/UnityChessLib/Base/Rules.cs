@@ -58,8 +58,8 @@ namespace UnityChess {
 
 					Square testSquare = new Square(king.Position, fileOffset, rankOffset);
 
-					while (testSquare.IsValid && !testSquare.IsOccupiedBySide(board, king.Color)) {
-						if (testSquare.IsOccupiedBySide(board, king.Color.Complement())) {
+					while (testSquare.IsValid && !board.IsOccupiedBySide(testSquare, king.Color)) {
+						if (board.IsOccupiedBySide(testSquare, king.Color.Complement())) {
 							Piece piece = board[testSquare];
 
 							//diagonal direction
@@ -104,7 +104,7 @@ namespace UnityChess {
 				foreach (int rankOffset in knightRankOffset) {
 					Square testSquare = new Square(king.Position, fileOffset, rankOffset);
 
-					if (testSquare.IsValid && testSquare.IsOccupiedBySide(board, king.Color.Complement()) && board[testSquare] is Knight)
+					if (testSquare.IsValid && board.IsOccupiedBySide(testSquare, king.Color.Complement()) && board[testSquare] is Knight)
 						return true;
 				}
 			}

@@ -46,7 +46,6 @@ namespace UnityEngine.PostProcessing
             var th = context.height / 2;
 
             // Blur buffer format
-            // TODO: Extend the use of RGBM to the whole chain for mobile platforms
             var useRGBM = Application.isMobilePlatform;
             var rtFormat = useRGBM
                 ? RenderTextureFormat.Default
@@ -70,7 +69,6 @@ namespace UnityEngine.PostProcessing
             float sampleScale = 0.5f + logh - logh_i;
             material.SetFloat(Uniforms._SampleScale, sampleScale);
 
-            // TODO: Probably can disable antiFlicker if TAA is enabled - need to do some testing
             if (bloom.antiFlicker)
                 material.EnableKeyword("ANTI_FLICKER");
 

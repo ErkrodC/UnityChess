@@ -2,15 +2,8 @@
 
 namespace UnityChess {
 	public class King : Piece {
-		private static int instanceCounter;
-
-		public King(Square startingPosition, Side color) : base(startingPosition, color) {
-			ID = ++instanceCounter;
-		}
-
-		private King(King kingCopy) : base(kingCopy) {
-			ID = kingCopy.ID;
-		}
+		public King(Square startingPosition, Side color) : base(startingPosition, color) {}
+		public King(King kingCopy) : base(kingCopy) {}
 
 		public override void UpdateLegalMoves(Board board, Square enPassantEligibleSquare) {
 			LegalMoves.Clear();
@@ -18,8 +11,6 @@ namespace UnityChess {
 			CheckSurroundingSquares(board);
 			CheckCastlingMoves(board);
 		}
-
-		public override Piece Clone() => new King(this);
 
 		private void CheckSurroundingSquares(Board board) {
 			for (int fileOffset = -1; fileOffset <= 1; fileOffset++) {
@@ -29,7 +20,7 @@ namespace UnityChess {
 					Square testSquare = new Square(Position, fileOffset, rankOffset);
 					Movement testMove = new Movement(Position, testSquare);
 					Square enemyKingPosition = Color == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
-					if (testSquare.IsValid && !testSquare.IsOccupiedBySide(board, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
+					if (testSquare.IsValid && !board.IsOccupiedBySide(testSquare, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
 						LegalMoves.Add(new Movement(testMove));
 				}
 			}
@@ -49,7 +40,7 @@ namespace UnityChess {
 						inBetweenSquares.Add(new Square(checkingQueensideCastle ? 3 : 7, castlingRank));
 						if (checkingQueensideCastle) inBetweenSquares.Add(new Square(2, castlingRank));
 
-						if (!inBetweenSquares[0].IsOccupied(board) && !inBetweenSquares[1].IsOccupied(board) && (!checkingQueensideCastle || !inBetweenSquares[2].IsOccupied(board))) {
+						if (!board.IsOccupied(inBetweenSquares[0]) && !board.IsOccupied(inBetweenSquares[1]) && (!checkingQueensideCastle || !board.IsOccupied(inBetweenSquares[2]))) {
 							inBetweenMoves.Add(new Movement(Position, inBetweenSquares[0]));
 							inBetweenMoves.Add(new Movement(Position, inBetweenSquares[1]));
 

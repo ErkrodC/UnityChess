@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
 namespace UnityChess {
 	/// <summary>Base class for any chess piece.</summary>
@@ -7,7 +7,6 @@ namespace UnityChess {
 		public readonly LegalMovesList LegalMoves;
 		public Square Position;
 		public bool HasMoved;
-		protected int ID;
 
 		protected Piece(Square startPosition, Side color) {
 			Color = color;
@@ -21,34 +20,15 @@ namespace UnityChess {
 			HasMoved = pieceCopy.HasMoved;
 			Position = pieceCopy.Position;
 			LegalMoves = pieceCopy.LegalMoves.DeepCopy();
-			ID = pieceCopy.ID;
 		}
-
-		public abstract Piece Clone();
 
 		public abstract void UpdateLegalMoves(Board board, Square enPassantEligibleSquare);
 
-		// override object.Equals
-		public override bool Equals(object obj) {
-			if (obj == null || GetType() != obj.GetType()) {
-				return false;
-			}
-
-			Piece piece = obj as Piece;
-			// ReSharper disable once PossibleNullReferenceException
-			return Color == piece.Color && ID == piece.ID;
+		public Piece DeepCopy() {
+			Type derivedType = GetType();
+			return (Piece) derivedType.GetConstructor(new []{derivedType})?.Invoke(new object[]{this}); // copy constructor call
 		}
 
-		// override object.GetHashCode
-		public override int GetHashCode() {
-			int hash = 13;
-			hash = hash * 7 + Color.GetHashCode();
-			hash = hash * 7 + ID.GetHashCode();
-			return hash;
-		}
-
-		public override string ToString() {
-			return $"{Color.ToString()} {GetType().ToString().Substring(11)}";
-		}
+		public override string ToString() => $"{Color} {GetType().Name}";
 	}
 }

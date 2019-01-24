@@ -19,7 +19,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		
 		for (int file = 1; file <= 8; file++) {
 			for (int rank = 1; rank <= 8; rank++) {
-				GameObject squareGO = new GameObject(FileRankToSquareString(file, rank), typeof(BoxCollider2D));
+				GameObject squareGO = new GameObject(FileRankToSquareString(file, rank));
 				squareGO.transform.position = new Vector3(boardPosition.x + FileOrRankToSidePosition(file), boardPosition.y + BoardHeight, boardPosition.z + FileOrRankToSidePosition(rank));
 				squareGO.transform.parent = boardTransform;
 				squareGO.tag = "Square";
@@ -45,7 +45,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		foreach (Piece piece in GameManager.Instance.CurrentPieces)
 			CreateAndPlacePieceGO(piece);
 
-		HalfMove latestHalfMove = GameManager.Instance.PreviousMoves.Last;
+		HalfMove latestHalfMove = GameManager.Instance.PreviousMoves.Current;
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) SetActiveAllPieces(false);
 		else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.CurrentTurnSide);
 	}

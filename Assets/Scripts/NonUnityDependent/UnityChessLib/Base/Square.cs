@@ -18,15 +18,6 @@
 			File = startPosition.File + fileOffset;
 			Rank = startPosition.Rank + rankOffset;
 		}
-		
-
-		internal bool IsOccupied(Board board) => board[this] != null;
-
-		/// <summary>Determines whether the square is occupied by a piece belonging to the given side.</summary>
-		internal bool IsOccupiedBySide(Board board, Side side) {
-			Piece piece = board[this];
-			return piece != null && piece.Color == side;
-		}
 
 		//public static int FileRankAsIndex(int file, int rank) => (rank + 1) * 10 + file;
 

@@ -19,8 +19,14 @@ public class FullMoveUI : MonoBehaviour {
 	public Image backgroundImage;
 	public Image whiteMoveButtonImage;
 	public Image blackMoveButtonImage;
-	
-	[HideInInspector] public int FullMoveNumber;
+	public GameObject whiteMoveHighlight;
+	public GameObject blackMoveHighlight;
+
+	public int FullMoveNumber => transform.GetSiblingIndex() + 1;
+	private int WhiteHalfMoveIndex => (FullMoveNumber - 1) * 2;
+	private int BlackHalfMoveIndex => WhiteHalfMoveIndex + 1;
+
+	private void Start() => ValidateMoveHighlights();
 
 	public void SetAlternateColor(float darkenAmount) {
 		foreach (Image image in new []{ backgroundImage, whiteMoveButtonImage, blackMoveButtonImage }) {
@@ -29,13 +35,13 @@ public class FullMoveUI : MonoBehaviour {
 		}
 	}
 
-	public void ResetBoardToWhiteMove() {
-		int halfMoveIndex = (FullMoveNumber - 1) * 2;
-		GameManager.Instance.ResetGameToHalfMoveIndex(halfMoveIndex);
-	}
+	public void ResetBoardToWhiteMove() => GameManager.Instance.ResetGameToHalfMoveIndex(WhiteHalfMoveIndex);
 
-	public void ResetBoardToBlackMove() {
-		int halfMoveIndex = (FullMoveNumber - 1) * 2 + 1;
-		GameManager.Instance.ResetGameToHalfMoveIndex(halfMoveIndex);
+	public void ResetBoardToBlackMove() => GameManager.Instance.ResetGameToHalfMoveIndex(BlackHalfMoveIndex);
+
+	public void ValidateMoveHighlights() {
+		int halfMoveCount = GameManager.Instance.HalfMoveCount;
+		whiteMoveHighlight.SetActive(halfMoveCount == WhiteHalfMoveIndex);
+		blackMoveHighlight.SetActive(halfMoveCount == BlackHalfMoveIndex);
 	}
 }

@@ -7,10 +7,10 @@ namespace UnityChess {
 		public Side CurrentTurnSide { get; private set; }
 		public int HalfMoveCount => PreviousMoves.HeadIndex;
 		public GameConditions StartingConditions { get; }
-		public History<Board> BoardHistory { get; }
-		public History<HalfMove> PreviousMoves { get; }
+		public Timeline<Board> BoardTimeline { get; }
+		public Timeline<HalfMove> PreviousMoves { get; }
 
-		private History<Square> enPassantEligibleSquareHistory;
+		private readonly Timeline<Square> enPassantCaptureSquareTimeline;
 
 		/// <summary>Creates a Game instance of a given mode with a standard starting Board.</summary>
 		/// <param name="mode">Describes which players are human or AI.</param>
@@ -19,16 +19,16 @@ namespace UnityChess {
 			Mode = mode;
 			CurrentTurnSide = Side.White;
 			StartingConditions = startingConditions;
-			BoardHistory = new History<Board>();
-			PreviousMoves = new History<HalfMove>();
-			enPassantEligibleSquareHistory = new History<Square>();
+			BoardTimeline = new Timeline<Board>();
+			PreviousMoves = new Timeline<HalfMove>();
+			enPassantCaptureSquareTimeline = new Timeline<Square>();
 			
-			BoardHistory.AddLast(new Board());
-			enPassantEligibleSquareHistory.AddLast(Square.Invalid);
-			UpdateAllPiecesLegalMoves(BoardHistory.Last, enPassantEligibleSquareHistory.Last, Side.White);
+			BoardTimeline.AddNext(new Board());
+			enPassantCaptureSquareTimeline.AddNext(Square.Invalid);
+			UpdateAllPiecesLegalMoves(BoardTimeline.Current, enPassantCaptureSquareTimeline.Current, Side.White);
 		}
 
-		private Board LatestBoard => BoardHistory.Last;
+		private Board LatestBoard => BoardTimeline.Current;
 		
 		/// <summary>Executes passed move and switches sides; also adds move to history.</summary>
 		public void ExecuteTurn(Movement move) {
@@ -37,22 +37,22 @@ namespace UnityChess {
 			Square enPassantEligibleSquare = boardBeforeMove[move.Start] is Pawn pawn && Math.Abs(move.End.Rank - move.Start.Rank) == 2 ?
 				                          new Square(move.End, 0, pawn.Color == Side.White ? -1 : 1) :
 				                          Square.Invalid;
-			enPassantEligibleSquareHistory.AddLast(enPassantEligibleSquare);
+			enPassantCaptureSquareTimeline.AddNext(enPassantEligibleSquare);
 
 			Board resultingBoard = new Board(LatestBoard);
 			resultingBoard.MovePiece(move);
 
-			BoardHistory.AddLast(resultingBoard);
+			BoardTimeline.AddNext(resultingBoard);
 
 			CurrentTurnSide = CurrentTurnSide.Complement();
 			
-			UpdateAllPiecesLegalMoves(resultingBoard, enPassantEligibleSquareHistory.Last, CurrentTurnSide);
+			UpdateAllPiecesLegalMoves(resultingBoard, enPassantCaptureSquareTimeline.Current, CurrentTurnSide);
 
 			bool capturedPiece = boardBeforeMove[move.End] != null || move is EnPassantMove;
 			bool causedCheckmate = Rules.IsPlayerCheckmated(resultingBoard, CurrentTurnSide);
 			bool causedStalemate = Rules.IsPlayerStalemated(resultingBoard, CurrentTurnSide);
 			bool causedCheck = Rules.IsPlayerInCheck(resultingBoard, CurrentTurnSide) && !causedCheckmate;
-			PreviousMoves.AddLast(new HalfMove(boardBeforeMove[move.Start], move, capturedPiece, causedCheck, causedStalemate , causedCheckmate));
+			PreviousMoves.AddNext(new HalfMove(boardBeforeMove[move.Start], move, capturedPiece, causedCheck, causedStalemate , causedCheckmate));
 		}
 
 		/// <summary>Checks whether a move is legal on a given board/turn.</summary>
@@ -71,12 +71,12 @@ namespace UnityChess {
 		}
 
 		public void ResetGameToHalfMoveIndex(int halfMoveIndex) {
-			BoardHistory.HeadIndex = halfMoveIndex + 1;
-			enPassantEligibleSquareHistory.HeadIndex = halfMoveIndex + 1;
+			BoardTimeline.HeadIndex = halfMoveIndex + 1;
+			enPassantCaptureSquareTimeline.HeadIndex = halfMoveIndex + 1;
 			PreviousMoves.HeadIndex = halfMoveIndex;
 			CurrentTurnSide = halfMoveIndex % 2 == 0 ? Side.Black : Side.White;
 			
-			UpdateAllPiecesLegalMoves(BoardHistory.Last, enPassantEligibleSquareHistory.Last, CurrentTurnSide);
+			UpdateAllPiecesLegalMoves(BoardTimeline.Current, enPassantCaptureSquareTimeline.Current, CurrentTurnSide);
 		}
 
 		private static void UpdateAllPiecesLegalMoves(Board board, Square enPassantEligibleSquare, Side turn) {

@@ -1,16 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace UnityChess {
+﻿namespace UnityChess {
 	public class Queen : Piece {
-		private static int instanceCounter;
-
-		public Queen(Square startingPosition, Side color) : base(startingPosition, color) {
-			ID = ++instanceCounter;
-		}
-
-		private Queen(Queen queenCopy) : base(queenCopy) {
-			ID = queenCopy.ID;
-		}
+		public Queen(Square startingPosition, Side color) : base(startingPosition, color) {}
+		public Queen(Queen queenCopy) : base(queenCopy) {}
 
 		public override void UpdateLegalMoves(Board board, Square enPassantEligibleSquare) {
 			LegalMoves.Clear();
@@ -28,8 +19,8 @@ namespace UnityChess {
 
 					while (testSquare.IsValid) {
 						Square enemyKingPosition = Color == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
-						if (testSquare.IsOccupied(board)) {
-							if (!testSquare.IsOccupiedBySide(board, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
+						if (board.IsOccupied(testSquare)) {
+							if (!board.IsOccupiedBySide(testSquare, Color) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition)
 								LegalMoves.Add(new Movement(testMove));
 
 							break;
@@ -44,7 +35,5 @@ namespace UnityChess {
 				}
 			}
 		}
-
-		public override Piece Clone() => new Queen(this);
 	}
 }

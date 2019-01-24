@@ -1,18 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace UnityChess {
+﻿namespace UnityChess {
 	public class Pawn : Piece {
-		public delegate ElectedPiece PieceChoiceAction();
-
-		private static int instanceCounter;
-
-		public Pawn(Square startingPosition, Side color) : base(startingPosition, color) {
-			ID = ++instanceCounter;
-		}
-
-		private Pawn(Pawn pawnCopy) : base(pawnCopy) {
-			ID = pawnCopy.ID;
-		}
+		public Pawn(Square startingPosition, Side color) : base(startingPosition, color) {}
+		public Pawn(Pawn pawnCopy) : base(pawnCopy) {}
 
 		public override void UpdateLegalMoves(Board board, Square enPassantEligibleSquare) {
 			LegalMoves.Clear();
@@ -23,22 +12,20 @@ namespace UnityChess {
 		}
 
 		private void CheckForwardMovingSquares(Board board) {
-			Square testSquare = new Square(Position, 0, Color == Side.White ? 1 : -1);
+			int advancingDirection = Color == Side.White ? 1 : -1;
+			Square testSquare = new Square(Position, 0, advancingDirection);
 			Movement testMove = new Movement(Position, testSquare);
 			
-			if (!testSquare.IsOccupied(board) && Rules.MoveObeysRules(board, testMove, Color)) {
-				if (Position.Rank == (Color == Side.White ? 7 : 2)) {
-					LegalMoves.Add(new PromotionMove(Position, testSquare));
-				} else {
+			if (!board.IsOccupied(testSquare) && Rules.MoveObeysRules(board, testMove, Color)) {
+				bool amOnSecondToLastRank = Position.Rank == (Color == Side.White ? 7 : 2);
+				LegalMoves.Add(amOnSecondToLastRank ? new PromotionMove(Position, testSquare) : new Movement(testMove));
+			}
+			
+			if (!HasMoved) {
+				testSquare = new Square(testSquare, 0, advancingDirection);
+				testMove = new Movement(Position, testSquare);
+				if (!board.IsOccupied(testSquare) && Rules.MoveObeysRules(board, testMove, Color))
 					LegalMoves.Add(new Movement(testMove));
-
-					if (!HasMoved) {
-						testSquare = new Square(testSquare, 0, Color == Side.White ? 1 : -1);
-						testMove = new Movement(Position, testSquare);
-						if (!testSquare.IsOccupied(board) && Rules.MoveObeysRules(board, testMove, Color))
-							LegalMoves.Add(new Movement(testMove));
-					}
-				}
 			}
 		}
 
@@ -49,7 +36,7 @@ namespace UnityChess {
 				Movement testMove = new Movement(Position, testSquare);
 
 				Square enemyKingPosition = Color == Side.White ? board.BlackKing.Position : board.WhiteKing.Position;
-				if (testSquare.IsValid && testSquare.IsOccupiedBySide(board, Color.Complement()) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition) {
+				if (testSquare.IsValid && board.IsOccupiedBySide(testSquare, Color.Complement()) && Rules.MoveObeysRules(board, testMove, Color) && testSquare != enemyKingPosition) {
 					bool pawnAtSecondToLastRank = Position.Rank == (Color == Side.White ? 7 : 2);
 					Movement move = pawnAtSecondToLastRank ? new PromotionMove(Position, testSquare) : new Movement(testMove);
 					LegalMoves.Add(move);
@@ -74,7 +61,5 @@ namespace UnityChess {
 				}
 			}
 		}
-
-		public override Piece Clone() => new Pawn(this);
 	}
 }
