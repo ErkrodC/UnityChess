@@ -26,10 +26,10 @@ namespace UnityChess {
 				SquareUtil.SquareToString(currentGameConditions.EnPassantSquare) :
 				"-";
 
-			return $"{string.Join("/", BuildRankStrings(currentBoard))} {toMoveString} {castlingInfoString} {enPassantSquareString} {currentGameConditions.HalfMoveClock} {currentGameConditions.TurnNumber}";
+			return $"{CalculateRankStrings(currentBoard)} {toMoveString} {castlingInfoString} {enPassantSquareString} {currentGameConditions.HalfMoveClock} {currentGameConditions.TurnNumber}";
 		}
 
-		private static string[] BuildRankStrings(Board currentBoard) {
+		private static string CalculateRankStrings(Board currentBoard) {
 			string[] rankStrings = new string[8];
 			for (int rank = 1; rank <= 8; rank++) {
 				int emptySquareCount = 0;
@@ -55,7 +55,7 @@ namespace UnityChess {
 				}
 			}
 
-			return rankStrings;
+			return string.Join("/", rankStrings);
 		}
 
 		private static string GetFENPieceSymbol(Piece piece) {
