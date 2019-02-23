@@ -14,19 +14,19 @@ namespace UnityChess {
 			throw new NotImplementedException();
 		}
 
-		private static string ConvertCurrentGameStateToFEN(Board currentBoard, GameConditions gameConditions) {
-			string toMoveString = gameConditions.WhiteToMove ? "w" : "b";
+		private static string ConvertCurrentGameStateToFEN(Board currentBoard, GameConditions currentGameConditions) {
+			string toMoveString = currentGameConditions.WhiteToMove ? "w" : "b";
 
-			bool areAnyCastlingsAvailable = gameConditions.WhiteCanCastleKingside || gameConditions.WhiteCanCastleQueenside || gameConditions.BlackCanCastleKingside || gameConditions.BlackCanCastleQueenside;
+			bool areAnyCastlingsAvailable = currentGameConditions.WhiteCanCastleKingside || currentGameConditions.WhiteCanCastleQueenside || currentGameConditions.BlackCanCastleKingside || currentGameConditions.BlackCanCastleQueenside;
 			string castlingInfoString = areAnyCastlingsAvailable ?
-				$"{(gameConditions.WhiteCanCastleKingside ? "K" : "")}{(gameConditions.WhiteCanCastleQueenside ? "Q" : "")}{(gameConditions.BlackCanCastleKingside ? "k" : "")}{(gameConditions.BlackCanCastleQueenside ? "q" : "")}" :
+				$"{(currentGameConditions.WhiteCanCastleKingside ? "K" : "")}{(currentGameConditions.WhiteCanCastleQueenside ? "Q" : "")}{(currentGameConditions.BlackCanCastleKingside ? "k" : "")}{(currentGameConditions.BlackCanCastleQueenside ? "q" : "")}" :
 				"-";
 
-			string enPassantSquareString = gameConditions.EnPassantSquare.IsValid ?
-				SquareUtil.SquareToString(gameConditions.EnPassantSquare) :
+			string enPassantSquareString = currentGameConditions.EnPassantSquare.IsValid ?
+				SquareUtil.SquareToString(currentGameConditions.EnPassantSquare) :
 				"-";
 
-			return $"{string.Join("/", BuildRankStrings(currentBoard))} {toMoveString} {castlingInfoString} {enPassantSquareString} {gameConditions.HalfMoveClock} {gameConditions.TurnNumber}";
+			return $"{string.Join("/", BuildRankStrings(currentBoard))} {toMoveString} {castlingInfoString} {enPassantSquareString} {currentGameConditions.HalfMoveClock} {currentGameConditions.TurnNumber}";
 		}
 
 		private static string[] BuildRankStrings(Board currentBoard) {
