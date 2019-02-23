@@ -4,69 +4,72 @@ namespace UnityChess {
 	public class FENInterchanger : IGameStringInterchanger {
 		public string Export(Game game) {
 			Board currentBoard = game.BoardTimeline.Current;
-			GameConditions endingConditions = game.StartingConditions.GetEndingGameConditions(currentBoard, game.PreviousMoves.GetStartToCurrent());
-			
+			GameConditions currentGameConditions = game.StartingConditions.CalculateEndingGameConditions(currentBoard, game.PreviousMoves.GetStartToCurrent());
+
+			return ConvertCurrentGameStateToFEN(currentBoard, currentGameConditions);
+		}
+		
+		// TODO implement
+		public Game Import(string fen) {
+			throw new NotImplementedException();
+		}
+
+		private static string ConvertCurrentGameStateToFEN(Board currentBoard, GameConditions gameConditions) {
+			string toMoveString = gameConditions.WhiteToMove ? "w" : "b";
+
+			bool areAnyCastlingsAvailable = gameConditions.WhiteCanCastleKingside || gameConditions.WhiteCanCastleQueenside || gameConditions.BlackCanCastleKingside || gameConditions.BlackCanCastleQueenside;
+			string castlingInfoString = areAnyCastlingsAvailable ?
+				$"{(gameConditions.WhiteCanCastleKingside ? "K" : "")}{(gameConditions.WhiteCanCastleQueenside ? "Q" : "")}{(gameConditions.BlackCanCastleKingside ? "k" : "")}{(gameConditions.BlackCanCastleQueenside ? "q" : "")}" :
+				"-";
+
+			string enPassantSquareString = gameConditions.EnPassantSquare.IsValid ?
+				SquareUtil.SquareToString(gameConditions.EnPassantSquare) :
+				"-";
+
+			return $"{string.Join("/", BuildRankStrings(currentBoard))} {toMoveString} {castlingInfoString} {enPassantSquareString} {gameConditions.HalfMoveClock} {gameConditions.TurnNumber}";
+		}
+
+		private static string[] BuildRankStrings(Board currentBoard) {
 			string[] rankStrings = new string[8];
 			for (int rank = 1; rank <= 8; rank++) {
-				int emptySpaceCount = 0;
+				int emptySquareCount = 0;
 				int rankStringsIndex = 7 - (rank - 1);
 				rankStrings[rankStringsIndex] = "";
 				for (int file = 1; file <= 8; file++) {
 					Piece piece = currentBoard[file, rank];
 					if (piece == null) {
-						emptySpaceCount++;
-						if (file == 8) {
-							rankStrings[rankStringsIndex] += emptySpaceCount;
-							emptySpaceCount = 0;
-						}
-						continue;
-					}
-					
-					if (emptySpaceCount > 0){
-						rankStrings[rankStringsIndex] += emptySpaceCount;
-						emptySpaceCount = 0;
-					}
+						emptySquareCount++;
 
-					bool useCaps = piece.Color == Side.White;
-					switch (piece) {
-						case Bishop _:
-							rankStrings[rankStringsIndex] += useCaps ? "B" : "b";
-							break;
-						case King _:
-							rankStrings[rankStringsIndex] += useCaps ? "K" : "k";
-							break;
-						case Knight _:
-							rankStrings[rankStringsIndex] += useCaps ? "N" : "n";
-							break;
-						case Pawn _:
-							rankStrings[rankStringsIndex] += useCaps ? "P" : "p";
-							break;
-						case Queen _:
-							rankStrings[rankStringsIndex] += useCaps ? "Q" : "q";
-							break;
-						case Rook _:
-							rankStrings[rankStringsIndex] += useCaps ? "R" : "r";
-							break;
+						if (file == 8) { // reached end of rank, append empty square count to rankString
+							rankStrings[rankStringsIndex] += emptySquareCount;
+							emptySquareCount = 0;
+						}
+					} else {
+						if (emptySquareCount > 0) { // found piece, append empty square count to rankString
+							rankStrings[rankStringsIndex] += emptySquareCount;
+							emptySquareCount = 0;
+						}
+
+						rankStrings[rankStringsIndex] += GetFENPieceSymbol(piece);
 					}
 				}
 			}
 
-			string toMoveString = endingConditions.WhiteToMove ? "w" : "b";
-			
-			string castlingInfoString =
-				endingConditions.WhiteCanCastleKingside || endingConditions.WhiteCanCastleQueenside || endingConditions.BlackCanCastleKingside|| endingConditions.BlackCanCastleQueenside ?
-					$"{(endingConditions.WhiteCanCastleKingside ? "K" : "")}{(endingConditions.WhiteCanCastleQueenside ? "Q" : "")}{(endingConditions.BlackCanCastleKingside ? "k" : "")}{(endingConditions.BlackCanCastleQueenside ? "q" : "")}" :
-					"-";
-
-			string enPassantSquareString = endingConditions.EnPassantSquare.IsValid ? SquareUtil.SquareToString(endingConditions.EnPassantSquare) : "-";
-			
-			string fen = $"{string.Join("/", rankStrings)} {toMoveString} {castlingInfoString} {enPassantSquareString} {endingConditions.HalfMoveClock} {endingConditions.TurnNumber}";
-			return fen;
+			return rankStrings;
 		}
 
-		// TODO implement
-		public Game Import(string fen) {
-			throw new NotImplementedException();
+		private static string GetFENPieceSymbol(Piece piece) {
+			bool useCaps = piece.Color == Side.White;
+			switch (piece) {
+				case Bishop _: return useCaps ? "B" : "b";
+				case King _: return useCaps ? "K" : "k";
+				case Knight _: return useCaps ? "N" : "n";
+				case Pawn _: return useCaps ? "P" : "p";
+				case Queen _: return useCaps ? "Q" : "q";
+				case Rook _: return useCaps ? "R" : "r";
+				default: throw new NullReferenceException();
+			}
 		}
+
 	}
 }

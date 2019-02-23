@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace UnityChess {
+	/// Non-board, non-move-record game state
 	public struct GameConditions {
 		public static GameConditions NormalStartingConditions = new GameConditions(true, true, true, true, true, Square.Invalid, 0, 1);
 		public readonly bool WhiteToMove;
@@ -23,35 +24,37 @@ namespace UnityChess {
 			TurnNumber = turnNumber;
 		}
 		
-		public GameConditions GetEndingGameConditions(Board currentBoard, List<HalfMove> movesFromStart) {
-			if (movesFromStart.Count == 0) return this;
+		public GameConditions CalculateEndingGameConditions(Board endingBoard, List<HalfMove> halfMovesFromStart) {
+			if (halfMovesFromStart.Count == 0) return this;
 			
-			bool whiteEligibleForCastling = currentBoard.WhiteKing.Position.Equals(5, 1) && !currentBoard.WhiteKing.HasMoved;
-			bool whiteCanCastleKingside = whiteEligibleForCastling && currentBoard[8, 1] is Rook whiteKingsideRook && !whiteKingsideRook.HasMoved;
-			bool whiteCanCastleQueenside = whiteEligibleForCastling && currentBoard[1, 1] is Rook whiteQueensideRook && !whiteQueensideRook.HasMoved;
+			bool whiteEligibleForCastling = endingBoard.WhiteKing.Position.Equals(5, 1) && !endingBoard.WhiteKing.HasMoved;
+			bool blackEligibleForCastling = endingBoard.BlackKing.Position.Equals(5, 8) && !endingBoard.BlackKing.HasMoved;
+
+			return new GameConditions(
+				whiteToMove: halfMovesFromStart.Count % 2 == 0 ? WhiteToMove : !WhiteToMove,
+				whiteCanCastleKingside: whiteEligibleForCastling && endingBoard[8, 1] is Rook whiteKingsideRook && !whiteKingsideRook.HasMoved,
+				whiteCanCastleQueenside: whiteEligibleForCastling && endingBoard[1, 1] is Rook whiteQueensideRook && !whiteQueensideRook.HasMoved,
+				blackCanCastleKingside: blackEligibleForCastling && endingBoard[8, 8] is Rook blackKingsideRook && !blackKingsideRook.HasMoved,
+				blackCanCastleQueenside: blackEligibleForCastling && endingBoard[1, 8] is Rook blackQueensideRook && !blackQueensideRook.HasMoved,
+				enPassantSquare: GetEndingEnPassantSquare(halfMovesFromStart[halfMovesFromStart.Count - 1]),
+				halfMoveClock: GetEndingHalfMoveClock(halfMovesFromStart),
+				turnNumber: TurnNumber + (WhiteToMove ? halfMovesFromStart.Count / 2 : (halfMovesFromStart.Count + 1) / 2)
+			);
+		}
+
+		private int GetEndingHalfMoveClock(List<HalfMove> movesFromStart) {
+			int endingHalfMoveClock = HalfMoveClock;
 			
-			bool blackEligibleForCastling = currentBoard.BlackKing.Position.Equals(5, 8) && !currentBoard.BlackKing.HasMoved;
-			bool blackCanCastleKingside = blackEligibleForCastling && currentBoard[8, 8] is Rook blackKingsideRook && !blackKingsideRook.HasMoved;
-			bool blackCanCastleQueenside = blackEligibleForCastling && currentBoard[1, 8] is Rook blackQueensideRook && !blackQueensideRook.HasMoved;
-
-			int halfMoveClock = this.HalfMoveClock;
-
 			foreach (HalfMove halfMove in movesFromStart) {
-				if (!(halfMove.Piece is Pawn) && !halfMove.CapturedPiece) halfMoveClock++;
-				else halfMoveClock = 0;
-			}
-			
-			
-			bool whiteToMove = movesFromStart.Count % 2 == 0 ? this.WhiteToMove : !this.WhiteToMove;
-
-			int turnNumber = this.TurnNumber;
-			if (this.WhiteToMove) {
-				turnNumber += movesFromStart.Count / 2;
-			} else {
-				turnNumber += (movesFromStart.Count + 1) / 2;
+				if (!(halfMove.Piece is Pawn) && !halfMove.CapturedPiece) endingHalfMoveClock++;
+				else endingHalfMoveClock = 0;
 			}
 
-			HalfMove lastHalfMove = movesFromStart[movesFromStart.Count - 1];
+			return endingHalfMoveClock;
+		}
+
+		// NOTE ending en passant square can be determined from simply the last half move made.
+		private static Square GetEndingEnPassantSquare(HalfMove lastHalfMove) {
 			Side lastTurnPieceColor = lastHalfMove.Piece.Color;
 			int pawnStartingRank = lastTurnPieceColor == Side.White ? 2 : 7;
 			int pawnEndingRank = lastTurnPieceColor == Side.White ? 4 : 5;
@@ -61,8 +64,8 @@ namespace UnityChess {
 				int rankOffset = lastTurnPieceColor == Side.White ? -1 : 1;
 				enPassantSquare = new Square(lastHalfMove.Move.End, 0, rankOffset);
 			}
-			
-			return new GameConditions(whiteToMove, whiteCanCastleKingside, whiteCanCastleQueenside, blackCanCastleKingside, blackCanCastleQueenside, enPassantSquare, halfMoveClock, turnNumber);
+
+			return enPassantSquare;
 		}
 	}
 }
