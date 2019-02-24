@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#pragma warning disable 0649
+
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityChess;
 using UnityEngine;
@@ -8,14 +10,6 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public Side CurrentTurnSide => game.CurrentTurnSide;
 	public Timeline<HalfMove> PreviousMoves => game.PreviousMoves;
 	public int HalfMoveCount => game.HalfMoveCount;
-	
-	public Queue<Movement> MoveQueue { get; private set; }
-	
-	[SerializeField] private GameEvent NewGameStartedEvent = null;
-	[SerializeField] private GameEvent GameEndedEvent = null;
-	[SerializeField] private GameEvent GameResetToHalfMoveEvent = null;
-	[SerializeField] private GameEvent MoveExecutedEvent = null;
-	[SerializeField] private UnityChessDebug unityChessDebug = null;
 	public List<Piece> CurrentPieces {
 		get {
 			currentPiecesBacking.Clear();
@@ -27,14 +21,20 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 
 			return currentPiecesBacking;
 		}
-	}
-	private readonly List<Piece> currentPiecesBacking = new List<Piece>();
+	} private readonly List<Piece> currentPiecesBacking = new List<Piece>();
+	
+	[SerializeField] private GameEvent NewGameStartedEvent;
+	[SerializeField] private GameEvent GameEndedEvent;
+	[SerializeField] private GameEvent GameResetToHalfMoveEvent;
+	[SerializeField] private GameEvent MoveExecutedEvent;
+	[SerializeField] private UnityChessDebug unityChessDebug;
+	private Game game;
+	private Queue<Movement> moveQueue;
 	private FENInterchanger fenInterchanger;
 	private PGNInterchanger pgnInterchanger;
-	private Game game;
-	
+
 	public void Start() {
-		MoveQueue = new Queue<Movement>();
+		moveQueue = new Queue<Movement>();
 		fenInterchanger = new FENInterchanger();
 		pgnInterchanger = new PGNInterchanger();
 #if GAME_TEST
@@ -45,32 +45,39 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		unityChessDebug.enabled = true;
 #endif
 	}
+	
+	public bool MoveIsLegal(Movement baseMove, out Movement foundLegalMove) => game.MoveIsLegal(baseMove, out foundLegalMove);
+	public void EnqueueValidMove(Movement validMove) => moveQueue.Enqueue(validMove);
+	public string ExportToFEN() => fenInterchanger.Export(game);
+	public string ExportToPGN() => pgnInterchanger.Export(game);
+	public void StartNewGame(int mode) => StartNewGame((Mode) mode); // NOTE Used for binding to UnityEvent response, probably a cleaner way...
+	public async void OnPieceMoved() => await ExecuteMove(moveQueue.Dequeue());
 
-	public void StartNewGame(int mode) => StartNewGame((Mode) mode);
 	public void StartNewGame(Mode mode) {
 		game = new Game(mode, GameConditions.NormalStartingConditions);
 		NewGameStartedEvent.Raise();
-	}
-
-	public void OnPieceMoved() {
-		Movement move = MoveQueue.Dequeue();
-
-		if (move is SpecialMove specialMove) {
-			HandleSpecialMoveExecution(specialMove);
-		} else {
-			ExecuteTurn(move);
-		}
 	}
 
 	public void ResetGameToHalfMoveIndex(int halfMoveIndex) {
 		game.ResetGameToHalfMoveIndex(halfMoveIndex);
 		GameResetToHalfMoveEvent.Raise();
 	}
-	
-	public string ExportToFEN() => fenInterchanger.Export(game);
-	public string ExportToPGN() => pgnInterchanger.Export(game);
 
-	private async void HandleSpecialMoveExecution(SpecialMove specialMove) {
+	private async Task ExecuteMove(Movement move) {
+		if (move is SpecialMove specialMove) await HandleSpecialMoveBehaviour(specialMove);
+		
+		game.ExecuteTurn(move);
+
+		HalfMove latestHalfMove = PreviousMoves.Current;
+		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
+			BoardManager.Instance.SetActiveAllPieces(false);
+			GameEndedEvent.Raise();
+		} else BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(game.CurrentTurnSide);
+
+		MoveExecutedEvent.Raise();
+	}
+	
+	private async Task HandleSpecialMoveBehaviour(SpecialMove specialMove) {
 		switch (specialMove) {
 			case CastlingMove castlingMove:
 				BoardManager.Instance.CastleRook(castlingMove.AssociatedPiece.Position);
@@ -82,9 +89,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				UIManager.Instance.ActivatePromotionUI();
 				BoardManager.Instance.SetActiveAllPieces(false);
 				
-				Task<ElectedPiece> getUserChoiceTask = new Task<ElectedPiece>(UIManager.Instance.GetUserPromotionPieceChoice);
-				getUserChoiceTask.Start();
-				ElectedPiece choice = await getUserChoiceTask;
+				ElectedPiece choice = await Task.Run(UIManager.Instance.GetUserPromotionPieceChoice);
 				promotionMove.AssociatedPiece = PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, game.CurrentTurnSide);
 				BoardManager.Instance.DestroyPieceAtPosition(promotionMove.End);
 				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.AssociatedPiece);
@@ -93,23 +98,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				BoardManager.Instance.SetActiveAllPieces(true);
 				break;
 		}
-		
-		ExecuteTurn(specialMove);
 	}
-
-	private void ExecuteTurn(Movement move) {
-		game.ExecuteTurn(move);
-
-		HalfMove latestHalfMove = PreviousMoves.Current;
-		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
-			BoardManager.Instance.SetActiveAllPieces(false);
-			GameEndedEvent.Raise();
-		} else {
-			BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(game.CurrentTurnSide);
-		}
-
-		MoveExecutedEvent.Raise();
-	}
-
-	public bool MoveIsLegal(Movement baseMove, out Movement foundLegalMove) => game.MoveIsLegal(baseMove, out foundLegalMove);
 }
+
+#pragma warning restore 0649

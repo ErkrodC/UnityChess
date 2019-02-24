@@ -74,7 +74,7 @@ public class PieceBehaviour : MonoBehaviour {
 			if (GameManager.Instance.CurrentBoard[closestSquare] != null) BoardManager.Instance.DestroyPieceAtPosition(closestSquare);
 			thisTransform.parent = closestSquareTransform;
 			thisTransform.position = closestSquareTransform.position;
-			GameManager.Instance.MoveQueue.Enqueue(foundValidMove);
+			GameManager.Instance.EnqueueValidMove(foundValidMove);
 			PieceMovedEvent.Raise();
 		} else {
 			thisTransform.position = thisTransform.parent.position;
