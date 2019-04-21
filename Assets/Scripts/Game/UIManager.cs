@@ -25,6 +25,11 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	private Color buttonColor;
 
 	private void Start() {
+		GameManager.Instance.NewGameStarted += OnNewGameStarted;
+		GameManager.Instance.GameEndedEvent += OnGameEnded;
+		GameManager.Instance.MoveExecutedEvent += OnMoveExecuted;
+		GameManager.Instance.GameResetToHalfMove += OnGameResetToHalfMove;
+		
 		moveUITimeline = new Timeline<FullMoveUI>();
 		foreach (Text boardInfoText in boardInfoTexts) {
 			boardInfoText.color = textColor;

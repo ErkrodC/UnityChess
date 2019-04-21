@@ -1,11 +1,17 @@
 ﻿#pragma warning disable 0649
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityChess;
 using UnityEngine;
 
 public class GameManager : MonoBehaviourSingleton<GameManager> {
+	public event Action NewGameStarted;
+	public event Action GameEndedEvent;
+	public event Action GameResetToHalfMove;
+	public event Action MoveExecutedEvent;
+	
 	public Board CurrentBoard => game.BoardTimeline.Current;
 	public Side CurrentTurnSide => game.CurrentTurnSide;
 	public Timeline<HalfMove> PreviousMoves => game.PreviousMoves;
@@ -23,10 +29,6 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		}
 	} private readonly List<Piece> currentPiecesBacking = new List<Piece>();
 	
-	[SerializeField] private GameEvent NewGameStartedEvent;
-	[SerializeField] private GameEvent GameEndedEvent;
-	[SerializeField] private GameEvent GameResetToHalfMoveEvent;
-	[SerializeField] private GameEvent MoveExecutedEvent;
 	[SerializeField] private UnityChessDebug unityChessDebug;
 	private Game game;
 	private Queue<Movement> moveQueue;
@@ -34,6 +36,8 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	private PGNInterchanger pgnInterchanger;
 
 	public void Start() {
+		VisualPiece.VisualPieceMoved += OnPieceMoved;
+		
 		moveQueue = new Queue<Movement>();
 		fenInterchanger = new FENInterchanger();
 		pgnInterchanger = new PGNInterchanger();
@@ -46,35 +50,35 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 #endif
 	}
 	
-	public bool MoveIsLegal(Movement baseMove, out Movement foundLegalMove) => game.MoveIsLegal(baseMove, out foundLegalMove);
-	public void EnqueueValidMove(Movement validMove) => moveQueue.Enqueue(validMove);
+	public void EnqueueValidMove(Movement move) => moveQueue.Enqueue(move);
 	public string ExportToFEN() => fenInterchanger.Export(game);
 	public string ExportToPGN() => pgnInterchanger.Export(game);
 	public void StartNewGame(int mode) => StartNewGame((Mode) mode); // NOTE Used for binding to UnityEvent response, probably a cleaner way...
-	public async void OnPieceMoved() => await ExecuteMove(moveQueue.Dequeue());
 
 	public void StartNewGame(Mode mode) {
 		game = new Game(mode, GameConditions.NormalStartingConditions);
-		NewGameStartedEvent.Raise();
+		NewGameStarted?.Invoke();
 	}
 
 	public void ResetGameToHalfMoveIndex(int halfMoveIndex) {
 		game.ResetGameToHalfMoveIndex(halfMoveIndex);
-		GameResetToHalfMoveEvent.Raise();
+		GameResetToHalfMove?.Invoke();
 	}
 
-	private async Task ExecuteMove(Movement move) {
+	public async Task<bool> TryExecuteMove(Movement move) {
 		if (move is SpecialMove specialMove) await HandleSpecialMoveBehaviour(specialMove);
-		
-		game.ExecuteTurn(move);
+
+		if (!game.TryExecuteMove(move)) return false;
 
 		HalfMove latestHalfMove = PreviousMoves.Current;
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
 			BoardManager.Instance.SetActiveAllPieces(false);
-			GameEndedEvent.Raise();
+			GameEndedEvent?.Invoke();
 		} else BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(game.CurrentTurnSide);
 
-		MoveExecutedEvent.Raise();
+		MoveExecutedEvent?.Invoke();
+
+		return true;
 	}
 	
 	private async Task HandleSpecialMoveBehaviour(SpecialMove specialMove) {
@@ -83,7 +87,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				BoardManager.Instance.CastleRook(castlingMove.AssociatedPiece.Position);
 				break;
 			case EnPassantMove enPassantMove:
-				BoardManager.Instance.DestroyPieceAtPosition(enPassantMove.AssociatedPiece.Position);
+				BoardManager.Instance.TryDestroyVisualPiece(enPassantMove.AssociatedPiece.Position);
 				break;
 			case PromotionMove promotionMove:
 				UIManager.Instance.ActivatePromotionUI();
@@ -91,12 +95,29 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				
 				ElectedPiece choice = await Task.Run(UIManager.Instance.GetUserPromotionPieceChoice);
 				promotionMove.AssociatedPiece = PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, game.CurrentTurnSide);
-				BoardManager.Instance.DestroyPieceAtPosition(promotionMove.End);
+				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.End);
 				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.AssociatedPiece);
 				
 				UIManager.Instance.DeactivatePromotionUI();
 				BoardManager.Instance.SetActiveAllPieces(true);
 				break;
+		}
+	}
+
+	private void OnPieceMoved(Square movedPieceInitialSquare, Transform movedPieceTransform, Transform closedBoardSquareTransform) {
+		Square closestSquare = SquareUtil.StringToSquare(closedBoardSquareTransform.name);
+	
+		Movement move = new Movement(movedPieceInitialSquare, closestSquare);
+		if (TryExecuteMove(move).Result) {
+			BoardManager.Instance.TryDestroyVisualPiece(closestSquare);
+			movedPieceTransform.parent = closedBoardSquareTransform;
+			movedPieceTransform.position = closedBoardSquareTransform.position;
+			EnqueueValidMove(move);
+		} else {
+			movedPieceTransform.position = movedPieceTransform.parent.position;
+#if DEBUG_VIEW
+			UnityChessDebug.ShowLegalMovesInLog(GameManager.Instance.CurrentBoard[movedPieceInitialSquare]);
+#endif
 		}
 	}
 }

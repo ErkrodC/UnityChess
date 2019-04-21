@@ -13,6 +13,9 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	private readonly System.Random rng = new System.Random();
 
 	private void Start() {
+		GameManager.Instance.NewGameStarted += OnNewGameStarted;
+		GameManager.Instance.GameResetToHalfMove += OnGameResetToHalfMove;
+		
 		positionMap = new Dictionary<Square, GameObject>(64);
 		Transform boardTransform = transform;
 		Vector3 boardPosition = boardTransform.position;
@@ -92,20 +95,20 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	}
 
 	public void SetActiveAllPieces(bool active) {
-		PieceBehaviour[] pieceBehaviours = GetComponentsInChildren<PieceBehaviour>(true);
-		foreach (PieceBehaviour pieceBehaviour in pieceBehaviours) pieceBehaviour.enabled = active;
+		VisualPiece[] visualPiece = GetComponentsInChildren<VisualPiece>(true);
+		foreach (VisualPiece pieceBehaviour in visualPiece) pieceBehaviour.enabled = active;
 	}
 
 	public void EnsureOnlyPiecesOfSideAreEnabled(Side side) {
-		PieceBehaviour[] pieceBehaviours = GetComponentsInChildren<PieceBehaviour>(true);
-		foreach (PieceBehaviour pieceBehaviour in pieceBehaviours) {
+		VisualPiece[] visualPiece = GetComponentsInChildren<VisualPiece>(true);
+		foreach (VisualPiece pieceBehaviour in visualPiece) {
 			pieceBehaviour.enabled = pieceBehaviour.PieceColor == side && GameManager.Instance.CurrentBoard[pieceBehaviour.CurrentSquare].LegalMoves.Count > 0;
 		}
 	}
 
-	public void DestroyPieceAtPosition(Square position) {
-		PieceBehaviour pieceBehaviour = positionMap[position].GetComponentInChildren<PieceBehaviour>();
-		DestroyImmediate(pieceBehaviour.gameObject);
+	public void TryDestroyVisualPiece(Square position) {
+		VisualPiece visualPiece = positionMap[position].GetComponentInChildren<VisualPiece>();
+		if (visualPiece != null) DestroyImmediate(visualPiece.gameObject);
 	}
 	
 	private static float FileOrRankToSidePosition(int index) {
@@ -114,9 +117,9 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	}
 	
 	private void ClearBoard() {
-		PieceBehaviour[] pieceBehaviours = GetComponentsInChildren<PieceBehaviour>(true);
+		VisualPiece[] visualPiece = GetComponentsInChildren<VisualPiece>(true);
 
-		foreach (PieceBehaviour pieceBehaviour in pieceBehaviours) {
+		foreach (VisualPiece pieceBehaviour in visualPiece) {
 			DestroyImmediate(pieceBehaviour.gameObject);
 		}
 	}

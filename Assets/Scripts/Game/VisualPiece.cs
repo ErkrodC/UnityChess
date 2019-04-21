@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityChess;
 using UnityEngine;
 using static UnityChess.SquareUtil;
 
-public class PieceBehaviour : MonoBehaviour {
+public class VisualPiece : MonoBehaviour {
+	public delegate void VisualPieceMovedAction(Square movedPieceInitialSquare, Transform movedPieceTransform, Transform closedBoardSquareTransform);
+	public static event VisualPieceMovedAction VisualPieceMoved;
+	
 	public Side PieceColor;
 	public Square CurrentSquare => StringToSquare(transform.parent.name);
 	
 	private const float SquareCollisionRadius = 9f;
-	
-	[SerializeField] private GameEvent PieceMovedEvent = null;
 	private Camera boardCamera;
 	private Vector3 piecePositionSS;
 	private Vector2 mouseToPieceSS;
@@ -62,25 +64,7 @@ public class PieceBehaviour : MonoBehaviour {
 				}
 			}
 
-			TryExecuteMove(closestSquareTransform);
-		}
-	}
-
-	private void TryExecuteMove(Transform closestSquareTransform) {
-		Square closestSquare = StringToSquare(closestSquareTransform.name);
-		
-		Movement baseMove = new Movement(CurrentSquare, closestSquare);
-		if (GameManager.Instance.MoveIsLegal(baseMove, out Movement foundValidMove)) {
-			if (GameManager.Instance.CurrentBoard[closestSquare] != null) BoardManager.Instance.DestroyPieceAtPosition(closestSquare);
-			thisTransform.parent = closestSquareTransform;
-			thisTransform.position = closestSquareTransform.position;
-			GameManager.Instance.EnqueueValidMove(foundValidMove);
-			PieceMovedEvent.Raise();
-		} else {
-			thisTransform.position = thisTransform.parent.position;
-#if DEBUG_VIEW
-			UnityChessDebug.ShowLegalMovesInLog(GameManager.Instance.CurrentBoard[CurrentSquare]);
-#endif
+			VisualPieceMoved?.Invoke(CurrentSquare, thisTransform, closestSquareTransform);
 		}
 	}
 }
