@@ -52,7 +52,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	}
 
 	public void OnGameEnded() {
-		HalfMove latestHalfMove = GameManager.Instance.PreviousMoves.Current;
+		HalfMove latestHalfMove = GameManager.Instance.HalfMoveTimeline.Current;
 
 		if (latestHalfMove.CausedCheckmate) resultText.text = $"{latestHalfMove.Piece.Color} Wins!";
 		else if (latestHalfMove.CausedStalemate) resultText.text = "Draw.";
@@ -65,7 +65,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		whiteTurnIndicator.enabled = !whiteTurnIndicator.enabled;
 		blackTurnIndicator.enabled = !blackTurnIndicator.enabled;
 
-		AddMoveToHistory(GameManager.Instance.PreviousMoves.Current, GameManager.Instance.CurrentTurnSide.Complement());
+		AddMoveToHistory(GameManager.Instance.HalfMoveTimeline.Current, GameManager.Instance.CurrentTurnSide.Complement());
 	}
 
 	public void OnGameResetToHalfMove() {
@@ -74,9 +74,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		ValidateIndicators();
 	}
 
-	public void ActivatePromotionUI() => promotionUI.gameObject.SetActive(true);
-
-	public void DeactivatePromotionUI() => promotionUI.gameObject.SetActive(false);
+	public void SetActivePromotionUI(bool value) => promotionUI.gameObject.SetActive(value);
 
 	public ElectedPiece GetUserPromotionPieceChoice() {
 		while (!userHasMadePromotionPieceChoice) { }
@@ -91,12 +89,12 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	}
 
 	public void ResetGameToFirstHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(0);
-	
+
 	public void ResetGameToPreviousHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Max(0, GameManager.Instance.HalfMoveCount - 1));
 
-	public void ResetGameToNextHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Min(GameManager.Instance.HalfMoveCount + 1, GameManager.Instance.PreviousMoves.Span - 1));
+	public void ResetGameToNextHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Min(GameManager.Instance.HalfMoveCount + 1, GameManager.Instance.HalfMoveTimeline.Span - 1));
 
-	public void ResetGameToLastHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(GameManager.Instance.PreviousMoves.Span - 1);
+	public void ResetGameToLastHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(GameManager.Instance.HalfMoveTimeline.Span - 1);
 
 	public void StartNewGame(int mode) => GameManager.Instance.StartNewGame(mode);
 
@@ -134,7 +132,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	private void RemoveAlternateHistory() {
 		if (!moveUITimeline.IsUpToDate) {
-			resultText.gameObject.SetActive(GameManager.Instance.PreviousMoves.Current.CausedCheckmate);
+			resultText.gameObject.SetActive(GameManager.Instance.HalfMoveTimeline.Current.CausedCheckmate);
 			List<FullMoveUI> divergentFullMoveUIs = moveUITimeline.PopFuture();
 			foreach (FullMoveUI divergentFullMoveUI in divergentFullMoveUIs) Destroy(divergentFullMoveUI.gameObject);
 		}
