@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public event Action NewGameStarted;
 	public event Action GameEndedEvent;
 	public event Action GameResetToHalfMove;
-	public event Action MoveExecutedEvent;
+	public event Action MoveExecuted;
 	
 	public Board CurrentBoard => game.BoardTimeline.Current;
 	public Side CurrentTurnSide => game.CurrentTurnSide;
@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 			GameEndedEvent?.Invoke();
 		} else BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(game.CurrentTurnSide);
 
-		MoveExecutedEvent?.Invoke();
+		MoveExecuted?.Invoke();
 
 		return true;
 	}

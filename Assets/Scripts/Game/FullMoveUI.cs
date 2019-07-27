@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class FullMoveUI : MonoBehaviour {
@@ -26,7 +27,18 @@ public class FullMoveUI : MonoBehaviour {
 	private int WhiteHalfMoveIndex => (FullMoveNumber - 1) * 2;
 	private int BlackHalfMoveIndex => WhiteHalfMoveIndex + 1;
 
-	private void Start() => ValidateMoveHighlights();
+	private void Start() {
+		ValidateMoveHighlights();
+
+		GameManager.Instance.MoveExecuted += ValidateMoveHighlights;
+		GameManager.Instance.GameResetToHalfMove += ValidateMoveHighlights;
+	}
+
+	private void OnDestroy()
+	{
+		GameManager.Instance.MoveExecuted -= ValidateMoveHighlights;
+		GameManager.Instance.GameResetToHalfMove -= ValidateMoveHighlights;
+	}
 
 	public void SetAlternateColor(float darkenAmount) {
 		foreach (Image image in new []{ backgroundImage, whiteMoveButtonImage, blackMoveButtonImage }) {
