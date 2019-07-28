@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public event Action NewGameStarted;
-	public event Action GameEndedEvent;
+	public event Action GameEnded;
 	public event Action GameResetToHalfMove;
 	public event Action MoveExecuted;
 	
@@ -43,7 +43,6 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		moveQueue = new Queue<Movement>();
 		fenInterchanger = new FENInterchanger();
 		pgnInterchanger = new PGNInterchanger();
-		promotionUITaskCancellationTokenSource = new CancellationTokenSource();
 #if GAME_TEST
 		StartNewGame(Mode.HumanVsHuman);
 #endif
@@ -67,21 +66,17 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		if (!game.ResetGameToHalfMoveIndex(halfMoveIndex)) return;
 		
 		UIManager.Instance.SetActivePromotionUI(false);
-		promotionUITaskCancellationTokenSource.Cancel();
+		promotionUITaskCancellationTokenSource?.Cancel();
 		GameResetToHalfMove?.Invoke();
 	}
-	
-	public async void OnPieceMoved() => await TryExecuteMove(moveQueue.Dequeue());
 
-	public async Task<bool> TryExecuteMove(Movement move) {
-		if (move is SpecialMove specialMove) await HandleSpecialMoveBehaviour(specialMove);
-
+	public bool TryExecuteMove(Movement move) {
 		if (!game.TryExecuteMove(move)) return false;
 
 		HalfMove latestHalfMove = HalfMoveTimeline.Current;
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
 			BoardManager.Instance.SetActiveAllPieces(false);
-			GameEndedEvent?.Invoke();
+			GameEnded?.Invoke();
 		} else BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(game.CurrentTurnSide);
 
 		MoveExecuted?.Invoke();
@@ -89,46 +84,63 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		return true;
 	}
 	
-	private async Task<bool> HandleSpecialMoveBehaviour(SpecialMove specialMove) {
+	private async Task<SpecialMove> HandleSpecialMoveBehaviour(SpecialMove specialMove) {
 		switch (specialMove) {
 			case CastlingMove castlingMove:
 				BoardManager.Instance.CastleRook(castlingMove.AssociatedPiece.Position);
-				return true;
+				return castlingMove;
 			case EnPassantMove enPassantMove:
 				BoardManager.Instance.TryDestroyVisualPiece(enPassantMove.AssociatedPiece.Position);
-				return true;
+				return enPassantMove;
 			case PromotionMove promotionMove:
 				UIManager.Instance.SetActivePromotionUI(true);
 				BoardManager.Instance.SetActiveAllPieces(false);
 
-				ElectedPiece choice = await Task.Run(UIManager.Instance.GetUserPromotionPieceChoice, promotionUITaskCancellationTokenSource.Token);
-				if (promotionUITaskCancellationTokenSource.Token.IsCancellationRequested) return false;
+				Func<ElectedPiece> task = UIManager.Instance.GetUserPromotionPieceChoice;
+
+				promotionUITaskCancellationTokenSource?.Cancel();
+				promotionUITaskCancellationTokenSource = new CancellationTokenSource();
+				ElectedPiece choice = await Task.Run(task, promotionUITaskCancellationTokenSource.Token);
+				
+				UIManager.Instance.SetActivePromotionUI(false);
+				BoardManager.Instance.SetActiveAllPieces(true);
+
+				if (promotionUITaskCancellationTokenSource == null) { return null; }
+				else if (promotionUITaskCancellationTokenSource.Token.IsCancellationRequested) return null;
 				
 				promotionMove.AssociatedPiece = PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, game.CurrentTurnSide);
+				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.Start);
 				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.End);
 				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.AssociatedPiece);
 
-				UIManager.Instance.SetActivePromotionUI(false);
-				BoardManager.Instance.SetActiveAllPieces(true);
-				return true;
+				promotionUITaskCancellationTokenSource = null;
+				return promotionMove;
 			default:
-				return false;
+				return null;
 		}
 	}
 
-	private void OnPieceMoved(Square movedPieceInitialSquare, Transform movedPieceTransform, Transform closedBoardSquareTransform) {
-		Square closestSquare = SquareUtil.StringToSquare(closedBoardSquareTransform.name);
-	
-		Movement move = new Movement(movedPieceInitialSquare, closestSquare);
-		if (TryExecuteMove(move).Result) {
-			BoardManager.Instance.TryDestroyVisualPiece(closestSquare);
-			movedPieceTransform.parent = closedBoardSquareTransform;
-			movedPieceTransform.position = closedBoardSquareTransform.position;
+	private async void OnPieceMoved(Square movedPieceInitialSquare, Transform movedPieceTransform, Transform closestBoardSquareTransform) {
+		Square closestSquare = SquareUtil.StringToSquare(closestBoardSquareTransform.name);
+
+		bool foundLegalMove = game.TryGetLegalMove(movedPieceInitialSquare, closestSquare, out Movement move);
+		
+		if (move is SpecialMove specialMove) {
+			if ((move = await HandleSpecialMoveBehaviour(specialMove)) == null) { return; }
+		}
+		
+		if (foundLegalMove && TryExecuteMove(move)) {
+			if (!(move is SpecialMove)) { BoardManager.Instance.TryDestroyVisualPiece(move.End); }
+			if (move is PromotionMove) { movedPieceTransform = BoardManager.Instance.GetPieceGOAtPosition(move.End).transform; }
+			
+			movedPieceTransform.parent = closestBoardSquareTransform;
+			movedPieceTransform.position = closestBoardSquareTransform.position;
+			
 			EnqueueValidMove(move);
 		} else {
 			movedPieceTransform.position = movedPieceTransform.parent.position;
 #if DEBUG_VIEW
-			UnityChessDebug.ShowLegalMovesInLog(GameManager.Instance.CurrentBoard[movedPieceInitialSquare]);
+			UnityChessDebug.ShowLegalMovesInLog(CurrentBoard[movedPieceInitialSquare]);
 #endif
 		}
 	}

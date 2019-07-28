@@ -5,7 +5,7 @@ using UnityEngine;
 using static UnityChess.SquareUtil;
 
 public class VisualPiece : MonoBehaviour {
-	public delegate void VisualPieceMovedAction(Square movedPieceInitialSquare, Transform movedPieceTransform, Transform closedBoardSquareTransform);
+	public delegate void VisualPieceMovedAction(Square movedPieceInitialSquare, Transform movedPieceTransform, Transform closestBoardSquareTransform);
 	public static event VisualPieceMovedAction VisualPieceMoved;
 	
 	public Side PieceColor;

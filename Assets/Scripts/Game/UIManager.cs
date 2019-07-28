@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityChess;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,7 +27,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	private void Start() {
 		GameManager.Instance.NewGameStarted += OnNewGameStarted;
-		GameManager.Instance.GameEndedEvent += OnGameEnded;
+		GameManager.Instance.GameEnded += OnGameEnded;
 		GameManager.Instance.MoveExecuted += OnMoveExecuted;
 		GameManager.Instance.GameResetToHalfMove += OnGameResetToHalfMove;
 		
@@ -78,7 +79,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	public ElectedPiece GetUserPromotionPieceChoice() {
 		while (!userHasMadePromotionPieceChoice) { }
-		
+
 		userHasMadePromotionPieceChoice = false;
 		return userPromotionPieceChoice;
 	}
@@ -100,7 +101,6 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	private void AddMoveToHistory(HalfMove latestHalfMove, Side latestTurnSide) {
 		RemoveAlternateHistory();
-		int turnCount = GameManager.Instance.HalfMoveCount;
 		
 		switch (latestTurnSide) {
 			case Side.Black:

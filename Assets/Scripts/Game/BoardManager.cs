@@ -111,6 +111,11 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		if (visualPiece != null) DestroyImmediate(visualPiece.gameObject);
 	}
 	
+	public GameObject GetPieceGOAtPosition(Square position) {
+		GameObject square = GetSquareGOByPosition(position);
+		return square.transform.childCount == 0 ? null : square.transform.GetChild(0).gameObject;
+	}
+	
 	private static float FileOrRankToSidePosition(int index) {
 		float t = (index - 1) / 7f;
 		return Mathf.Lerp(-BoardPlaneSideHalfLength, BoardPlaneSideHalfLength, t);
@@ -122,11 +127,6 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		foreach (VisualPiece pieceBehaviour in visualPiece) {
 			DestroyImmediate(pieceBehaviour.gameObject);
 		}
-	}
-	
-	private GameObject GetPieceGOAtPosition(Square position) {
-		GameObject square = GetSquareGOByPosition(position);
-		return square.transform.childCount == 0 ? null : square.transform.GetChild(0).gameObject;
 	}
 
 	private GameObject GetSquareGOByPosition(Square position) => Array.Find(AllSquaresGO, go => go.name == SquareToString(position));
