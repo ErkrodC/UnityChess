@@ -41,6 +41,6 @@ public class MultiplayerSystem : MonoBehaviourSingleton<MultiplayerSystem> {
 		Marshal.FreeHGlobal(dataPacketPtr);
 		// offset += dataPacketSize;
 
-		serverSocket.Send(buffer, 1024, SocketFlags.None);
+		serverSocket.Send(buffer, dataPacketSize, SocketFlags.None);
 	}
 }
