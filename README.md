@@ -6,6 +6,7 @@ UnityChess is a 3D Chess game built using Unity/C#, complete with its own AI.
 
 ### Contributing
 Downloading a zip of the repository may not work. To properly clone, [download](https://git-lfs.github.com/) and install Git LFS.
+For a more in-depth explanation/guide, visit the relevant [wiki page](https://github.com/ErkrodC/UnityChess/wiki/Getting-The-Project).
 
 Please follow the collaborative github workflow, well described [here](https://github.com/asmeurer/git-workflow/blob/master/README.md).
 
