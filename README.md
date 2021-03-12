@@ -1,6 +1,6 @@
 # UnityChess
 
-UnityChess is a 3D Chess game built using Unity/C#, complete with its own AI.
+UnityChess is a 3D Chess game built using Unity/C#.
 
 ![UnityChess demo](https://media.githubusercontent.com/media/ErkrodC/UnityChess/development/UnityChess.gif)
 
