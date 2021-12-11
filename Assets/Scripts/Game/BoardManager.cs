@@ -5,7 +5,7 @@ using UnityEngine;
 using static UnityChess.SquareUtil;
 
 public class BoardManager : MonoBehaviourSingleton<BoardManager> {
-	[HideInInspector] public GameObject[] AllSquaresGO = new GameObject[64];
+	private readonly GameObject[] allSquaresGO = new GameObject[64];
 	private Dictionary<Square, GameObject> positionMap;
 	private const float BoardPlaneSideLength = 14f; // measured from corner square center to corner square center, on same side.
 	private const float BoardPlaneSideHalfLength = BoardPlaneSideLength * 0.5f;
@@ -28,12 +28,12 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 				squareGO.tag = "Square";
 				
 				positionMap.Add(new Square(file, rank), squareGO);
-				AllSquaresGO[(file - 1) * 8 + (rank - 1)] = squareGO;
+				allSquaresGO[(file - 1) * 8 + (rank - 1)] = squareGO;
 			}
 		}
 	}
 
-	public void OnNewGameStarted() {
+	private void OnNewGameStarted() {
 		ClearBoard();
 		
 		foreach (Piece piece in GameManager.Instance.CurrentPieces)
@@ -42,7 +42,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.CurrentTurnSide);
 	}
 
-	public void OnGameResetToHalfMove() {
+	private void OnGameResetToHalfMove() {
 		ClearBoard();
 
 		foreach (Piece piece in GameManager.Instance.CurrentPieces)
@@ -88,7 +88,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 
 	public void GetSquareGOsWithinRadius(List<GameObject> squareGOs, Vector3 positionWS, float radius) {
 		float radiusSqr = radius * radius;
-		foreach (GameObject squareGO in AllSquaresGO) {
+		foreach (GameObject squareGO in allSquaresGO) {
 			if ((squareGO.transform.position - positionWS).sqrMagnitude < radiusSqr)
 				squareGOs.Add(squareGO);
 		}
@@ -129,5 +129,5 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		}
 	}
 
-	private GameObject GetSquareGOByPosition(Square position) => Array.Find(AllSquaresGO, go => go.name == SquareToString(position));
+	private GameObject GetSquareGOByPosition(Square position) => Array.Find(allSquaresGO, go => go.name == SquareToString(position));
 }

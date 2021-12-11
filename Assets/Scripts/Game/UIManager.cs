@@ -20,8 +20,6 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	[SerializeField, Range(-0.25f, 0.25f)] private float buttonColorDarkenAmount = 0f;
 	[SerializeField, Range(-0.25f, 0.25f)] private float moveHistoryAlternateColorDarkenAmount = 0f;
 	
-	private bool userHasMadePromotionPieceChoice;
-	private ElectedPiece userPromotionPieceChoice = ElectedPiece.None;
 	private Timeline<FullMoveUI> moveUITimeline;
 	private Color buttonColor;
 
@@ -39,7 +37,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		buttonColor = new Color(backgroundColor.r - buttonColorDarkenAmount, backgroundColor.g - buttonColorDarkenAmount, backgroundColor.b - buttonColorDarkenAmount);
 	}
 
-	public void OnNewGameStarted() {
+	private void OnNewGameStarted() {
 		UpdateGameStringInputField();
 		ValidateIndicators();
 		
@@ -52,7 +50,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		resultText.gameObject.SetActive(false);
 	}
 
-	public void OnGameEnded() {
+	private void OnGameEnded() {
 		HalfMove latestHalfMove = GameManager.Instance.HalfMoveTimeline.Current;
 
 		if (latestHalfMove.CausedCheckmate) resultText.text = $"{latestHalfMove.Piece.Color} Wins!";
@@ -61,7 +59,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		resultText.gameObject.SetActive(true);
 	}
 
-	public void OnMoveExecuted() {
+	private void OnMoveExecuted() {
 		UpdateGameStringInputField();
 		whiteTurnIndicator.enabled = !whiteTurnIndicator.enabled;
 		blackTurnIndicator.enabled = !blackTurnIndicator.enabled;
@@ -69,7 +67,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		AddMoveToHistory(GameManager.Instance.HalfMoveTimeline.Current, GameManager.Instance.CurrentTurnSide.Complement());
 	}
 
-	public void OnGameResetToHalfMove() {
+	private void OnGameResetToHalfMove() {
 		UpdateGameStringInputField();
 		moveUITimeline.HeadIndex = GameManager.Instance.HalfMoveCount / 2;
 		ValidateIndicators();
@@ -77,17 +75,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	public void SetActivePromotionUI(bool value) => promotionUI.gameObject.SetActive(value);
 
-	public ElectedPiece GetUserPromotionPieceChoice() {
-		while (!userHasMadePromotionPieceChoice) { }
-
-		userHasMadePromotionPieceChoice = false;
-		return userPromotionPieceChoice;
-	}
-
-	public void OnElectionButton(int choice) {
-		userPromotionPieceChoice = (ElectedPiece) choice;
-		userHasMadePromotionPieceChoice = true;
-	}
+	public void OnElectionButton(int choice) => GameManager.Instance.ElectPiece((ElectedPiece)choice);
 
 	public void ResetGameToFirstHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(0);
 
@@ -97,7 +85,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	public void ResetGameToLastHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(GameManager.Instance.HalfMoveTimeline.Span - 1);
 
-	public void StartNewGame(int mode) => GameManager.Instance.StartNewGame(mode);
+	public void StartNewGame(int mode) => GameManager.Instance.StartNewGame((Mode) mode);
 
 	private void AddMoveToHistory(HalfMove latestHalfMove, Side latestTurnSide) {
 		RemoveAlternateHistory();
