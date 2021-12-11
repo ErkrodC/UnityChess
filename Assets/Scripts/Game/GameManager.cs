@@ -1,6 +1,4 @@
-﻿#pragma warning disable 0649
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -70,8 +68,10 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		GameResetToHalfMove?.Invoke();
 	}
 
-	public bool TryExecuteMove(Movement move) {
-		if (!game.TryExecuteMove(move)) return false;
+	private bool TryExecuteMove(Movement move) {
+		if (!game.TryExecuteMove(move)) {
+			return false;
+		}
 
 		HalfMove latestHalfMove = HalfMoveTimeline.Current;
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
@@ -136,27 +136,29 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	private async void OnPieceMoved(Square movedPieceInitialSquare, Transform movedPieceTransform, Transform closestBoardSquareTransform) {
 		Square closestSquare = SquareUtil.StringToSquare(closestBoardSquareTransform.name);
 
-		bool foundLegalMove = game.TryGetLegalMove(movedPieceInitialSquare, closestSquare, out Movement move);
-
-		if (move is SpecialMove specialMove
-		    && !await TryHandleSpecialMoveBehaviourAsync(specialMove)
-		) { return; }
-
-		if (foundLegalMove && TryExecuteMove(move)) {
-			if (move is not SpecialMove) { BoardManager.Instance.TryDestroyVisualPiece(move.End); }
-			if (move is PromotionMove) { movedPieceTransform = BoardManager.Instance.GetPieceGOAtPosition(move.End).transform; }
-			
-			movedPieceTransform.parent = closestBoardSquareTransform;
-			movedPieceTransform.position = closestBoardSquareTransform.position;
-			
-			EnqueueValidMove(move);
-		} else {
+		if (!game.TryGetLegalMove(movedPieceInitialSquare, closestSquare, out Movement move)) {
 			movedPieceTransform.position = movedPieceTransform.parent.position;
 #if DEBUG_VIEW
 			UnityChessDebug.ShowLegalMovesInLog(CurrentBoard[movedPieceInitialSquare]);
 #endif
+			return;
+		}
+
+		if ((move is not SpecialMove specialMove || await TryHandleSpecialMoveBehaviourAsync(specialMove))
+		    && TryExecuteMove(move)
+		) {
+			if (move is not SpecialMove) {
+				BoardManager.Instance.TryDestroyVisualPiece(move.End);
+			}
+
+			if (move is PromotionMove) {
+				movedPieceTransform = BoardManager.Instance.GetPieceGOAtPosition(move.End).transform;
+			}
+
+			movedPieceTransform.parent = closestBoardSquareTransform;
+			movedPieceTransform.position = closestBoardSquareTransform.position;
+
+			EnqueueValidMove(move);
 		}
 	}
 }
-
-#pragma warning restore 0649
