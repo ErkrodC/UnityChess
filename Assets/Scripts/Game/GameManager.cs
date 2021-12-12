@@ -31,16 +31,24 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	[SerializeField] private UnityChessDebug unityChessDebug;
 	private Game game;
 	private Queue<Movement> moveQueue;
-	private FENInterchanger fenInterchanger;
-	private PGNInterchanger pgnInterchanger;
+	private FENSerializer fenSerializer;
+	private PGNSerializer pgnSerializer;
 	private CancellationTokenSource promotionUITaskCancellationTokenSource;
+	private ElectedPiece userPromotionChoice = ElectedPiece.None;
+	private IGameSerializer currentSerializer;
+	private Dictionary<GameSerializationType, IGameSerializer> serializersByType;
+	private GameSerializationType selectSerializationType = GameSerializationType.FEN;
 
 	public void Start() {
 		VisualPiece.VisualPieceMoved += OnPieceMoved;
 		
 		moveQueue = new Queue<Movement>();
-		fenInterchanger = new FENInterchanger();
-		pgnInterchanger = new PGNInterchanger();
+
+		serializersByType = new Dictionary<GameSerializationType, IGameSerializer> {
+			[GameSerializationType.FEN] = new FENSerializer(),
+			[GameSerializationType.PGN] = new PGNSerializer()
+		};
+		
 #if GAME_TEST
 		StartNewGame(Mode.HumanVsHuman);
 #endif
@@ -51,9 +59,11 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 #endif
 	}
 	
-	public void EnqueueValidMove(Movement move) => moveQueue.Enqueue(move);
-	public string ExportToFEN() => fenInterchanger.Export(game);
-	public string ExportToPGN() => pgnInterchanger.Export(game);
+	public string SerializeGame() {
+		return serializersByType.TryGetValue(selectSerializationType, out IGameSerializer serializer)
+			? serializer?.Serialize(game)
+			: null;
+	}
 
 	public void StartNewGame(Mode mode) {
 		game = new Game(mode, GameConditions.NormalStartingConditions);
@@ -108,7 +118,9 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				    || promotionUITaskCancellationTokenSource.Token.IsCancellationRequested
 				) { return false; }
 
-				promotionMove.AssociatedPiece = PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, game.CurrentTurnSide);
+				promotionMove.SetPromotionPiece(
+					PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, game.CurrentTurnSide)
+				);
 				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.Start);
 				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.End);
 				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.AssociatedPiece);
@@ -120,7 +132,6 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		}
 	}
 	
-	private ElectedPiece userPromotionChoice = ElectedPiece.None;
 	private ElectedPiece GetUserPromotionPieceChoice() {
 		while (userPromotionChoice == ElectedPiece.None) { }
 
@@ -158,7 +169,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 			movedPieceTransform.parent = closestBoardSquareTransform;
 			movedPieceTransform.position = closestBoardSquareTransform.position;
 
-			EnqueueValidMove(move);
+			moveQueue.Enqueue(move);
 		}
 	}
 }

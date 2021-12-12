@@ -131,5 +131,5 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		blackTurnIndicator.enabled = currentTurnSide == Side.Black;
 	}
 
-	private void UpdateGameStringInputField() => GameStringInputField.text = GameManager.Instance.ExportToFEN();
+	private void UpdateGameStringInputField() => GameStringInputField.text = GameManager.Instance.SerializeGame();
 }
