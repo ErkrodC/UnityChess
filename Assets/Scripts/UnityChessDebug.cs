@@ -21,7 +21,7 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 		for (int file = 1; file <= 8; file++) {
 			for (int rank = 1; rank <= 8; rank++) {
 				Piece piece = board[file, rank];
-				Transform squareTransform = debugBoard.transform.Find($"{SquareUtil.FileRankToSquareString(file, rank)}");
+				Transform squareTransform = debugBoard.transform.Find($"{SquareUtil.SquareToString(file, rank)}");
 
 				Text squareText = squareTransform.GetComponentInChildren<Text>();
 

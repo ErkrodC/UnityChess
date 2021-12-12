@@ -22,7 +22,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		
 		for (int file = 1; file <= 8; file++) {
 			for (int rank = 1; rank <= 8; rank++) {
-				GameObject squareGO = new GameObject(FileRankToSquareString(file, rank));
+				GameObject squareGO = new GameObject(SquareToString(file, rank));
 				squareGO.transform.position = new Vector3(boardPosition.x + FileOrRankToSidePosition(file), boardPosition.y + BoardHeight, boardPosition.z + FileOrRankToSidePosition(rank));
 				squareGO.transform.parent = boardTransform;
 				squareGO.tag = "Square";
