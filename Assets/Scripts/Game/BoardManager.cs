@@ -39,7 +39,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		foreach (Piece piece in GameManager.Instance.CurrentPieces)
 			CreateAndPlacePieceGO(piece);
 		
-		EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.CurrentTurnSide);
+		EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);
 	}
 
 	private void OnGameResetToHalfMove() {
@@ -50,7 +50,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 
 		HalfMove latestHalfMove = GameManager.Instance.HalfMoveTimeline.Current;
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) SetActiveAllPieces(false);
-		else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.CurrentTurnSide);
+		else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);
 	}
 
 	public void CastleRook(Square rookPosition) {
@@ -78,7 +78,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	}
 
 	public void CreateAndPlacePieceGO(Piece piece) {
-		string modelName = $"{piece.Color} {piece.GetType().Name}";
+		string modelName = $"{piece.OwningSide} {piece.GetType().Name}";
 		GameObject pieceGO = Instantiate(Resources.Load("PieceSets/Marble/" + modelName) as GameObject, positionMap[piece.Position].transform);
 
 		/*if (!(piece is Knight) && !(piece is King)) {

@@ -10,11 +10,14 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 	}
 
 	public static void ShowLegalMovesInLog(Piece piece) {
-		string debMsg = $"# of valid moves: {piece.LegalMoves.Count}\n";
-		foreach (Movement validMove in piece.LegalMoves) {
-			debMsg += $"{validMove}\n";
+		string debugMessage = $"# of valid moves: {piece?.LegalMoves.Count ?? 0}\n";
+		if (piece != null) {
+			foreach (Movement validMove in piece.LegalMoves) {
+				debugMessage += $"{validMove}\n";
+			}
 		}
-		Debug.Log(debMsg);
+		
+		Debug.LogWarning(debugMessage);
 	}
 
 	private void UpdateBoardDebugView(Board board) {
@@ -27,12 +30,12 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 
 				Image squareBackground = squareTransform.GetComponent<Image>();
 				switch (piece) {
-					case { Color: Side.Black }:
+					case { OwningSide: Side.Black }:
 						squareBackground.color = Color.black;
 						squareText.color = Color.white;
 						squareText.text = piece.ToString();
 						break;
-					case { Color: Side.White }:
+					case { OwningSide: Side.White }:
 						squareBackground.color = Color.white;
 						squareText.color = Color.black;
 						squareText.text = piece.ToString();

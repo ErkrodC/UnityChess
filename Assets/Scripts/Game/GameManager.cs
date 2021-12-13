@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public event Action MoveExecuted;
 	
 	public Board CurrentBoard => game.BoardTimeline.Current;
-	public Side CurrentTurnSide => game.CurrentTurnSide;
+	public Side SideToMove => game.SideToMove;
 	public Timeline<HalfMove> HalfMoveTimeline => game.HalfMoveTimeline;
 	public int HalfMoveCount => game.LatestHalfMoveIndex;
 	public List<Piece> CurrentPieces {
@@ -87,7 +87,9 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
 			BoardManager.Instance.SetActiveAllPieces(false);
 			GameEnded?.Invoke();
-		} else BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(game.CurrentTurnSide);
+		} else {
+			BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(game.SideToMove);
+		}
 
 		MoveExecuted?.Invoke();
 
@@ -119,7 +121,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				) { return false; }
 
 				promotionMove.SetPromotionPiece(
-					PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, game.CurrentTurnSide)
+					PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, game.SideToMove)
 				);
 				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.Start);
 				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.End);

@@ -52,7 +52,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	private void OnGameEnded() {
 		HalfMove latestHalfMove = GameManager.Instance.HalfMoveTimeline.Current;
 
-		if (latestHalfMove.CausedCheckmate) resultText.text = $"{latestHalfMove.Piece.Color} Wins!";
+		if (latestHalfMove.CausedCheckmate) resultText.text = $"{latestHalfMove.Piece.OwningSide} Wins!";
 		else if (latestHalfMove.CausedStalemate) resultText.text = "Draw.";
 
 		resultText.gameObject.SetActive(true);
@@ -63,7 +63,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		whiteTurnIndicator.enabled = !whiteTurnIndicator.enabled;
 		blackTurnIndicator.enabled = !blackTurnIndicator.enabled;
 
-		AddMoveToHistory(GameManager.Instance.HalfMoveTimeline.Current, GameManager.Instance.CurrentTurnSide.Complement());
+		AddMoveToHistory(GameManager.Instance.HalfMoveTimeline.Current, GameManager.Instance.SideToMove.Complement());
 	}
 
 	private void OnGameResetToHalfMove() {
@@ -80,9 +80,9 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	public void ResetGameToPreviousHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Max(0, GameManager.Instance.HalfMoveCount - 1));
 
-	public void ResetGameToNextHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Min(GameManager.Instance.HalfMoveCount + 1, GameManager.Instance.HalfMoveTimeline.Span - 1));
+	public void ResetGameToNextHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Min(GameManager.Instance.HalfMoveCount + 1, GameManager.Instance.HalfMoveTimeline.Count - 1));
 
-	public void ResetGameToLastHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(GameManager.Instance.HalfMoveTimeline.Span - 1);
+	public void ResetGameToLastHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(GameManager.Instance.HalfMoveTimeline.Count - 1);
 
 	public void StartNewGame(int mode) => GameManager.Instance.StartNewGame((Mode) mode);
 
@@ -126,9 +126,9 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	}
 
 	private void ValidateIndicators() {
-		Side currentTurnSide = GameManager.Instance.CurrentTurnSide;
-		whiteTurnIndicator.enabled = currentTurnSide == Side.White;
-		blackTurnIndicator.enabled = currentTurnSide == Side.Black;
+		Side sideToMove = GameManager.Instance.SideToMove;
+		whiteTurnIndicator.enabled = sideToMove == Side.White;
+		blackTurnIndicator.enabled = sideToMove == Side.Black;
 	}
 
 	private void UpdateGameStringInputField() => GameStringInputField.text = GameManager.Instance.SerializeGame();
