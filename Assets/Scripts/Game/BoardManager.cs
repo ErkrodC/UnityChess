@@ -13,8 +13,8 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	private readonly System.Random rng = new System.Random();
 
 	private void Start() {
-		GameManager.Instance.NewGameStarted += OnNewGameStarted;
-		GameManager.Instance.GameResetToHalfMove += OnGameResetToHalfMove;
+		GameManager.NewGameStartedEvent += OnNewGameStarted;
+		GameManager.GameResetToHalfMoveEvent += OnGameResetToHalfMove;
 		
 		positionMap = new Dictionary<Square, GameObject>(64);
 		Transform boardTransform = transform;

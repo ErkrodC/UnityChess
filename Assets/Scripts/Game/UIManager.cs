@@ -23,10 +23,10 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	private Color buttonColor;
 
 	private void Start() {
-		GameManager.Instance.NewGameStarted += OnNewGameStarted;
-		GameManager.Instance.GameEnded += OnGameEnded;
-		GameManager.Instance.MoveExecuted += OnMoveExecuted;
-		GameManager.Instance.GameResetToHalfMove += OnGameResetToHalfMove;
+		GameManager.NewGameStartedEvent += OnNewGameStarted;
+		GameManager.GameEndedEvent += OnGameEnded;
+		GameManager.MoveExecutedEvent += OnMoveExecuted;
+		GameManager.GameResetToHalfMoveEvent += OnGameResetToHalfMove;
 		
 		moveUITimeline = new Timeline<FullMoveUI>();
 		foreach (Text boardInfoText in boardInfoTexts) {

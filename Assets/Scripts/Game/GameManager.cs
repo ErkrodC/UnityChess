@@ -6,10 +6,10 @@ using UnityChess;
 using UnityEngine;
 
 public class GameManager : MonoBehaviourSingleton<GameManager> {
-	public event Action NewGameStarted;
-	public event Action GameEnded;
-	public event Action GameResetToHalfMove;
-	public event Action MoveExecuted;
+	public static event Action NewGameStartedEvent;
+	public static event Action GameEndedEvent;
+	public static event Action GameResetToHalfMoveEvent;
+	public static event Action MoveExecutedEvent;
 	
 	public Board CurrentBoard => game.BoardTimeline.Current;
 	public Side SideToMove => game.SideToMove;
@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 
 	public void StartNewGame(Mode mode) {
 		game = new Game(mode, GameConditions.NormalStartingConditions);
-		NewGameStarted?.Invoke();
+		NewGameStartedEvent?.Invoke();
 	}
 
 	public void ResetGameToHalfMoveIndex(int halfMoveIndex) {
@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		
 		UIManager.Instance.SetActivePromotionUI(false);
 		promotionUITaskCancellationTokenSource?.Cancel();
-		GameResetToHalfMove?.Invoke();
+		GameResetToHalfMoveEvent?.Invoke();
 	}
 
 	private bool TryExecuteMove(Movement move) {
@@ -86,12 +86,12 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		HalfMove latestHalfMove = HalfMoveTimeline.Current;
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
 			BoardManager.Instance.SetActiveAllPieces(false);
-			GameEnded?.Invoke();
+			GameEndedEvent?.Invoke();
 		} else {
 			BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(game.SideToMove);
 		}
 
-		MoveExecuted?.Invoke();
+		MoveExecutedEvent?.Invoke();
 
 		return true;
 	}

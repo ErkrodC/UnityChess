@@ -30,14 +30,14 @@ public class FullMoveUI : MonoBehaviour {
 	private void Start() {
 		ValidateMoveHighlights();
 
-		GameManager.Instance.MoveExecuted += ValidateMoveHighlights;
-		GameManager.Instance.GameResetToHalfMove += ValidateMoveHighlights;
+		GameManager.MoveExecutedEvent += ValidateMoveHighlights;
+		GameManager.GameResetToHalfMoveEvent += ValidateMoveHighlights;
 	}
 
 	private void OnDestroy()
 	{
-		GameManager.Instance.MoveExecuted -= ValidateMoveHighlights;
-		GameManager.Instance.GameResetToHalfMove -= ValidateMoveHighlights;
+		GameManager.MoveExecutedEvent -= ValidateMoveHighlights;
+		GameManager.GameResetToHalfMoveEvent -= ValidateMoveHighlights;
 	}
 
 	public void SetAlternateColor(float darkenAmount) {
