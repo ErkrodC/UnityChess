@@ -30,12 +30,12 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 
 				Image squareBackground = squareTransform.GetComponent<Image>();
 				switch (piece) {
-					case { OwningSide: Side.Black }:
+					case { Owner: Side.Black }:
 						squareBackground.color = Color.black;
 						squareText.color = Color.white;
 						squareText.text = piece.ToString();
 						break;
-					case { OwningSide: Side.White }:
+					case { Owner: Side.White }:
 						squareBackground.color = Color.white;
 						squareText.color = Color.black;
 						squareText.text = piece.ToString();

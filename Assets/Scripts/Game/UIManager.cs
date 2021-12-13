@@ -52,8 +52,11 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	private void OnGameEnded() {
 		HalfMove latestHalfMove = GameManager.Instance.HalfMoveTimeline.Current;
 
-		if (latestHalfMove.CausedCheckmate) resultText.text = $"{latestHalfMove.Piece.OwningSide} Wins!";
-		else if (latestHalfMove.CausedStalemate) resultText.text = "Draw.";
+		if (latestHalfMove.CausedCheckmate) {
+			resultText.text = $"{latestHalfMove.Piece.Owner} Wins!";
+		} else if (latestHalfMove.CausedStalemate) {
+			resultText.text = "Draw.";
+		}
 
 		resultText.gameObject.SetActive(true);
 	}
