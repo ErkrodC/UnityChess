@@ -10,7 +10,7 @@ For a more in-depth explanation/guide, visit the relevant [wiki page](https://gi
 
 Please follow the collaborative github workflow, well described [here](https://github.com/asmeurer/git-workflow/blob/master/README.md).
 
-The project is using the following version of Unity: [Unity 2021.2.3f1](https://unity3d.com/get-unity/download/archive)
+The project is using the following version of Unity: [Unity 2021.2.6f1](https://unity3d.com/get-unity/download/archive)
 
 It's recommended you use [Unity Hub](https://unity3d.com/get-unity/download) to manage Unity versions as it's likely the project will be upgraded as new versions come out.
 
