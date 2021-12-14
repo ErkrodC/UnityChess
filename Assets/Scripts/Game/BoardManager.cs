@@ -102,7 +102,10 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	public void EnsureOnlyPiecesOfSideAreEnabled(Side side) {
 		VisualPiece[] visualPiece = GetComponentsInChildren<VisualPiece>(true);
 		foreach (VisualPiece pieceBehaviour in visualPiece) {
-			pieceBehaviour.enabled = pieceBehaviour.PieceColor == side && GameManager.Instance.CurrentBoard[pieceBehaviour.CurrentSquare].LegalMoves.Count > 0;
+			Piece piece = GameManager.Instance.CurrentBoard[pieceBehaviour.CurrentSquare];
+			
+			pieceBehaviour.enabled = pieceBehaviour.PieceColor == side
+			                         && GameManager.Instance.HasLegalMoves(piece);
 		}
 	}
 

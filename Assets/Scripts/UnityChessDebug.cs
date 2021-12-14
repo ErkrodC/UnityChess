@@ -1,4 +1,5 @@
-﻿using UnityChess;
+﻿using System.Collections.Generic;
+using UnityChess;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,10 +10,10 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 		UpdateBoardDebugView(GameManager.Instance.CurrentBoard);
 	}
 
-	public static void ShowLegalMovesInLog(Piece piece) {
-		string debugMessage = $"# of valid moves: {piece?.LegalMoves.Count ?? 0}\n";
-		if (piece != null) {
-			foreach (Movement validMove in piece.LegalMoves) {
+	public static void ShowLegalMovesInLog(ICollection<Movement> legalMoves) {
+		string debugMessage = $"# of valid moves: {legalMoves?.Count ?? 0}\n";
+		if (legalMoves != null) {
+			foreach (Movement validMove in legalMoves) {
 				debugMessage += $"{validMove}\n";
 			}
 		}

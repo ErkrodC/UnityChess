@@ -152,7 +152,9 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		if (!game.TryGetLegalMove(movedPieceInitialSquare, closestSquare, out Movement move)) {
 			movedPieceTransform.position = movedPieceTransform.parent.position;
 #if DEBUG_VIEW
-			UnityChessDebug.ShowLegalMovesInLog(CurrentBoard[movedPieceInitialSquare]);
+			Piece movedPiece = CurrentBoard[movedPieceInitialSquare];
+			game.TryGetLegalMovesForPiece(movedPiece, out ICollection<Movement> legalMoves);
+			UnityChessDebug.ShowLegalMovesInLog(legalMoves);
 #endif
 			return;
 		}
@@ -173,5 +175,9 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 
 			moveQueue.Enqueue(move);
 		}
+	}
+
+	public bool HasLegalMoves(Piece piece) {
+		return game.TryGetLegalMovesForPiece(piece, out _);
 	}
 }
