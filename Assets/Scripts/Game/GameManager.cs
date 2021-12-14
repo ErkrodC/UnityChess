@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	}
 
 	public void StartNewGame(Mode mode) {
-		game = new Game(mode, GameConditions.NormalStartingConditions);
+		game = new Game(mode);
 		NewGameStartedEvent?.Invoke();
 	}
 
