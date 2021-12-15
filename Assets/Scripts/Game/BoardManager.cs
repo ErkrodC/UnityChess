@@ -55,28 +55,10 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);
 	}
 
-	public void CastleRook(Square rookPosition) {
+	public void CastleRook(Square rookPosition, Square endSquare) {
 		GameObject rookGO = GetPieceGOAtPosition(rookPosition);
-
-		GameObject landingSquare = null;
-		switch (SquareToString(rookPosition)) {
-			case "a1":
-				landingSquare = GetSquareGOByPosition(new Square(4, 1));
-				break;
-			case "h1":
-				landingSquare = GetSquareGOByPosition(new Square(6, 1));
-				break;
-			case "a8":
-				landingSquare = GetSquareGOByPosition(new Square(4, 8));
-				break;
-			case "h8":
-				landingSquare = GetSquareGOByPosition(new Square(6, 8));
-				break;
-		}
-
-		
-		rookGO.transform.parent = landingSquare.transform;
-		rookGO.transform.position = landingSquare.transform.position;
+		rookGO.transform.parent = GetSquareGOByPosition(endSquare).transform;
+		rookGO.transform.localPosition = Vector3.zero;
 	}
 
 	public void CreateAndPlacePieceGO(Piece piece, Square position) {

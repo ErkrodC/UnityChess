@@ -1,5 +1,4 @@
-﻿using System;
-using UnityChess;
+﻿using UnityChess;
 using UnityEngine;
 using UnityEngine.UI;
 

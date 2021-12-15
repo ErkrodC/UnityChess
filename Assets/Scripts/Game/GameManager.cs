@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	private async Task<bool> TryHandleSpecialMoveBehaviourAsync(SpecialMove specialMove) {
 		switch (specialMove) {
 			case CastlingMove castlingMove:
-				BoardManager.Instance.CastleRook(castlingMove.RookSquare);
+				BoardManager.Instance.CastleRook(castlingMove.RookSquare, castlingMove.GetRookEndSquare());
 				return true;
 			case EnPassantMove enPassantMove:
 				BoardManager.Instance.TryDestroyVisualPiece(enPassantMove.CapturedPawnSquare);
