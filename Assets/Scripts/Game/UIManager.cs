@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	[SerializeField] private Image blackTurnIndicator = null;
 	[SerializeField] private GameObject moveHistoryContentParent = null;
 	[SerializeField] private Scrollbar moveHistoryScrollbar = null;
-	[SerializeField] private GameObject moveUIPrefab = null;
+	[SerializeField] private FullMoveUI moveUIPrefab = null;
 	[SerializeField] private Text[] boardInfoTexts = null;
 	[SerializeField] private Color backgroundColor = new Color(0.39f, 0.39f, 0.39f);
 	[SerializeField] private Color textColor = new Color(1f, 0.71f, 0.18f);
@@ -63,15 +63,16 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	private void OnMoveExecuted() {
 		UpdateGameStringInputField();
-		whiteTurnIndicator.enabled = !whiteTurnIndicator.enabled;
-		blackTurnIndicator.enabled = !blackTurnIndicator.enabled;
+		Side sideToMove = GameManager.Instance.SideToMove;
+		whiteTurnIndicator.enabled = sideToMove == Side.White;
+		blackTurnIndicator.enabled = sideToMove == Side.Black;
 
-		AddMoveToHistory(GameManager.Instance.HalfMoveTimeline.Current, GameManager.Instance.SideToMove.Complement());
+		AddMoveToHistory(GameManager.Instance.HalfMoveTimeline.Current, sideToMove.Complement());
 	}
 
 	private void OnGameResetToHalfMove() {
 		UpdateGameStringInputField();
-		moveUITimeline.HeadIndex = GameManager.Instance.HalfMoveCount / 2;
+		moveUITimeline.HeadIndex = GameManager.Instance.LatestHalfMoveIndex / 2;
 		ValidateIndicators();
 	}
 
@@ -81,32 +82,55 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	public void ResetGameToFirstHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(0);
 
-	public void ResetGameToPreviousHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Max(0, GameManager.Instance.HalfMoveCount - 1));
+	public void ResetGameToPreviousHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Max(0, GameManager.Instance.LatestHalfMoveIndex - 1));
 
-	public void ResetGameToNextHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Min(GameManager.Instance.HalfMoveCount + 1, GameManager.Instance.HalfMoveTimeline.Count - 1));
+	public void ResetGameToNextHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Min(GameManager.Instance.LatestHalfMoveIndex + 1, GameManager.Instance.HalfMoveTimeline.Count - 1));
 
 	public void ResetGameToLastHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(GameManager.Instance.HalfMoveTimeline.Count - 1);
 
 	public void StartNewGame(int mode) => GameManager.Instance.StartNewGame((Mode) mode);
+	
+	public void LoadGame() => GameManager.Instance.LoadGame(GameStringInputField.text);
 
 	private void AddMoveToHistory(HalfMove latestHalfMove, Side latestTurnSide) {
 		RemoveAlternateHistory();
 		
 		switch (latestTurnSide) {
-			case Side.Black:
+			case Side.Black: {
+				if (moveUITimeline.HeadIndex == -1) {
+					FullMoveUI newFullMoveUI = Instantiate(moveUIPrefab, moveHistoryContentParent.transform);
+					moveUITimeline.AddNext(newFullMoveUI);
+					
+					newFullMoveUI.transform.SetSiblingIndex(GameManager.Instance.FullMoveNumber - 1);
+					newFullMoveUI.backgroundImage.color = backgroundColor;
+					newFullMoveUI.whiteMoveButtonImage.color = buttonColor;
+					newFullMoveUI.blackMoveButtonImage.color = buttonColor;
+					
+					if (newFullMoveUI.FullMoveNumber % 2 == 0) {
+						newFullMoveUI.SetAlternateColor(moveHistoryAlternateColorDarkenAmount);
+					}
+
+					newFullMoveUI.MoveNumberText.text = $"{newFullMoveUI.FullMoveNumber}.";
+					newFullMoveUI.WhiteMoveButton.enabled = false;
+				}
+				
 				FullMoveUI latestFullMoveUI = moveUITimeline.Current;
 				latestFullMoveUI.BlackMoveText.text = latestHalfMove.ToAlgebraicNotation();
 				latestFullMoveUI.BlackMoveButton.enabled = true;
 				
 				break;
-			case Side.White:
-				GameObject newMoveUIGO = Instantiate(moveUIPrefab, moveHistoryContentParent.transform);
-				FullMoveUI newFullMoveUI = newMoveUIGO.GetComponent<FullMoveUI>();
+			}
+			case Side.White: {
+				FullMoveUI newFullMoveUI = Instantiate(moveUIPrefab, moveHistoryContentParent.transform);
+				newFullMoveUI.transform.SetSiblingIndex(GameManager.Instance.FullMoveNumber - 1);
 				newFullMoveUI.backgroundImage.color = backgroundColor;
 				newFullMoveUI.whiteMoveButtonImage.color = buttonColor;
 				newFullMoveUI.blackMoveButtonImage.color = buttonColor;
 
-				if (newFullMoveUI.FullMoveNumber % 2 == 0) newFullMoveUI.SetAlternateColor(moveHistoryAlternateColorDarkenAmount);
+				if (newFullMoveUI.FullMoveNumber % 2 == 0) {
+					newFullMoveUI.SetAlternateColor(moveHistoryAlternateColorDarkenAmount);
+				}
+
 				newFullMoveUI.MoveNumberText.text = $"{newFullMoveUI.FullMoveNumber}.";
 				newFullMoveUI.WhiteMoveText.text = latestHalfMove.ToAlgebraicNotation();
 				newFullMoveUI.BlackMoveText.text = "";
@@ -115,6 +139,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 				
 				moveUITimeline.AddNext(newFullMoveUI);
 				break;
+			}
 		}
 
 		moveHistoryScrollbar.value = 0;
@@ -124,7 +149,9 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		if (!moveUITimeline.IsUpToDate) {
 			resultText.gameObject.SetActive(GameManager.Instance.HalfMoveTimeline.Current.CausedCheckmate);
 			List<FullMoveUI> divergentFullMoveUIs = moveUITimeline.PopFuture();
-			foreach (FullMoveUI divergentFullMoveUI in divergentFullMoveUIs) Destroy(divergentFullMoveUI.gameObject);
+			foreach (FullMoveUI divergentFullMoveUI in divergentFullMoveUIs) {
+				Destroy(divergentFullMoveUI.gameObject);
+			}
 		}
 	}
 

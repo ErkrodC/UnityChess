@@ -12,9 +12,16 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public static event Action MoveExecutedEvent;
 	
 	public Board CurrentBoard => game.BoardTimeline.Current;
-	public Side SideToMove => game.SideToMove;
+	public Side SideToMove => game.ConditionsTimeline.Current.SideToMove;
+	public Side StartingSide => game.ConditionsTimeline[0].SideToMove;
 	public Timeline<HalfMove> HalfMoveTimeline => game.HalfMoveTimeline;
-	public int HalfMoveCount => game.LatestHalfMoveIndex;
+	public int LatestHalfMoveIndex => game.LatestHalfMoveIndex;
+	public int FullMoveNumber => StartingSide switch {
+		Side.White => LatestHalfMoveIndex / 2 + 1,
+		Side.Black => (LatestHalfMoveIndex + 1) / 2 + 1,
+		_ => -1
+	};
+
 	public List<Piece> CurrentPieces {
 		get {
 			currentPiecesBacking.Clear();
@@ -26,7 +33,10 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 
 			return currentPiecesBacking;
 		}
-	} private readonly List<Piece> currentPiecesBacking = new List<Piece>();
+	}
+
+
+	private readonly List<Piece> currentPiecesBacking = new List<Piece>();
 	
 	[SerializeField] private UnityChessDebug unityChessDebug;
 	private Game game;
@@ -35,9 +45,8 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	private PGNSerializer pgnSerializer;
 	private CancellationTokenSource promotionUITaskCancellationTokenSource;
 	private ElectedPiece userPromotionChoice = ElectedPiece.None;
-	private IGameSerializer currentSerializer;
 	private Dictionary<GameSerializationType, IGameSerializer> serializersByType;
-	private GameSerializationType selectSerializationType = GameSerializationType.FEN;
+	private GameSerializationType selectedSerializationType = GameSerializationType.FEN;
 
 	public void Start() {
 		VisualPiece.VisualPieceMoved += OnPieceMoved;
@@ -58,15 +67,20 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		unityChessDebug.enabled = true;
 #endif
 	}
-	
-	public string SerializeGame() {
-		return serializersByType.TryGetValue(selectSerializationType, out IGameSerializer serializer)
-			? serializer?.Serialize(game)
-			: null;
-	}
 
 	public void StartNewGame(Mode mode) {
 		game = new Game(mode);
+		NewGameStartedEvent?.Invoke();
+	}
+	
+	public string SerializeGame() {
+		return serializersByType.TryGetValue(selectedSerializationType, out IGameSerializer serializer)
+			? serializer?.Serialize(game)
+			: null;
+	}
+	
+	public void LoadGame(string serializedGame) {
+		game = serializersByType[selectedSerializationType].Deserialize(serializedGame);
 		NewGameStartedEvent?.Invoke();
 	}
 
@@ -88,7 +102,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 			BoardManager.Instance.SetActiveAllPieces(false);
 			GameEndedEvent?.Invoke();
 		} else {
-			BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(game.SideToMove);
+			BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(SideToMove);
 		}
 
 		MoveExecutedEvent?.Invoke();
@@ -121,7 +135,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				) { return false; }
 
 				promotionMove.SetPromotionPiece(
-					PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, game.SideToMove)
+					PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, SideToMove)
 				);
 				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.Start);
 				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.End);
