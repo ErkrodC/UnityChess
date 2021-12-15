@@ -36,17 +36,19 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	private void OnNewGameStarted() {
 		ClearBoard();
 		
-		foreach (Piece piece in GameManager.Instance.CurrentPieces)
-			CreateAndPlacePieceGO(piece);
-		
+		foreach ((Square square, Piece piece) in GameManager.Instance.CurrentPieces) {
+			CreateAndPlacePieceGO(piece, square);
+		}
+
 		EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);
 	}
 
 	private void OnGameResetToHalfMove() {
 		ClearBoard();
 
-		foreach (Piece piece in GameManager.Instance.CurrentPieces)
-			CreateAndPlacePieceGO(piece);
+		foreach ((Square square, Piece piece) in GameManager.Instance.CurrentPieces) {
+			CreateAndPlacePieceGO(piece, square);
+		}
 
 		HalfMove latestHalfMove = GameManager.Instance.HalfMoveTimeline.Current;
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) SetActiveAllPieces(false);
@@ -77,9 +79,12 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		rookGO.transform.position = landingSquare.transform.position;
 	}
 
-	public void CreateAndPlacePieceGO(Piece piece) {
+	public void CreateAndPlacePieceGO(Piece piece, Square position) {
 		string modelName = $"{piece.Owner} {piece.GetType().Name}";
-		GameObject pieceGO = Instantiate(Resources.Load("PieceSets/Marble/" + modelName) as GameObject, positionMap[piece.Position].transform);
+		GameObject pieceGO = Instantiate(
+			Resources.Load("PieceSets/Marble/" + modelName) as GameObject,
+			positionMap[position].transform
+		);
 
 		/*if (!(piece is Knight) && !(piece is King)) {
 			pieceGO.transform.Rotate(0f, (float) rng.NextDouble() * 360f, 0f);

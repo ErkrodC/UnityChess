@@ -22,21 +22,22 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		_ => -1
 	};
 
-	public List<Piece> CurrentPieces {
+	public List<(Square, Piece)> CurrentPieces {
 		get {
 			currentPiecesBacking.Clear();
-			for (int file = 1; file <= 8; file++)
+			for (int file = 1; file <= 8; file++) {
 				for (int rank = 1; rank <= 8; rank++) {
 					Piece piece = CurrentBoard[file, rank];
-					if (piece != null) currentPiecesBacking.Add(piece);
+					if (piece != null) currentPiecesBacking.Add((new Square(file, rank), piece));
 				}
+			}
 
 			return currentPiecesBacking;
 		}
 	}
 
 
-	private readonly List<Piece> currentPiecesBacking = new List<Piece>();
+	private readonly List<(Square, Piece)> currentPiecesBacking = new List<(Square, Piece)>();
 	
 	[SerializeField] private UnityChessDebug unityChessDebug;
 	private Game game;
@@ -135,11 +136,11 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				) { return false; }
 
 				promotionMove.SetPromotionPiece(
-					PromotionUtil.GeneratePromotionPiece(choice, promotionMove.End, SideToMove)
+					PromotionUtil.GeneratePromotionPiece(choice, SideToMove)
 				);
 				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.Start);
 				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.End);
-				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.PromotionPiece);
+				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.PromotionPiece, promotionMove.End);
 
 				promotionUITaskCancellationTokenSource = null;
 				return true;
