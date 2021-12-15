@@ -113,10 +113,10 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	private async Task<bool> TryHandleSpecialMoveBehaviourAsync(SpecialMove specialMove) {
 		switch (specialMove) {
 			case CastlingMove castlingMove:
-				BoardManager.Instance.CastleRook(castlingMove.AssociatedPiece.Position);
+				BoardManager.Instance.CastleRook(castlingMove.RookSquare);
 				return true;
 			case EnPassantMove enPassantMove:
-				BoardManager.Instance.TryDestroyVisualPiece(enPassantMove.AssociatedPiece.Position);
+				BoardManager.Instance.TryDestroyVisualPiece(enPassantMove.CapturedPawnSquare);
 				return true;
 			case PromotionMove promotionMove:
 				UIManager.Instance.SetActivePromotionUI(true);
@@ -139,7 +139,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 				);
 				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.Start);
 				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.End);
-				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.AssociatedPiece);
+				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.PromotionPiece);
 
 				promotionUITaskCancellationTokenSource = null;
 				return true;
