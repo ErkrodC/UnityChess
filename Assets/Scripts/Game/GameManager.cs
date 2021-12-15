@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public Side SideToMove => game.ConditionsTimeline.Current.SideToMove;
 	public Side StartingSide => game.ConditionsTimeline[0].SideToMove;
 	public Timeline<HalfMove> HalfMoveTimeline => game.HalfMoveTimeline;
-	public int LatestHalfMoveIndex => game.LatestHalfMoveIndex;
+	public int LatestHalfMoveIndex => game.HalfMoveTimeline.HeadIndex;
 	public int FullMoveNumber => StartingSide switch {
 		Side.White => LatestHalfMoveIndex / 2 + 1,
 		Side.Black => (LatestHalfMoveIndex + 1) / 2 + 1,
