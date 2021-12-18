@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityChess;
+using UnityChess.Engine;
 using UnityEngine;
 
 public class GameManager : MonoBehaviourSingleton<GameManager> {
@@ -11,8 +12,20 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	public static event Action GameResetToHalfMoveEvent;
 	public static event Action MoveExecutedEvent;
 	
-	public Board CurrentBoard => game.BoardTimeline.Current;
-	public Side SideToMove => game.ConditionsTimeline.Current.SideToMove;
+	public Board CurrentBoard {
+		get {
+			game.BoardTimeline.TryGetCurrent(out Board currentBoard);
+			return currentBoard;
+		}
+	}
+
+	public Side SideToMove {
+		get {
+			game.ConditionsTimeline.TryGetCurrent(out GameConditions currentConditions);
+			return currentConditions.SideToMove;
+		}
+	}
+
 	public Side StartingSide => game.ConditionsTimeline[0].SideToMove;
 	public Timeline<HalfMove> HalfMoveTimeline => game.HalfMoveTimeline;
 	public int LatestHalfMoveIndex => game.HalfMoveTimeline.HeadIndex;
@@ -21,6 +34,9 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		Side.Black => (LatestHalfMoveIndex + 1) / 2 + 1,
 		_ => -1
 	};
+
+	private bool isWhiteAI;
+	private bool isBlackAI;
 
 	public List<(Square, Piece)> CurrentPieces {
 		get {
@@ -41,7 +57,6 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	
 	[SerializeField] private UnityChessDebug unityChessDebug;
 	private Game game;
-	private Queue<Movement> moveQueue;
 	private FENSerializer fenSerializer;
 	private PGNSerializer pgnSerializer;
 	private CancellationTokenSource promotionUITaskCancellationTokenSource;
@@ -49,19 +64,17 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	private Dictionary<GameSerializationType, IGameSerializer> serializersByType;
 	private GameSerializationType selectedSerializationType = GameSerializationType.FEN;
 
+	private IUCIEngine uciEngine;
+	
 	public void Start() {
 		VisualPiece.VisualPieceMoved += OnPieceMoved;
-		
-		moveQueue = new Queue<Movement>();
 
 		serializersByType = new Dictionary<GameSerializationType, IGameSerializer> {
 			[GameSerializationType.FEN] = new FENSerializer(),
 			[GameSerializationType.PGN] = new PGNSerializer()
 		};
 		
-#if GAME_TEST
-		StartNewGame(Mode.HumanVsHuman);
-#endif
+		StartNewGame();
 		
 #if DEBUG_VIEW
 		unityChessDebug.gameObject.SetActive(true);
@@ -69,11 +82,38 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 #endif
 	}
 
-	public void StartNewGame(Mode mode) {
-		game = new Game(mode);
-		NewGameStartedEvent?.Invoke();
+	private void OnDestroy() {
+		uciEngine.ShutDown();
 	}
 	
+#if AI_TEST
+	public async void StartNewGame(bool isWhiteAI = true, bool isBlackAI = true) {
+#else
+	public async void StartNewGame(bool isWhiteAI = false, bool isBlackAI = false) {
+#endif
+		game = new Game();
+
+		this.isWhiteAI = isWhiteAI;
+		this.isBlackAI = isBlackAI;
+
+		if (isWhiteAI || isBlackAI) {
+			if (uciEngine == null) {
+				uciEngine = new MockUCIEngine();
+				uciEngine.Start();
+			}
+			
+			await uciEngine.SetupNewGame(game);
+			NewGameStartedEvent?.Invoke();
+
+			if (isWhiteAI) {
+				Movement bestMove = await uciEngine.GetBestMove(10_000);
+				DoAIMove(bestMove);
+			}
+		} else {
+			NewGameStartedEvent?.Invoke();
+		}
+	}
+
 	public string SerializeGame() {
 		return serializersByType.TryGetValue(selectedSerializationType, out IGameSerializer serializer)
 			? serializer?.Serialize(game)
@@ -98,7 +138,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 			return false;
 		}
 
-		HalfMove latestHalfMove = HalfMoveTimeline.Current;
+		HalfMoveTimeline.TryGetCurrent(out HalfMove latestHalfMove);
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
 			BoardManager.Instance.SetActiveAllPieces(false);
 			GameEndedEvent?.Invoke();
@@ -119,7 +159,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 			case EnPassantMove enPassantMove:
 				BoardManager.Instance.TryDestroyVisualPiece(enPassantMove.CapturedPawnSquare);
 				return true;
-			case PromotionMove promotionMove:
+			case PromotionMove { PromotionPiece: null } promotionMove:
 				UIManager.Instance.SetActivePromotionUI(true);
 				BoardManager.Instance.SetActiveAllPieces(false);
 
@@ -144,6 +184,12 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 
 				promotionUITaskCancellationTokenSource = null;
 				return true;
+			case PromotionMove promotionMove:
+				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.Start);
+				BoardManager.Instance.TryDestroyVisualPiece(promotionMove.End);
+				BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.PromotionPiece, promotionMove.End);
+				
+				return true;
 			default:
 				return false;
 		}
@@ -161,10 +207,10 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 		userPromotionChoice = choice;
 	}
 
-	private async void OnPieceMoved(Square movedPieceInitialSquare, Transform movedPieceTransform, Transform closestBoardSquareTransform) {
-		Square closestSquare = SquareUtil.StringToSquare(closestBoardSquareTransform.name);
+	private async void OnPieceMoved(Square movedPieceInitialSquare, Transform movedPieceTransform, Transform closestBoardSquareTransform, Piece promotionPiece = null) {
+		Square endSquare = new Square(closestBoardSquareTransform.name);
 
-		if (!game.TryGetLegalMove(movedPieceInitialSquare, closestSquare, out Movement move)) {
+		if (!game.TryGetLegalMove(movedPieceInitialSquare, endSquare, out Movement move)) {
 			movedPieceTransform.position = movedPieceTransform.parent.position;
 #if DEBUG_VIEW
 			Piece movedPiece = CurrentBoard[movedPieceInitialSquare];
@@ -174,12 +220,14 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 			return;
 		}
 
+		if (move is PromotionMove promotionMove) {
+			promotionMove.SetPromotionPiece(promotionPiece);
+		}
+
 		if ((move is not SpecialMove specialMove || await TryHandleSpecialMoveBehaviourAsync(specialMove))
 		    && TryExecuteMove(move)
 		) {
-			if (move is not SpecialMove) {
-				BoardManager.Instance.TryDestroyVisualPiece(move.End);
-			}
+			if (move is not SpecialMove) { BoardManager.Instance.TryDestroyVisualPiece(move.End); }
 
 			if (move is PromotionMove) {
 				movedPieceTransform = BoardManager.Instance.GetPieceGOAtPosition(move.End).transform;
@@ -187,9 +235,28 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 
 			movedPieceTransform.parent = closestBoardSquareTransform;
 			movedPieceTransform.position = closestBoardSquareTransform.position;
-
-			moveQueue.Enqueue(move);
 		}
+
+		bool gameIsOver = game.HalfMoveTimeline.TryGetCurrent(out HalfMove lastHalfMove)
+		                  && lastHalfMove.CausedStalemate || lastHalfMove.CausedCheckmate;
+		if (!gameIsOver
+			&& (SideToMove == Side.White && isWhiteAI
+			    || SideToMove == Side.Black && isBlackAI)
+		) {
+			Movement bestMove = await uciEngine.GetBestMove(10_000);
+			DoAIMove(bestMove);
+		}
+	}
+
+	private void DoAIMove(Movement move) {
+		GameObject movedPiece = BoardManager.Instance.GetPieceGOAtPosition(move.Start);
+		GameObject endSquareGO = BoardManager.Instance.GetSquareGOByPosition(move.End);
+		OnPieceMoved(
+			move.Start,
+			movedPiece.transform,
+			endSquareGO.transform,
+			(move as PromotionMove)?.PromotionPiece
+		);
 	}
 
 	public bool HasLegalMoves(Piece piece) {

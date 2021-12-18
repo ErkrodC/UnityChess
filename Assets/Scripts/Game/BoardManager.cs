@@ -12,7 +12,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 	private const float BoardHeight = 1.6f;
 	private readonly System.Random rng = new System.Random();
 
-	private void Start() {
+	private void Awake() {
 		GameManager.NewGameStartedEvent += OnNewGameStarted;
 		GameManager.GameResetToHalfMoveEvent += OnGameResetToHalfMove;
 		
@@ -22,11 +22,14 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		
 		for (int file = 1; file <= 8; file++) {
 			for (int rank = 1; rank <= 8; rank++) {
-				GameObject squareGO = new GameObject(SquareToString(file, rank));
-				squareGO.transform.position = new Vector3(boardPosition.x + FileOrRankToSidePosition(file), boardPosition.y + BoardHeight, boardPosition.z + FileOrRankToSidePosition(rank));
-				squareGO.transform.parent = boardTransform;
-				squareGO.tag = "Square";
-				
+				GameObject squareGO = new GameObject(SquareToString(file, rank)) {
+					transform = {
+						position = new Vector3(boardPosition.x + FileOrRankToSidePosition(file), boardPosition.y + BoardHeight, boardPosition.z + FileOrRankToSidePosition(rank)),
+						parent = boardTransform
+					},
+					tag = "Square"
+				};
+
 				positionMap.Add(new Square(file, rank), squareGO);
 				allSquaresGO[(file - 1) * 8 + (rank - 1)] = squareGO;
 			}
@@ -50,7 +53,7 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 			CreateAndPlacePieceGO(piece, square);
 		}
 
-		HalfMove latestHalfMove = GameManager.Instance.HalfMoveTimeline.Current;
+		GameManager.Instance.HalfMoveTimeline.TryGetCurrent(out HalfMove latestHalfMove);
 		if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) SetActiveAllPieces(false);
 		else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);
 	}
@@ -119,5 +122,5 @@ public class BoardManager : MonoBehaviourSingleton<BoardManager> {
 		}
 	}
 
-	private GameObject GetSquareGOByPosition(Square position) => Array.Find(allSquaresGO, go => go.name == SquareToString(position));
+	public GameObject GetSquareGOByPosition(Square position) => Array.Find(allSquaresGO, go => go.name == SquareToString(position));
 }

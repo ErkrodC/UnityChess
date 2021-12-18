@@ -50,7 +50,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	}
 
 	private void OnGameEnded() {
-		HalfMove latestHalfMove = GameManager.Instance.HalfMoveTimeline.Current;
+		GameManager.Instance.HalfMoveTimeline.TryGetCurrent(out HalfMove latestHalfMove);
 
 		if (latestHalfMove.CausedCheckmate) {
 			resultText.text = $"{latestHalfMove.Piece.Owner} Wins!";
@@ -67,7 +67,8 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		whiteTurnIndicator.enabled = sideToMove == Side.White;
 		blackTurnIndicator.enabled = sideToMove == Side.Black;
 
-		AddMoveToHistory(GameManager.Instance.HalfMoveTimeline.Current, sideToMove.Complement());
+		GameManager.Instance.HalfMoveTimeline.TryGetCurrent(out HalfMove lastMove);
+		AddMoveToHistory(lastMove, sideToMove.Complement());
 	}
 
 	private void OnGameResetToHalfMove() {
@@ -88,7 +89,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	public void ResetGameToLastHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(GameManager.Instance.HalfMoveTimeline.Count - 1);
 
-	public void StartNewGame(int mode) => GameManager.Instance.StartNewGame((Mode) mode);
+	public void StartNewGame() => GameManager.Instance.StartNewGame();
 	
 	public void LoadGame() => GameManager.Instance.LoadGame(GameStringInputField.text);
 
@@ -114,7 +115,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 					newFullMoveUI.WhiteMoveButton.enabled = false;
 				}
 				
-				FullMoveUI latestFullMoveUI = moveUITimeline.Current;
+				moveUITimeline.TryGetCurrent(out FullMoveUI latestFullMoveUI);
 				latestFullMoveUI.BlackMoveText.text = latestHalfMove.ToAlgebraicNotation();
 				latestFullMoveUI.BlackMoveButton.enabled = true;
 				
@@ -147,7 +148,8 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	private void RemoveAlternateHistory() {
 		if (!moveUITimeline.IsUpToDate) {
-			resultText.gameObject.SetActive(GameManager.Instance.HalfMoveTimeline.Current.CausedCheckmate);
+			GameManager.Instance.HalfMoveTimeline.TryGetCurrent(out HalfMove lastHalfMove);
+			resultText.gameObject.SetActive(lastHalfMove.CausedCheckmate);
 			List<FullMoveUI> divergentFullMoveUIs = moveUITimeline.PopFuture();
 			foreach (FullMoveUI divergentFullMoveUI in divergentFullMoveUIs) {
 				Destroy(divergentFullMoveUI.gameObject);

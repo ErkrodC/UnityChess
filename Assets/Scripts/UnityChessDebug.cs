@@ -5,6 +5,18 @@ using UnityEngine.UI;
 
 public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 	[SerializeField] private GameObject debugBoard = null;
+	[SerializeField] private int fontSize = 20;
+
+	private void Awake() {
+		for (int file = 1; file <= 8; file++) {
+			for (int rank = 1; rank <= 8; rank++) {
+				Transform squareTransform = debugBoard.transform.Find($"{SquareUtil.SquareToString(file, rank)}");
+				Text squareText = squareTransform.GetComponentInChildren<Text>();
+				squareText.fontSize = fontSize;
+				squareText.resizeTextForBestFit = false;
+			}
+		}
+	}
 
 	private void Update() {
 		UpdateBoardDebugView(GameManager.Instance.CurrentBoard);
@@ -34,12 +46,12 @@ public class UnityChessDebug : MonoBehaviourSingleton<UnityChessDebug> {
 					case { Owner: Side.Black }:
 						squareBackground.color = Color.black;
 						squareText.color = Color.white;
-						squareText.text = piece.ToString();
+						squareText.text = piece.ToTextArt();
 						break;
 					case { Owner: Side.White }:
 						squareBackground.color = Color.white;
 						squareText.color = Color.black;
-						squareText.text = piece.ToString();
+						squareText.text = piece.ToTextArt();
 						break;
 					default:
 						squareBackground.color = Color.gray;
