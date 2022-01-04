@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityChess;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,23 +12,21 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 	[SerializeField] private Image blackTurnIndicator = null;
 	[SerializeField] private GameObject moveHistoryContentParent = null;
 	[SerializeField] private Scrollbar moveHistoryScrollbar = null;
-	[SerializeField] private GameObject moveUIPrefab = null;
+	[SerializeField] private FullMoveUI moveUIPrefab = null;
 	[SerializeField] private Text[] boardInfoTexts = null;
 	[SerializeField] private Color backgroundColor = new Color(0.39f, 0.39f, 0.39f);
 	[SerializeField] private Color textColor = new Color(1f, 0.71f, 0.18f);
 	[SerializeField, Range(-0.25f, 0.25f)] private float buttonColorDarkenAmount = 0f;
 	[SerializeField, Range(-0.25f, 0.25f)] private float moveHistoryAlternateColorDarkenAmount = 0f;
 	
-	private bool userHasMadePromotionPieceChoice;
-	private ElectedPiece userPromotionPieceChoice = ElectedPiece.None;
 	private Timeline<FullMoveUI> moveUITimeline;
 	private Color buttonColor;
 
 	private void Start() {
-		GameManager.Instance.NewGameStarted += OnNewGameStarted;
-		GameManager.Instance.GameEnded += OnGameEnded;
-		GameManager.Instance.MoveExecuted += OnMoveExecuted;
-		GameManager.Instance.GameResetToHalfMove += OnGameResetToHalfMove;
+		GameManager.NewGameStartedEvent += OnNewGameStarted;
+		GameManager.GameEndedEvent += OnGameEnded;
+		GameManager.MoveExecutedEvent += OnMoveExecuted;
+		GameManager.GameResetToHalfMoveEvent += OnGameResetToHalfMove;
 		
 		moveUITimeline = new Timeline<FullMoveUI>();
 		foreach (Text boardInfoText in boardInfoTexts) {
@@ -39,7 +36,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		buttonColor = new Color(backgroundColor.r - buttonColorDarkenAmount, backgroundColor.g - buttonColorDarkenAmount, backgroundColor.b - buttonColorDarkenAmount);
 	}
 
-	public void OnNewGameStarted() {
+	private void OnNewGameStarted() {
 		UpdateGameStringInputField();
 		ValidateIndicators();
 		
@@ -52,71 +49,88 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 		resultText.gameObject.SetActive(false);
 	}
 
-	public void OnGameEnded() {
-		HalfMove latestHalfMove = GameManager.Instance.HalfMoveTimeline.Current;
+	private void OnGameEnded() {
+		GameManager.Instance.HalfMoveTimeline.TryGetCurrent(out HalfMove latestHalfMove);
 
-		if (latestHalfMove.CausedCheckmate) resultText.text = $"{latestHalfMove.Piece.Color} Wins!";
-		else if (latestHalfMove.CausedStalemate) resultText.text = "Draw.";
+		if (latestHalfMove.CausedCheckmate) {
+			resultText.text = $"{latestHalfMove.Piece.Owner} Wins!";
+		} else if (latestHalfMove.CausedStalemate) {
+			resultText.text = "Draw.";
+		}
 
 		resultText.gameObject.SetActive(true);
 	}
 
-	public void OnMoveExecuted() {
+	private void OnMoveExecuted(HalfMove latestHalfMove) {
 		UpdateGameStringInputField();
-		whiteTurnIndicator.enabled = !whiteTurnIndicator.enabled;
-		blackTurnIndicator.enabled = !blackTurnIndicator.enabled;
-
-		AddMoveToHistory(GameManager.Instance.HalfMoveTimeline.Current, GameManager.Instance.CurrentTurnSide.Complement());
+		Side sideToMove = GameManager.Instance.SideToMove;
+		whiteTurnIndicator.enabled = sideToMove == Side.White;
+		blackTurnIndicator.enabled = sideToMove == Side.Black;
+		
+		AddMoveToHistory(latestHalfMove, sideToMove.Complement());
 	}
 
-	public void OnGameResetToHalfMove() {
+	private void OnGameResetToHalfMove() {
 		UpdateGameStringInputField();
-		moveUITimeline.HeadIndex = GameManager.Instance.HalfMoveCount / 2;
+		moveUITimeline.HeadIndex = GameManager.Instance.LatestHalfMoveIndex / 2;
 		ValidateIndicators();
 	}
 
 	public void SetActivePromotionUI(bool value) => promotionUI.gameObject.SetActive(value);
 
-	public ElectedPiece GetUserPromotionPieceChoice() {
-		while (!userHasMadePromotionPieceChoice) { }
-
-		userHasMadePromotionPieceChoice = false;
-		return userPromotionPieceChoice;
-	}
-
-	public void OnElectionButton(int choice) {
-		userPromotionPieceChoice = (ElectedPiece) choice;
-		userHasMadePromotionPieceChoice = true;
-	}
+	public void OnElectionButton(int choice) => GameManager.Instance.ElectPiece((ElectedPiece)choice);
 
 	public void ResetGameToFirstHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(0);
 
-	public void ResetGameToPreviousHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Max(0, GameManager.Instance.HalfMoveCount - 1));
+	public void ResetGameToPreviousHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Max(0, GameManager.Instance.LatestHalfMoveIndex - 1));
 
-	public void ResetGameToNextHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Min(GameManager.Instance.HalfMoveCount + 1, GameManager.Instance.HalfMoveTimeline.Span - 1));
+	public void ResetGameToNextHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(Math.Min(GameManager.Instance.LatestHalfMoveIndex + 1, GameManager.Instance.HalfMoveTimeline.Count - 1));
 
-	public void ResetGameToLastHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(GameManager.Instance.HalfMoveTimeline.Span - 1);
+	public void ResetGameToLastHalfMove() => GameManager.Instance.ResetGameToHalfMoveIndex(GameManager.Instance.HalfMoveTimeline.Count - 1);
 
-	public void StartNewGame(int mode) => GameManager.Instance.StartNewGame(mode);
+	public void StartNewGame() => GameManager.Instance.StartNewGame();
+	
+	public void LoadGame() => GameManager.Instance.LoadGame(GameStringInputField.text);
 
 	private void AddMoveToHistory(HalfMove latestHalfMove, Side latestTurnSide) {
 		RemoveAlternateHistory();
 		
 		switch (latestTurnSide) {
-			case Side.Black:
-				FullMoveUI latestFullMoveUI = moveUITimeline.Current;
+			case Side.Black: {
+				if (moveUITimeline.HeadIndex == -1) {
+					FullMoveUI newFullMoveUI = Instantiate(moveUIPrefab, moveHistoryContentParent.transform);
+					moveUITimeline.AddNext(newFullMoveUI);
+					
+					newFullMoveUI.transform.SetSiblingIndex(GameManager.Instance.FullMoveNumber - 1);
+					newFullMoveUI.backgroundImage.color = backgroundColor;
+					newFullMoveUI.whiteMoveButtonImage.color = buttonColor;
+					newFullMoveUI.blackMoveButtonImage.color = buttonColor;
+					
+					if (newFullMoveUI.FullMoveNumber % 2 == 0) {
+						newFullMoveUI.SetAlternateColor(moveHistoryAlternateColorDarkenAmount);
+					}
+
+					newFullMoveUI.MoveNumberText.text = $"{newFullMoveUI.FullMoveNumber}.";
+					newFullMoveUI.WhiteMoveButton.enabled = false;
+				}
+				
+				moveUITimeline.TryGetCurrent(out FullMoveUI latestFullMoveUI);
 				latestFullMoveUI.BlackMoveText.text = latestHalfMove.ToAlgebraicNotation();
 				latestFullMoveUI.BlackMoveButton.enabled = true;
 				
 				break;
-			case Side.White:
-				GameObject newMoveUIGO = Instantiate(moveUIPrefab, moveHistoryContentParent.transform);
-				FullMoveUI newFullMoveUI = newMoveUIGO.GetComponent<FullMoveUI>();
+			}
+			case Side.White: {
+				FullMoveUI newFullMoveUI = Instantiate(moveUIPrefab, moveHistoryContentParent.transform);
+				newFullMoveUI.transform.SetSiblingIndex(GameManager.Instance.FullMoveNumber - 1);
 				newFullMoveUI.backgroundImage.color = backgroundColor;
 				newFullMoveUI.whiteMoveButtonImage.color = buttonColor;
 				newFullMoveUI.blackMoveButtonImage.color = buttonColor;
 
-				if (newFullMoveUI.FullMoveNumber % 2 == 0) newFullMoveUI.SetAlternateColor(moveHistoryAlternateColorDarkenAmount);
+				if (newFullMoveUI.FullMoveNumber % 2 == 0) {
+					newFullMoveUI.SetAlternateColor(moveHistoryAlternateColorDarkenAmount);
+				}
+
 				newFullMoveUI.MoveNumberText.text = $"{newFullMoveUI.FullMoveNumber}.";
 				newFullMoveUI.WhiteMoveText.text = latestHalfMove.ToAlgebraicNotation();
 				newFullMoveUI.BlackMoveText.text = "";
@@ -125,6 +139,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 				
 				moveUITimeline.AddNext(newFullMoveUI);
 				break;
+			}
 		}
 
 		moveHistoryScrollbar.value = 0;
@@ -132,17 +147,20 @@ public class UIManager : MonoBehaviourSingleton<UIManager> {
 
 	private void RemoveAlternateHistory() {
 		if (!moveUITimeline.IsUpToDate) {
-			resultText.gameObject.SetActive(GameManager.Instance.HalfMoveTimeline.Current.CausedCheckmate);
+			GameManager.Instance.HalfMoveTimeline.TryGetCurrent(out HalfMove lastHalfMove);
+			resultText.gameObject.SetActive(lastHalfMove.CausedCheckmate);
 			List<FullMoveUI> divergentFullMoveUIs = moveUITimeline.PopFuture();
-			foreach (FullMoveUI divergentFullMoveUI in divergentFullMoveUIs) Destroy(divergentFullMoveUI.gameObject);
+			foreach (FullMoveUI divergentFullMoveUI in divergentFullMoveUIs) {
+				Destroy(divergentFullMoveUI.gameObject);
+			}
 		}
 	}
 
 	private void ValidateIndicators() {
-		Side currentTurnSide = GameManager.Instance.CurrentTurnSide;
-		whiteTurnIndicator.enabled = currentTurnSide == Side.White;
-		blackTurnIndicator.enabled = currentTurnSide == Side.Black;
+		Side sideToMove = GameManager.Instance.SideToMove;
+		whiteTurnIndicator.enabled = sideToMove == Side.White;
+		blackTurnIndicator.enabled = sideToMove == Side.Black;
 	}
 
-	private void UpdateGameStringInputField() => GameStringInputField.text = GameManager.Instance.ExportToFEN();
+	private void UpdateGameStringInputField() => GameStringInputField.text = GameManager.Instance.SerializeGame();
 }

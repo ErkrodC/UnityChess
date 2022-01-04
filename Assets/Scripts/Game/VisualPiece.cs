@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityChess;
 using UnityEngine;
 using static UnityChess.SquareUtil;
 
 public class VisualPiece : MonoBehaviour {
-	public delegate void VisualPieceMovedAction(Square movedPieceInitialSquare, Transform movedPieceTransform, Transform closestBoardSquareTransform);
+	public delegate void VisualPieceMovedAction(Square movedPieceInitialSquare, Transform movedPieceTransform, Transform closestBoardSquareTransform, Piece promotionPiece = null);
 	public static event VisualPieceMovedAction VisualPieceMoved;
 	
 	public Side PieceColor;
@@ -14,7 +13,6 @@ public class VisualPiece : MonoBehaviour {
 	private const float SquareCollisionRadius = 9f;
 	private Camera boardCamera;
 	private Vector3 piecePositionSS;
-	private Vector2 mouseToPieceSS;
 	private SphereCollider pieceBoundingSphere;
 	private List<GameObject> potentialLandingSquares;
 	private Transform thisTransform;
@@ -28,16 +26,13 @@ public class VisualPiece : MonoBehaviour {
 	public void OnMouseDown() {
 		if (enabled) {
 			piecePositionSS = boardCamera.WorldToScreenPoint(transform.position);
-			mouseToPieceSS = new Vector2(Input.mousePosition.x - piecePositionSS.x, Input.mousePosition.y - piecePositionSS.y);
 		}
 	}
 
 	private void OnMouseDrag() {
 		if (enabled) {
-			Vector3 nextPiecePositionSS = new Vector3(Input.mousePosition.x - mouseToPieceSS.x, Input.mousePosition.y - mouseToPieceSS.y, piecePositionSS.z);
-			Vector3 nextPiecePositionWS = boardCamera.ScreenToWorldPoint(nextPiecePositionSS);
-
-			thisTransform.position = new Vector3(nextPiecePositionWS.x, thisTransform.position.y, nextPiecePositionWS.z);
+			Vector3 nextPiecePositionSS = new Vector3(Input.mousePosition.x, Input.mousePosition.y, piecePositionSS.z);
+			thisTransform.position = boardCamera.ScreenToWorldPoint(nextPiecePositionSS);
 		}
 	}
 

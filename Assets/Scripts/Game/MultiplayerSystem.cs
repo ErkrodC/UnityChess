@@ -15,14 +15,14 @@ public class MultiplayerSystem : MonoBehaviourSingleton<MultiplayerSystem> {
 		serverSocket.ConnectAsync(new IPEndPoint(IPAddress.Loopback, 23000)).ContinueWith(task => {
 			if (!task.IsFaulted) {
 				Debug.LogError("Connected");
-				GameManager.Instance.MoveExecuted += SendMoveToServer;
+				GameManager.MoveExecutedEvent += SendMoveToServer;
 			}
 		});
 	}
 
-	private void SendMoveToServer() {
-		Movement latestMove = GameManager.Instance.HalfMoveTimeline.Current.Move;
-
+	private void SendMoveToServer(HalfMove latestHalfMove) {
+		Movement latestMove = latestHalfMove.Move;
+		
 		UnityChessDataPacket dataPacket;
 		dataPacket.UserCommand = UserCommand.ExecuteMove;
 		dataPacket.byte0 = (byte) latestMove.Start.File;

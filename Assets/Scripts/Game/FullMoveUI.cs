@@ -1,4 +1,4 @@
-﻿using System;
+﻿using UnityChess;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,20 +24,25 @@ public class FullMoveUI : MonoBehaviour {
 	public GameObject blackMoveHighlight;
 
 	public int FullMoveNumber => transform.GetSiblingIndex() + 1;
-	private int WhiteHalfMoveIndex => (FullMoveNumber - 1) * 2;
-	private int BlackHalfMoveIndex => WhiteHalfMoveIndex + 1;
+
+	private static int startingSideOffset => GameManager.Instance.StartingSide switch {
+		Side.White => 0,
+		_ => -1
+	};
+
+	private int WhiteHalfMoveIndex => transform.GetSiblingIndex() * 2 + startingSideOffset;
+	private int BlackHalfMoveIndex => transform.GetSiblingIndex() * 2 + 1 + startingSideOffset;
 
 	private void Start() {
 		ValidateMoveHighlights();
 
-		GameManager.Instance.MoveExecuted += ValidateMoveHighlights;
-		GameManager.Instance.GameResetToHalfMove += ValidateMoveHighlights;
+		GameManager.MoveExecutedEvent += OnMoveExecuted;
+		GameManager.GameResetToHalfMoveEvent += ValidateMoveHighlights;
 	}
 
-	private void OnDestroy()
-	{
-		GameManager.Instance.MoveExecuted -= ValidateMoveHighlights;
-		GameManager.Instance.GameResetToHalfMove -= ValidateMoveHighlights;
+	private void OnDestroy() {
+		GameManager.MoveExecutedEvent -= OnMoveExecuted;
+		GameManager.GameResetToHalfMoveEvent -= ValidateMoveHighlights;
 	}
 
 	public void SetAlternateColor(float darkenAmount) {
@@ -51,9 +56,13 @@ public class FullMoveUI : MonoBehaviour {
 
 	public void ResetBoardToBlackMove() => GameManager.Instance.ResetGameToHalfMoveIndex(BlackHalfMoveIndex);
 
-	public void ValidateMoveHighlights() {
-		int halfMoveCount = GameManager.Instance.HalfMoveCount;
-		whiteMoveHighlight.SetActive(halfMoveCount == WhiteHalfMoveIndex);
-		blackMoveHighlight.SetActive(halfMoveCount == BlackHalfMoveIndex);
+	private void OnMoveExecuted(HalfMove latestHalfMove) {
+		ValidateMoveHighlights();
+	}
+
+	private void ValidateMoveHighlights() {
+		int latestHalfMoveIndex = GameManager.Instance.LatestHalfMoveIndex;
+		whiteMoveHighlight.SetActive(latestHalfMoveIndex == WhiteHalfMoveIndex);
+		blackMoveHighlight.SetActive(latestHalfMoveIndex == BlackHalfMoveIndex);
 	}
 }
