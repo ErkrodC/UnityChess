@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager> {
 	}
 
 	private void OnDestroy() {
-		uciEngine.ShutDown();
+		uciEngine?.ShutDown();
 	}
 	
 #if AI_TEST
