@@ -3,7 +3,7 @@
 public class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviourSingleton<T> {
 	public static T Instance {
 		get {
-			if (instance == null) {
+			if (!instance) {
 				instance = FindAnyObjectByType<T>()
 				           ?? new GameObject().AddComponent<T>();
 			}
