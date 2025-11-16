@@ -2,25 +2,25 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Timers;
-using UnityEngine;
+using UnityChess.Core;
 using Debug = UnityEngine.Debug;
 
-namespace UnityChess.Engine {
+namespace UnityChess.Application {
 	public class MockUCIEngine : IUCIEngine {
 		private Process engineProcess;
-		private string exePath = Application.streamingAssetsPath + "/UCIEngines/pigeon-1.5.1/pigeon-1.5.1.exe";
+		private string exePath = UnityEngine.Application.streamingAssetsPath + "/UCIEngines/pigeon-1.5.1/pigeon-1.5.1.exe";
 		private bool isReady;
 		private Timer timer;
 		private float timeMS;
-		
+
 		private FENSerializer fenSerializer = new FENSerializer();
 		private bool isSearchingForBestMove;
 		private Game game;
-		
+
 		public async void Start() {
 			timer = new Timer(100);
 			timer.Elapsed += (_, _) => timeMS += 100;
-			
+
 			engineProcess = new Process();
 			engineProcess.StartInfo = new ProcessStartInfo(
 				exePath
@@ -31,7 +31,7 @@ namespace UnityChess.Engine {
 				CreateNoWindow = true
 			};
 			engineProcess.Start();
-			
+
 			await foreach (string engineOutputLine in Receive()) {
 				Debug.Log(engineOutputLine);
 			}
@@ -40,7 +40,7 @@ namespace UnityChess.Engine {
 			await foreach (string engineOutputLine in Receive("uciok")) {
 				Debug.Log(engineOutputLine);
 			}
-			
+
 			await Send("isready");
 			await foreach (string engineOutputLine in Receive("readyok")) {
 				Debug.Log(engineOutputLine);
@@ -51,14 +51,14 @@ namespace UnityChess.Engine {
 		public void ShutDown() {
 			engineProcess.Close();
 		}
-		
+
 		public async Task SetupNewGame(Game game) {
 			this.game = game;
 
 			while (!isReady) {
 				await Task.Yield();
 			}
-			
+
 			await Send("ucinewgame");
 		}
 
@@ -71,7 +71,7 @@ namespace UnityChess.Engine {
 				isSearchingForBestMove = true;
 				await Send($"go movetime {timeoutMS}");
 			}
-			
+
 			await foreach (string line in Receive("bestmove")) {
 				Debug.Log(line);
 				if (line.StartsWith("bestmove")) {
@@ -90,7 +90,7 @@ namespace UnityChess.Engine {
 					result = ParseUCIMove(line.Split(" ")[1], sideToMove);
 				}
 			}
-			
+
 			return result;
 		}
 
@@ -101,7 +101,7 @@ namespace UnityChess.Engine {
 					new Square(uciMove[..2]),
 					new Square(uciMove[2..4])
 				);
-				
+
 				ElectedPiece electedPiece = uciMove[4..5].ToLower() switch {
 					"b" => ElectedPiece.Bishop,
 					"n" => ElectedPiece.Knight,

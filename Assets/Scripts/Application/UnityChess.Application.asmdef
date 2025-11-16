@@ -1,0 +1,16 @@
+{
+    "name": "UnityChess.Application",
+    "rootNamespace": "UnityChess.Application",
+    "references": [
+        "GUID:9430a4ae04d98e84fbcc83f20af86bd1"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

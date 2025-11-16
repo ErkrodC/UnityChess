@@ -1,15 +1,16 @@
-﻿using UnityChess;
+﻿using UnityChess.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FullMoveUI : MonoBehaviour {
-	[Header("Moves")]
+namespace UnityChess.Presentation {
+	public class FullMoveUI : MonoBehaviour {
+		[Header("Moves")]
 	public Text MoveNumberText;
 	public Text WhiteMoveText;
 	public Text BlackMoveText;
 	public Button WhiteMoveButton;
 	public Button BlackMoveButton;
-	
+
 	[Header("Analysis")]
 	public Text WhiteAnalysisText;
 	public Text BlackAnalysisText;
@@ -25,6 +26,7 @@ public class FullMoveUI : MonoBehaviour {
 
 	public int FullMoveNumber => transform.GetSiblingIndex() + 1;
 
+	/*
 	private static int startingSideOffset => GameManager.Instance.StartingSide switch {
 		Side.White => 0,
 		_ => -1
@@ -45,13 +47,14 @@ public class FullMoveUI : MonoBehaviour {
 		GameManager.GameResetToHalfMoveEvent -= ValidateMoveHighlights;
 	}
 
+	*/
 	public void SetAlternateColor(float darkenAmount) {
 		foreach (Image image in new []{ backgroundImage, whiteMoveButtonImage, blackMoveButtonImage }) {
 			Color lightColor = image.color;
 			image.color = new Color(lightColor.r - darkenAmount, lightColor.g - darkenAmount, lightColor.b - darkenAmount);
 		}
 	}
-
+/*
 	public void ResetBoardToWhiteMove() => GameManager.Instance.ResetGameToHalfMoveIndex(WhiteHalfMoveIndex);
 
 	public void ResetBoardToBlackMove() => GameManager.Instance.ResetGameToHalfMoveIndex(BlackHalfMoveIndex);
@@ -60,5 +63,6 @@ public class FullMoveUI : MonoBehaviour {
 		int latestHalfMoveIndex = GameManager.Instance.LatestHalfMoveIndex;
 		whiteMoveHighlight.SetActive(latestHalfMoveIndex == WhiteHalfMoveIndex);
 		blackMoveHighlight.SetActive(latestHalfMoveIndex == BlackHalfMoveIndex);
+	}*/
 	}
 }
