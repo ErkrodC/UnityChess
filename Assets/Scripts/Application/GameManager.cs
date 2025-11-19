@@ -6,11 +6,13 @@ using UnityChess.Core;
 using UnityEngine;
 
 namespace UnityChess.Application {
-	public class GameManager : MonoBehaviourSingleton<GameManager> {
-		public static event Action NewGameStartedEvent;
-		public static event Action GameEndedEvent;
-		public static event Action GameResetToHalfMoveEvent;
-		public static event Action MoveExecutedEvent;
+	public class GameManager {
+		public event Action newGameStarted;
+		public event Action<Board> gameEnded;
+		public event Action<Timeline<HalfMove>> gameResetToHalfMove;
+		public event Action<HalfMove> moveExecuted;
+		public event Action<Board> boardChanged;
+		public event Action<Side> turnChanged;
 
 		public Board CurrentBoard {
 			get {
@@ -104,14 +106,14 @@ namespace UnityChess.Application {
 				}
 
 				await uciEngine.SetupNewGame(game);
-				NewGameStartedEvent?.Invoke();
+				newGameStarted?.Invoke();
 
 				if (isWhiteAI) {
 					Movement bestMove = await uciEngine.GetBestMove(10_000);
 					DoAIMove(bestMove);
 				}
 			} else {
-				NewGameStartedEvent?.Invoke();
+				newGameStarted?.Invoke();
 			}
 		}
 
@@ -123,7 +125,7 @@ namespace UnityChess.Application {
 
 		public void LoadGame(string serializedGame) {
 			game = serializersByType[selectedSerializationType].Deserialize(serializedGame);
-			NewGameStartedEvent?.Invoke();
+			newGameStarted?.Invoke();
 		}
 
 		public void ResetGameToHalfMoveIndex(int halfMoveIndex) {
@@ -131,23 +133,23 @@ namespace UnityChess.Application {
 
 			/*UIManager.Instance.SetActivePromotionUI(false);*/ // ER TODO remove, app layer should not know about presentation
 			promotionUITaskCancellationTokenSource?.Cancel();
-			GameResetToHalfMoveEvent?.Invoke();
+			gameResetToHalfMove?.Invoke(HalfMoveTimeline);
 		}
 
-		private bool TryExecuteMove(Movement move) {
-			if (!game.TryExecuteMove(move)) {
+		public bool TryExecuteMove(Square start, Square end) {
+			if (!game.TryExecuteMove(start, end)) {
 				return false;
 			}
 
 			HalfMoveTimeline.TryGetCurrent(out HalfMove latestHalfMove);
 			if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
 				/*BoardManager.Instance.SetActiveAllPieces(false);*/ // ER TODO remove, app layer should not know about presentation
-				GameEndedEvent?.Invoke();
+				gameEnded?.Invoke(CurrentBoard);
 			} else {
 				/*BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(SideToMove);*/ // ER TODO remove, app layer should not know about presentation
 			}
 
-			MoveExecutedEvent?.Invoke();
+			moveExecuted?.Invoke(latestHalfMove);
 
 			return true;
 		}
@@ -212,7 +214,7 @@ namespace UnityChess.Application {
 			userPromotionChoice = choice;
 		}
 
-		private async void OnPieceMoved(Square movedPieceInitialSquare, Transform movedPieceTransform,
+		public async void OnPieceMoved(Square movedPieceInitialSquare, Transform movedPieceTransform,
 			Transform closestBoardSquareTransform, Piece promotionPiece = null) {
 			Square endSquare = new Square(closestBoardSquareTransform.name);
 
@@ -231,7 +233,7 @@ namespace UnityChess.Application {
 			}
 
 			if ((move is not SpecialMove specialMove || await TryHandleSpecialMoveBehaviourAsync(specialMove))
-			    && TryExecuteMove(move)
+			    && TryExecuteMove(move.Start, move.End)
 			   ) {
 				if (move is not SpecialMove) {
 					/*BoardManager.Instance.TryDestroyVisualPiece(move.End);*/ // ER TODO remove, app layer should not know about presentation

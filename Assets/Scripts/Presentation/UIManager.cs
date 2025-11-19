@@ -26,10 +26,11 @@ namespace UnityChess.Presentation {
 		private Color buttonColor;
 
 		private void Start() {
-			GameManager.NewGameStartedEvent += OnNewGameStarted;
+			// ER TODO likely remove as part of rearchitecting
+			/*GameManager.NewGameStartedEvent += OnNewGameStarted;
 			GameManager.GameEndedEvent += OnGameEnded;
 			GameManager.MoveExecutedEvent += OnMoveExecuted;
-			GameManager.GameResetToHalfMoveEvent += OnGameResetToHalfMove;
+			GameManager.GameResetToHalfMoveEvent += OnGameResetToHalfMove;*/
 
 			moveUITimeline = new Timeline<FullMoveUI>();
 			foreach (Text boardInfoText in boardInfoTexts) {
@@ -54,7 +55,8 @@ namespace UnityChess.Presentation {
 		}
 
 		private void OnGameEnded() {
-			GameManager.Instance.HalfMoveTimeline.TryGetCurrent(out HalfMove latestHalfMove);
+			// ER TODO likely remove as part of rearchitecting
+			/*GameManager.Instance.HalfMoveTimeline.TryGetCurrent(out HalfMove latestHalfMove);
 
 			if (latestHalfMove.CausedCheckmate) {
 				resultText.text = $"{latestHalfMove.Piece.Owner} Wins!";
@@ -62,26 +64,29 @@ namespace UnityChess.Presentation {
 				resultText.text = "Draw.";
 			}
 
-			resultText.gameObject.SetActive(true);
+			resultText.gameObject.SetActive(true);*/
 		}
 
 		private void OnMoveExecuted() {
-			UpdateGameStringInputField();
+			// ER TODO likely remove as part of rearchitecting
+			/*UpdateGameStringInputField();
 			Side sideToMove = GameManager.Instance.SideToMove;
 			whiteTurnIndicator.enabled = sideToMove == Side.White;
 			blackTurnIndicator.enabled = sideToMove == Side.Black;
 
 			GameManager.Instance.HalfMoveTimeline.TryGetCurrent(out HalfMove lastMove);
-			AddMoveToHistory(lastMove, sideToMove.Complement());
+			AddMoveToHistory(lastMove, sideToMove.Complement());*/
 		}
 
 		private void OnGameResetToHalfMove() {
-			UpdateGameStringInputField();
+			// ER TODO likely remove as part of rearchitecting
+			/*UpdateGameStringInputField();
 			moveUITimeline.HeadIndex = GameManager.Instance.LatestHalfMoveIndex / 2;
-			ValidateIndicators();
+			ValidateIndicators();*/
 		}
 
-		public void SetActivePromotionUI(bool value) => promotionUI.gameObject.SetActive(value);
+		// ER TODO likely remove as part of rearchitecting
+		/*public void SetActivePromotionUI(bool value) => promotionUI.gameObject.SetActive(value);
 
 		public void OnElectionButton(int choice) => GameManager.Instance.ElectPiece((ElectedPiece)choice);
 
@@ -162,14 +167,18 @@ namespace UnityChess.Presentation {
 					Destroy(divergentFullMoveUI.gameObject);
 				}
 			}
-		}
+		}*/
 
 		private void ValidateIndicators() {
-			Side sideToMove = GameManager.Instance.SideToMove;
+			// ER TODO likely remove as part of rearchitecting
+			/*Side sideToMove = GameManager.Instance.SideToMove;
 			whiteTurnIndicator.enabled = sideToMove == Side.White;
-			blackTurnIndicator.enabled = sideToMove == Side.Black;
+			blackTurnIndicator.enabled = sideToMove == Side.Black;*/
 		}
 
-		private void UpdateGameStringInputField() => GameStringInputField.text = GameManager.Instance.SerializeGame();
+		// ER TODO likely remove as part of rearchitecting
+		private void UpdateGameStringInputField() {
+			/*GameStringInputField.text = GameManager.Instance.SerializeGame();*/
+		}
 	}
 }

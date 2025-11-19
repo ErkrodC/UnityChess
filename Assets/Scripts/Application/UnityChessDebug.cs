@@ -20,7 +20,8 @@ namespace UnityChess.Application {
 		}
 
 		private void Update() {
-			UpdateBoardDebugView(GameManager.Instance.CurrentBoard);
+			// ER TODO - probably end up removing this whole class
+			/*UpdateBoardDebugView(GameManager.Instance.CurrentBoard);*/
 		}
 
 		public static void ShowLegalMovesInLog(ICollection<Movement> legalMoves) {

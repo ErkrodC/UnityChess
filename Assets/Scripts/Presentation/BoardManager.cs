@@ -19,8 +19,9 @@ namespace UnityChess.Presentation {
 		private readonly Random rng = new Random();
 
 		private void Awake() {
-			GameManager.NewGameStartedEvent += OnNewGameStarted;
-			GameManager.GameResetToHalfMoveEvent += OnGameResetToHalfMove;
+			// ER TODO likely remove as part of rearchitecting
+			/*GameManager.NewGameStartedEvent += OnNewGameStarted;
+			GameManager.GameResetToHalfMoveEvent += OnGameResetToHalfMove;*/
 
 			positionMap = new Dictionary<Square, GameObject>(64);
 			Transform boardTransform = transform;
@@ -44,17 +45,19 @@ namespace UnityChess.Presentation {
 		}
 
 		private void OnNewGameStarted() {
-			ClearBoard();
+			// ER TODO likely remove as part of rearchitecting
+			/*ClearBoard();
 
 			foreach ((Square square, Piece piece) in GameManager.Instance.CurrentPieces) {
 				CreateAndPlacePieceGO(piece, square);
 			}
 
-			EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);
+			EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);*/
 		}
 
 		private void OnGameResetToHalfMove() {
-			ClearBoard();
+			// ER TODO likely remove as part of rearchitecting
+			/*ClearBoard();
 
 			foreach ((Square square, Piece piece) in GameManager.Instance.CurrentPieces) {
 				CreateAndPlacePieceGO(piece, square);
@@ -62,7 +65,7 @@ namespace UnityChess.Presentation {
 
 			GameManager.Instance.HalfMoveTimeline.TryGetCurrent(out HalfMove latestHalfMove);
 			if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) SetActiveAllPieces(false);
-			else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);
+			else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);*/
 		}
 
 		public void CastleRook(Square rookPosition, Square endSquare) {
@@ -97,13 +100,14 @@ namespace UnityChess.Presentation {
 		}
 
 		public void EnsureOnlyPiecesOfSideAreEnabled(Side side) {
-			VisualPiece[] visualPiece = GetComponentsInChildren<VisualPiece>(true);
+			// ER TODO likely remove as part of rearchitecting
+			/*VisualPiece[] visualPiece = GetComponentsInChildren<VisualPiece>(true);
 			foreach (VisualPiece pieceBehaviour in visualPiece) {
 				Piece piece = GameManager.Instance.CurrentBoard[pieceBehaviour.CurrentSquare];
 
 				pieceBehaviour.enabled = pieceBehaviour.PieceColor == side
 				                         && GameManager.Instance.HasLegalMoves(piece);
-			}
+			}*/
 		}
 
 		public void TryDestroyVisualPiece(Square position) {
