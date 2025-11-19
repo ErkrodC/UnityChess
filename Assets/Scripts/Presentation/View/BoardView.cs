@@ -31,7 +31,7 @@ namespace UnityChess.Presentation.View {
 			if (squareElement == null) { return; }
 
 			DataBinding binding = new DataBinding {
-				dataSource = viewModel.boardVM.currentBoard[square],
+				dataSource = viewModel.boardVM.currentBoard[square.File - 1, square.Rank - 1],
 				bindingMode = BindingMode.ToTarget
 			};
 

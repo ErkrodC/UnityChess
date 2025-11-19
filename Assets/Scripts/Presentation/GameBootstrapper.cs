@@ -7,18 +7,10 @@ namespace UnityChess.Presentation {
 		[Header("View Models")]
 		[SerializeField] private GameViewModel _gameViewModel;
 
-		private GameManager _gameManager;
 		private GamePresenter _gamePresenter;
 
 		private void Awake() {
-			_gameManager = new GameManager();
-			_gamePresenter = new GamePresenter(_gameManager, _gameViewModel);
+			_gamePresenter = new GamePresenter(new GameManager(), _gameViewModel);
 		}
-
-		private void Start() {
-			_gameManager.StartNewGame();
-		}
-
-		public void OnNewGameButtonClicked() => _gameManager.StartNewGame();
 	}
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace UnityChess.Application {
 	public class GameManager {
-		public event Action newGameStarted;
+		public event Action<Board> newGameStarted;
 		public event Action<Board> gameEnded;
 		public event Action<Timeline<HalfMove>> gameResetToHalfMove;
 		public event Action<HalfMove> moveExecuted;
@@ -106,14 +106,14 @@ namespace UnityChess.Application {
 				}
 
 				await uciEngine.SetupNewGame(game);
-				newGameStarted?.Invoke();
+				newGameStarted?.Invoke(CurrentBoard);
 
 				if (isWhiteAI) {
 					Movement bestMove = await uciEngine.GetBestMove(10_000);
 					DoAIMove(bestMove);
 				}
 			} else {
-				newGameStarted?.Invoke();
+				newGameStarted?.Invoke(CurrentBoard);
 			}
 		}
 
@@ -125,7 +125,7 @@ namespace UnityChess.Application {
 
 		public void LoadGame(string serializedGame) {
 			game = serializersByType[selectedSerializationType].Deserialize(serializedGame);
-			newGameStarted?.Invoke();
+			newGameStarted?.Invoke(CurrentBoard);
 		}
 
 		public void ResetGameToHalfMoveIndex(int halfMoveIndex) {
