@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 1097727455}
   - component: {fileID: 1097727454}
   m_Layer: 0
-  m_Name: GameBootstrapper
+  m_Name: Bootstrapper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -285,11 +285,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 039bd6078d84491f89b5d0ab23961e14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityChess.Presentation::UnityChess.Presentation.GameBootstrapper
-  _gameViewModel:
-    <turnVM>k__BackingField:
-      <currentSideToMove>k__BackingField: 0
-    <fenVM>k__BackingField:
-      <fen>k__BackingField: 
+  _menuVM:
+    <fenString>k__BackingField: 
+    <gameResult>k__BackingField: 
 --- !u!4 &1097727455
 Transform:
   m_ObjectHideFlags: 0

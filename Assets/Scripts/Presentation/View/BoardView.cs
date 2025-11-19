@@ -5,15 +5,15 @@ using UnityChess.Presentation.ViewModel;
 
 namespace UnityChess.Presentation.View {
 	public class BoardView : MonoBehaviour {
-		[SerializeField] private UIDocument uiDocument;
-		[SerializeField] private GameVM _gameVM; // Assign in Inspector or via Initialize
+		[SerializeField] private UIDocument _uiDocument;
+		[SerializeField] private BoardVM _vm; // Assign in Inspector or via Initialize
 
 		private void OnEnable() {
 			SetupBindings();
 		}
 
 		private void SetupBindings() {
-			var root = uiDocument.rootVisualElement;
+			var root = _uiDocument.rootVisualElement;
 
 			// Bind all 64 squares (a1-h8) to display pieces
 			for (int file = 1; file <= 8; file++) {
@@ -31,7 +31,7 @@ namespace UnityChess.Presentation.View {
 			if (squareElement == null) { return; }
 
 			DataBinding binding = new DataBinding {
-				dataSource = _gameVM.boardVM.currentBoard[square.File - 1, square.Rank - 1],
+				dataSource = _vm.currentBoard[square.File - 1, square.Rank - 1],
 				bindingMode = BindingMode.ToTarget
 			};
 

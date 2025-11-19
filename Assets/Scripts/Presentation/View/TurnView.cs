@@ -6,7 +6,7 @@ using UnityChess.Presentation.ViewModel;
 
 namespace UnityChess.Presentation.View {
 	public class TurnView : MonoBehaviour {
-		[SerializeField] private UIDocument uiDocument;
+		/*[SerializeField] private UIDocument uiDocument;
 		[SerializeField] private GameVM gameVM; // ER TODO Assign in Inspector or via Initialize
 
 		private void OnEnable() {
@@ -63,6 +63,6 @@ namespace UnityChess.Presentation.View {
 
 				blackIndicator.SetBinding("style.display", binding);
 			}
-		}
+		}*/
 	}
 }
