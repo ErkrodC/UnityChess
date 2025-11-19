@@ -7,7 +7,7 @@ using UnityChess.Presentation.ViewModel;
 namespace UnityChess.Presentation.View {
 	public class TurnView : MonoBehaviour {
 		[SerializeField] private UIDocument uiDocument;
-		[SerializeField] private GameViewModel viewModel; // Assign in Inspector or via Initialize
+		[SerializeField] private GameVM gameVM; // ER TODO Assign in Inspector or via Initialize
 
 		private void OnEnable() {
 			SetupBindings();
@@ -20,8 +20,8 @@ namespace UnityChess.Presentation.View {
 				var turnLabel = root.Q<Label>("turn-label");
 
 				DataBinding binding = new DataBinding {
-					dataSource = viewModel.turnVM,
-					dataSourcePath = new PropertyPath(nameof(TurnViewModel.currentSideToMove)),
+					dataSource = gameVM.boardVM,
+					dataSourcePath = new PropertyPath(nameof(BoardVM.currentSideToMove)),
 					bindingMode = BindingMode.ToTarget
 				};
 
@@ -36,8 +36,8 @@ namespace UnityChess.Presentation.View {
 				var whiteIndicator = root.Q<VisualElement>("white-turn-indicator");
 
 				DataBinding binding = new DataBinding {
-					dataSource = viewModel.turnVM,
-					dataSourcePath = new PropertyPath(nameof(TurnViewModel.currentSideToMove)),
+					dataSource = gameVM.boardVM,
+					dataSourcePath = new PropertyPath(nameof(BoardVM.currentSideToMove)),
 					bindingMode = BindingMode.ToTarget
 				};
 
@@ -52,8 +52,8 @@ namespace UnityChess.Presentation.View {
 				var blackIndicator = root.Q<VisualElement>("black-turn-indicator");
 
 				DataBinding binding = new DataBinding {
-					dataSource = viewModel.turnVM,
-					dataSourcePath = new PropertyPath(nameof(TurnViewModel.currentSideToMove)),
+					dataSource = gameVM.boardVM,
+					dataSourcePath = new PropertyPath(nameof(BoardVM.currentSideToMove)),
 					bindingMode = BindingMode.ToTarget
 				};
 

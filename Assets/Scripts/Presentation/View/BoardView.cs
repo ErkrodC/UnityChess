@@ -6,7 +6,7 @@ using UnityChess.Presentation.ViewModel;
 namespace UnityChess.Presentation.View {
 	public class BoardView : MonoBehaviour {
 		[SerializeField] private UIDocument uiDocument;
-		[SerializeField] private GameViewModel viewModel; // Assign in Inspector or via Initialize
+		[SerializeField] private GameVM _gameVM; // Assign in Inspector or via Initialize
 
 		private void OnEnable() {
 			SetupBindings();
@@ -31,7 +31,7 @@ namespace UnityChess.Presentation.View {
 			if (squareElement == null) { return; }
 
 			DataBinding binding = new DataBinding {
-				dataSource = viewModel.boardVM.currentBoard[square.File - 1, square.Rank - 1],
+				dataSource = _gameVM.boardVM.currentBoard[square.File - 1, square.Rank - 1],
 				bindingMode = BindingMode.ToTarget
 			};
 
