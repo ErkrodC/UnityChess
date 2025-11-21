@@ -31,7 +31,7 @@ namespace UnityChess.Presentation {
 			_moveHistoryVM.currentHalfMoveIndex = -1;
 		}
 
-		private void OnMoveExecuted(HalfMove halfMove) {
+		private void OnMoveExecuted(Board _, HalfMove halfMove) {
 			int halfMoveIndex = _moveHistoryVM.currentHalfMoveIndex + 1;
 			_moveHistoryVM.currentHalfMoveIndex = halfMoveIndex;
 

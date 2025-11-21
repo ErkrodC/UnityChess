@@ -63,8 +63,7 @@ namespace UnityChess.Application {
 		}
 
 		public async Task<Movement> GetBestMove(int timeoutMS = -1) {
-			game.ConditionsTimeline.TryGetCurrent(out GameConditions currentConditions);
-			Side sideToMove = currentConditions.SideToMove;
+			Side sideToMove = game.ConditionsTimeline.Head.SideToMove;
 			await Send($"position fen {fenSerializer.Serialize(game)}");
 
 			if (!isSearchingForBestMove) {

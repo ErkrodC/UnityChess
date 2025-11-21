@@ -13,11 +13,10 @@ namespace UnityChess.Presentation {
 
 			// To Presentation
 			_gameManager.newGameStarted += OnNewGameStarted;
-			_gameManager.boardChanged += OnBoardChanged;
-			_gameManager.turnChanged += OnTurnChanged;
+			_gameManager.moveExecuted += OnMoveExecuted;
 
 			// To Application
-			_boardVM.onSquareClicked = OnSquareClicked;
+			_boardVM.onSquareClicked = OnPieceDropped;
 		}
 
 		#region To Presentation Layer
@@ -28,50 +27,48 @@ namespace UnityChess.Presentation {
 			_boardVM.currentBoard = pieceVMs;
 		}
 
-		private void OnBoardChanged(Board board) {
+		private void OnMoveExecuted(Board board, HalfMove _) {
 			ConvertBoardToPieceTypes(board, _boardVM.currentBoard);
-		}
-
-		private void OnTurnChanged(Side sideToMove) {
-			_boardVM.currentSideToMove = sideToMove;
 		}
 
 		#endregion
 
 		#region To Application Layer
 
-		private void OnSquareClicked(Square square) {
-			// ER TODO: Implement square click logic - select piece, move piece, etc.
+		// ER TODO question about whether this should return anything
+		// reason being that gameManager already raises event on successful move
+		private bool OnPieceDropped(Square fromSquare, Square toSquare) {
+			return _gameManager.TryExecuteMove(fromSquare, toSquare);
 		}
 
 		#endregion
 
 		#region Helpers
 
-		private static void ConvertBoardToPieceTypes(Board board, PieceVM[,] boardPieceTypes) {
+		private static void ConvertBoardToPieceTypes(Board board, PieceVM[,] pieceVMs) {
 			for (int file = 1; file <= 8; file++)
 			for (int rank = 1; rank <= 8; rank++) {
 				Piece piece = board[file, rank];
 
-				if (piece == null) {
-					boardPieceTypes[file - 1, rank - 1] = null;
-					continue;
+				PieceVM pieceVM = null;
+				if (piece != null) {
+					PieceType pieceType = piece switch {
+						Pawn => PieceType.Pawn,
+						Rook => PieceType.Rook,
+						Knight => PieceType.Knight,
+						Bishop => PieceType.Bishop,
+						Queen => PieceType.Queen,
+						King => PieceType.King,
+						_ => throw new System.ArgumentException($"Unknown piece type: {piece.GetType().Name}")
+					};
+
+					pieceVM = new PieceVM {
+						type = pieceType,
+						side = piece.Owner
+					};
 				}
 
-				PieceType pieceType = piece switch {
-					Pawn => PieceType.Pawn,
-					Rook => PieceType.Rook,
-					Knight => PieceType.Knight,
-					Bishop => PieceType.Bishop,
-					Queen => PieceType.Queen,
-					King => PieceType.King,
-					_ => throw new System.ArgumentException($"Unknown piece type: {piece.GetType().Name}")
-				};
-
-				boardPieceTypes[file - 1, rank - 1] = new PieceVM {
-					type = pieceType,
-					side = piece.Owner
-				};
+				pieceVMs[file - 1, rank - 1] = pieceVM;
 			}
 		}
 

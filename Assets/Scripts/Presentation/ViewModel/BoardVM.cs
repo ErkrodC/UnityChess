@@ -12,6 +12,6 @@ namespace UnityChess.Presentation.ViewModel {
 		public float whiteTimeRemaining { get; set; }
 		public float blackTimeRemaining { get; set; }
 
-		public Action<Square> onSquareClicked { get; set; }
+		public Func<Square, Square, bool> onSquareClicked { get; set; }
 	}
 }

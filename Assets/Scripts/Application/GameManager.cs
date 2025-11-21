@@ -1,88 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityChess.Core;
-using UnityEngine;
 
 namespace UnityChess.Application {
 	public class GameManager {
 		public event Action<Board> newGameStarted;
 		public event Action<Board> gameEnded;
 		public event Action<Timeline<HalfMove>> gameResetToHalfMove;
-		public event Action<HalfMove> moveExecuted;
-		public event Action<Board> boardChanged;
-		public event Action<Side> turnChanged;
+		public event Action<Board, HalfMove> moveExecuted;
 
-		public Board CurrentBoard {
+		// ER TODO probably move to presentation, SideToMove is not a game concept
+		public Side SideToMove => game.ConditionsTimeline.Head.SideToMove;
+
+		// ER TODO probably move to presentation, FullMoveNumber is not a game concept
+		public int FullMoveNumber {
 			get {
-				game.BoardTimeline.TryGetCurrent(out Board currentBoard);
-				return currentBoard;
+				Side startingSide = game.ConditionsTimeline[0].SideToMove;
+				int latestHalfMoveIndex = game.HalfMoveTimeline.HeadIndex;
+
+				return startingSide switch {
+					Side.White => latestHalfMoveIndex / 2 + 1,
+					Side.Black => (latestHalfMoveIndex + 1) / 2 + 1,
+					_ => -1
+				};
 			}
 		}
 
-		public Side SideToMove {
-			get {
-				game.ConditionsTimeline.TryGetCurrent(out GameConditions currentConditions);
-				return currentConditions.SideToMove;
-			}
-		}
+		private Game game;
 
-		public Side StartingSide => game.ConditionsTimeline[0].SideToMove;
-		public Timeline<HalfMove> HalfMoveTimeline => game.HalfMoveTimeline;
-		public int LatestHalfMoveIndex => game.HalfMoveTimeline.HeadIndex;
+		private FENSerializer fenSerializer;
+		private PGNSerializer pgnSerializer;
+		private GameSerializationType selectedSerializationType = GameSerializationType.FEN;
+		private Dictionary<GameSerializationType, IGameSerializer> serializersByType;
 
-		public int FullMoveNumber => StartingSide switch {
-			Side.White => LatestHalfMoveIndex / 2 + 1,
-			Side.Black => (LatestHalfMoveIndex + 1) / 2 + 1,
-			_ => -1
-		};
+		private CancellationTokenSource promotionUITaskCancellationTokenSource;
 
+		private IUCIEngine uciEngine;
 		private bool isWhiteAI;
 		private bool isBlackAI;
 
-		public List<(Square, Piece)> CurrentPieces {
-			get {
-				currentPiecesBacking.Clear();
-				for (int file = 1; file <= 8; file++) {
-					for (int rank = 1; rank <= 8; rank++) {
-						Piece piece = CurrentBoard[file, rank];
-						if (piece != null) currentPiecesBacking.Add((new Square(file, rank), piece));
-					}
-				}
-
-				return currentPiecesBacking;
-			}
-		}
-
-
-		private readonly List<(Square, Piece)> currentPiecesBacking = new List<(Square, Piece)>();
-
-		[SerializeField] private UnityChessDebug unityChessDebug;
-		private Game game;
-		private FENSerializer fenSerializer;
-		private PGNSerializer pgnSerializer;
-		private CancellationTokenSource promotionUITaskCancellationTokenSource;
-		private ElectedPiece userPromotionChoice = ElectedPiece.None;
-		private Dictionary<GameSerializationType, IGameSerializer> serializersByType;
-		private GameSerializationType selectedSerializationType = GameSerializationType.FEN;
-
-		private IUCIEngine uciEngine;
-
 		public void Start() {
-			/*VisualPiece.VisualPieceMoved += OnPieceMoved;*/ // ER TODO remove, app layer should not know about visual pieces
-
 			serializersByType = new Dictionary<GameSerializationType, IGameSerializer> {
 				[GameSerializationType.FEN] = new FENSerializer(),
 				[GameSerializationType.PGN] = new PGNSerializer()
 			};
 
 			StartNewGame();
-
-#if DEBUG_VIEW
-		unityChessDebug.gameObject.SetActive(true);
-		unityChessDebug.enabled = true;
-#endif
 		}
 
 		private void OnDestroy() {
@@ -106,14 +70,14 @@ namespace UnityChess.Application {
 				}
 
 				await uciEngine.SetupNewGame(game);
-				newGameStarted?.Invoke(CurrentBoard);
+				newGameStarted?.Invoke(game.BoardTimeline.Head);
 
 				if (isWhiteAI) {
 					Movement bestMove = await uciEngine.GetBestMove(10_000);
 					DoAIMove(bestMove);
 				}
 			} else {
-				newGameStarted?.Invoke(CurrentBoard);
+				newGameStarted?.Invoke(game.BoardTimeline.Head);
 			}
 		}
 
@@ -125,130 +89,56 @@ namespace UnityChess.Application {
 
 		public void LoadGame(string serializedGame) {
 			game = serializersByType[selectedSerializationType].Deserialize(serializedGame);
-			newGameStarted?.Invoke(CurrentBoard);
+			newGameStarted?.Invoke(game.BoardTimeline.Head);
 		}
 
 		public void ResetGameToHalfMoveIndex(int halfMoveIndex) {
-			if (!game.ResetGameToHalfMoveIndex(halfMoveIndex)) return;
+			if (!game.ResetGameToHalfMoveIndex(halfMoveIndex)) { return; }
 
-			/*UIManager.Instance.SetActivePromotionUI(false);*/ // ER TODO remove, app layer should not know about presentation
 			promotionUITaskCancellationTokenSource?.Cancel();
-			gameResetToHalfMove?.Invoke(HalfMoveTimeline);
+			gameResetToHalfMove?.Invoke(game.HalfMoveTimeline);
 		}
 
-		public bool TryExecuteMove(Square start, Square end) {
-			if (!game.TryExecuteMove(start, end)) {
+		public bool TryExecuteMove(Square movedPieceInitialSquare, Square endSquare) {
+			if (!game.TryGetLegalMove(movedPieceInitialSquare, endSquare, out Movement move)) {
 				return false;
 			}
 
-			HalfMoveTimeline.TryGetCurrent(out HalfMove latestHalfMove);
-			if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
-				/*BoardManager.Instance.SetActiveAllPieces(false);*/ // ER TODO remove, app layer should not know about presentation
-				gameEnded?.Invoke(CurrentBoard);
-			} else {
-				/*BoardManager.Instance.EnsureOnlyPiecesOfSideAreEnabled(SideToMove);*/ // ER TODO remove, app layer should not know about presentation
+			if (move is PromotionMove promotionMove) {
+				// ER TODO raise event to get promotion piece choice, and await it
+				promotionUITaskCancellationTokenSource?.Cancel();
+				promotionUITaskCancellationTokenSource = new CancellationTokenSource();
+
+				// ER TODO
+				/*ElectedPiece choice = await Task.Run(GetUserPromotionPieceChoice, promotionUITaskCancellationTokenSource.Token);*/
+				if (promotionUITaskCancellationTokenSource == null
+				    || promotionUITaskCancellationTokenSource.Token.IsCancellationRequested
+				   ) {
+					return false;
+				}
+
+				// ER TODO
+				/*promotionMove.SetPromotionPiece(
+						PromotionUtil.GeneratePromotionPiece(choice, SideToMove)
+					);*/
+				promotionUITaskCancellationTokenSource = null;
 			}
 
-			moveExecuted?.Invoke(latestHalfMove);
+			if (!game.TryExecuteMove(movedPieceInitialSquare, endSquare, out HalfMove latestHalfMove)) {
+				return false;
+			}
+
+			moveExecuted?.Invoke(game.BoardTimeline.Head, latestHalfMove);
+
+			if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
+				gameEnded?.Invoke(game.BoardTimeline.Head);
+			}
+
 
 			return true;
-		}
 
-		private async Task<bool> TryHandleSpecialMoveBehaviourAsync(SpecialMove specialMove) {
-			switch (specialMove) {
-				case CastlingMove castlingMove:
-					/*BoardManager.Instance.CastleRook(castlingMove.RookSquare, castlingMove.GetRookEndSquare());*/ // ER TODO remove, app layer should not know about presentation
-					return true;
-				case EnPassantMove enPassantMove:
-					/*BoardManager.Instance.TryDestroyVisualPiece(enPassantMove.CapturedPawnSquare);*/ // ER TODO remove, app layer should not know about presentation
-					return true;
-				case PromotionMove { PromotionPiece: null } promotionMove:
-					/*UIManager.Instance.SetActivePromotionUI(true);*/ // ER TODO remove, app layer should not know about presentation
-					/*BoardManager.Instance.SetActiveAllPieces(false);*/ // ER TODO remove, app layer should not know about presentation
-
-					promotionUITaskCancellationTokenSource?.Cancel();
-					promotionUITaskCancellationTokenSource = new CancellationTokenSource();
-
-					ElectedPiece choice = await Task.Run(GetUserPromotionPieceChoice,
-						promotionUITaskCancellationTokenSource.Token);
-
-					/*UIManager.Instance.SetActivePromotionUI(false);*/ // ER TODO remove, app layer should not know about presentation
-					/*BoardManager.Instance.SetActiveAllPieces(true);*/ // ER TODO remove, app layer should not know about presentation
-
-					if (promotionUITaskCancellationTokenSource == null
-					    || promotionUITaskCancellationTokenSource.Token.IsCancellationRequested
-					   ) {
-						return false;
-					}
-
-					promotionMove.SetPromotionPiece(
-						PromotionUtil.GeneratePromotionPiece(choice, SideToMove)
-					);
-					/*BoardManager.Instance.TryDestroyVisualPiece(promotionMove.Start);
-					BoardManager.Instance.TryDestroyVisualPiece(promotionMove.End);
-					BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.PromotionPiece, promotionMove.End);*/ // ER TODO remove, app layer should not know about presentation
-
-					promotionUITaskCancellationTokenSource = null;
-					return true;
-				case PromotionMove promotionMove:
-					/*BoardManager.Instance.TryDestroyVisualPiece(promotionMove.Start);
-					BoardManager.Instance.TryDestroyVisualPiece(promotionMove.End);
-					BoardManager.Instance.CreateAndPlacePieceGO(promotionMove.PromotionPiece, promotionMove.End);*/ // ER TODO remove, app layer should not know about presentation
-
-					return true;
-				default:
-					return false;
-			}
-		}
-
-		private ElectedPiece GetUserPromotionPieceChoice() {
-			while (userPromotionChoice == ElectedPiece.None) {
-			}
-
-			ElectedPiece result = userPromotionChoice;
-			userPromotionChoice = ElectedPiece.None;
-			return result;
-		}
-
-		public void ElectPiece(ElectedPiece choice) {
-			userPromotionChoice = choice;
-		}
-
-		public async void OnPieceMoved(Square movedPieceInitialSquare, Transform movedPieceTransform,
-			Transform closestBoardSquareTransform, Piece promotionPiece = null) {
-			Square endSquare = new Square(closestBoardSquareTransform.name);
-
-			if (!game.TryGetLegalMove(movedPieceInitialSquare, endSquare, out Movement move)) {
-				movedPieceTransform.position = movedPieceTransform.parent.position;
-#if DEBUG_VIEW
-			Piece movedPiece = CurrentBoard[movedPieceInitialSquare];
-			game.TryGetLegalMovesForPiece(movedPiece, out ICollection<Movement> legalMoves);
-			UnityChessDebug.ShowLegalMovesInLog(legalMoves);
-#endif
-				return;
-			}
-
-			if (move is PromotionMove promotionMove) {
-				promotionMove.SetPromotionPiece(promotionPiece);
-			}
-
-			if ((move is not SpecialMove specialMove || await TryHandleSpecialMoveBehaviourAsync(specialMove))
-			    && TryExecuteMove(move.Start, move.End)
-			   ) {
-				if (move is not SpecialMove) {
-					/*BoardManager.Instance.TryDestroyVisualPiece(move.End);*/ // ER TODO remove, app layer should not know about presentation
-				}
-
-				if (move is PromotionMove) {
-					/*movedPieceTransform = BoardManager.Instance.GetPieceGOAtPosition(move.End).transform;*/ // ER TODO remove, app layer should not know about presentation
-				}
-
-				// ER TODO questionable whether this should be the presentation layer's responsibility
-				movedPieceTransform.parent = closestBoardSquareTransform;
-				movedPieceTransform.position = closestBoardSquareTransform.position;
-			}
-
-			bool gameIsOver = game.HalfMoveTimeline.TryGetCurrent(out HalfMove lastHalfMove)
+			// ER TODO do AI
+			/*bool gameIsOver = game.HalfMoveTimeline.TryGetCurrent(out HalfMove lastHalfMove)
 				&& lastHalfMove.CausedStalemate || lastHalfMove.CausedCheckmate;
 			if (!gameIsOver
 			    && (SideToMove == Side.White && isWhiteAI
@@ -256,7 +146,7 @@ namespace UnityChess.Application {
 			   ) {
 				Movement bestMove = await uciEngine.GetBestMove(10_000);
 				DoAIMove(bestMove);
-			}
+			}*/
 		}
 
 		private void DoAIMove(Movement move) {
@@ -269,10 +159,6 @@ namespace UnityChess.Application {
 				endSquareGO.transform,
 				(move as PromotionMove)?.PromotionPiece
 			);*/
-		}
-
-		public bool HasLegalMoves(Piece piece) {
-			return game.TryGetLegalMovesForPiece(piece, out _);
 		}
 	}
 }
