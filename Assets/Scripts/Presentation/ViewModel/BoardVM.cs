@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityChess.Core;
 
 namespace UnityChess.Presentation.ViewModel {
@@ -12,6 +13,6 @@ namespace UnityChess.Presentation.ViewModel {
 		public float whiteTimeRemaining { get; set; }
 		public float blackTimeRemaining { get; set; }
 
-		public Func<Square, Square, bool> onSquareClicked { get; set; }
+		public Func<Square, Square, Task<bool>> onPieceDropped { get; set; }
 	}
 }

@@ -12,9 +12,9 @@ namespace UnityChess.Presentation {
 			_moveHistoryVM = moveHistoryVM;
 
 			// To Presentation
-			_gameManager.newGameStarted += OnNewGameStarted;
-			_gameManager.moveExecuted += OnMoveExecuted;
-			_gameManager.gameResetToHalfMove += OnGameResetToHalfMove;
+			_gameManager.NewGameStarted += OnNewGameStarted;
+			_gameManager.MoveExecuted += OnMoveExecuted;
+			_gameManager.GameResetToHalfMove += OnGameResetToHalfMove;
 
 			// To Application
 			_moveHistoryVM.onToBeginningClicked = OnToBeginningClicked;
@@ -35,21 +35,21 @@ namespace UnityChess.Presentation {
 			int halfMoveIndex = _moveHistoryVM.currentHalfMoveIndex + 1;
 			_moveHistoryVM.currentHalfMoveIndex = halfMoveIndex;
 
-			// White's move (even half-move index)
+			// White's Move (even half-Move index)
 			if (halfMoveIndex % 2 == 0) {
 				_moveHistoryVM.moveEntries.Add(new MoveHistoryEntryVM {
 					moveNumber = halfMoveIndex / 2 + 1,
 					whiteMove = halfMove.ToAlgebraicNotation(),
 					blackMove = null
 				});
-			} else { // Black's move (odd half-move index)
+			} else { // Black's Move (odd half-Move index)
 				var lastEntry = _moveHistoryVM.moveEntries[^1];
 				lastEntry.blackMove = halfMove.ToAlgebraicNotation();
 			}
 		}
 
 		private void OnGameResetToHalfMove(Timeline<HalfMove> halfMoveTimeline) {
-			// ER TODO: Update move history view model with new half move timeline
+			// ER TODO: Update Move history view model with new half Move timeline
 		}
 
 		#endregion
@@ -61,11 +61,11 @@ namespace UnityChess.Presentation {
 		}
 
 		private void OnBackClicked() {
-			// ER TODO: Go back one move
+			// ER TODO: Go back one Move
 		}
 
 		private void OnForwardClicked() {
-			// ER TODO: Go forward one move
+			// ER TODO: Go forward one Move
 		}
 
 		private void OnToEndClicked() {
@@ -73,7 +73,7 @@ namespace UnityChess.Presentation {
 		}
 
 		private void OnMoveClicked(int halfMoveIndex) {
-			// ER TODO: Jump to specific move
+			// ER TODO: Jump to specific Move
 		}
 
 		#endregion

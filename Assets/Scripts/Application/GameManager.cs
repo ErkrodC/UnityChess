@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Threading.Tasks;
 using UnityChess.Core;
 
 namespace UnityChess.Application {
 	public class GameManager {
-		public event Action<Board> newGameStarted;
-		public event Action<Board> gameEnded;
-		public event Action<Timeline<HalfMove>> gameResetToHalfMove;
-		public event Action<Board, HalfMove> moveExecuted;
+		public event Action<Board> NewGameStarted;
+		public event Action<Board> GameEnded;
+		public event Action<Timeline<HalfMove>> GameResetToHalfMove;
+		public event Action<Board, HalfMove> MoveExecuted;
+		public event Action<PromotionInteraction> ElectionRequested;
 
-		// ER TODO probably move to presentation, SideToMove is not a game concept
-		public Side SideToMove => game.ConditionsTimeline.Head.SideToMove;
+		// ER TODO probably Move to presentation, SideToMove is not a _game concept
+		public Side SideToMove => _game.ConditionsTimeline.Head.SideToMove;
 
-		// ER TODO probably move to presentation, FullMoveNumber is not a game concept
+		// ER TODO probably Move to presentation, FullMoveNumber is not a _game concept
 		public int FullMoveNumber {
 			get {
-				Side startingSide = game.ConditionsTimeline[0].SideToMove;
-				int latestHalfMoveIndex = game.HalfMoveTimeline.HeadIndex;
+				Side startingSide = _game.ConditionsTimeline[0].SideToMove;
+				int latestHalfMoveIndex = _game.HalfMoveTimeline.HeadIndex;
 
 				return startingSide switch {
 					Side.White => latestHalfMoveIndex / 2 + 1,
@@ -27,21 +28,18 @@ namespace UnityChess.Application {
 			}
 		}
 
-		private Game game;
-
-		private FENSerializer fenSerializer;
-		private PGNSerializer pgnSerializer;
-		private GameSerializationType selectedSerializationType = GameSerializationType.FEN;
-		private Dictionary<GameSerializationType, IGameSerializer> serializersByType;
-
-		private CancellationTokenSource promotionUITaskCancellationTokenSource;
-
-		private IUCIEngine uciEngine;
-		private bool isWhiteAI;
-		private bool isBlackAI;
+		private Game _game;
+		private FENSerializer _fenSerializer;
+		private PGNSerializer _pgnSerializer;
+		private GameSerializationType _selectedSerializationType = GameSerializationType.FEN;
+		private Dictionary<GameSerializationType, IGameSerializer> _serializersByType;
+		private PromotionInteraction _currentPromotionInteraction;
+		private IUCIEngine _uciEngine;
+		private bool _isWhiteAI;
+		private bool _isBlackAI;
 
 		public void Start() {
-			serializersByType = new Dictionary<GameSerializationType, IGameSerializer> {
+			_serializersByType = new Dictionary<GameSerializationType, IGameSerializer> {
 				[GameSerializationType.FEN] = new FENSerializer(),
 				[GameSerializationType.PGN] = new PGNSerializer()
 			};
@@ -50,114 +48,119 @@ namespace UnityChess.Application {
 		}
 
 		private void OnDestroy() {
-			uciEngine?.ShutDown();
+			_uciEngine?.ShutDown();
 		}
 
 #if AI_TEST
-	public async void StartNewGame(bool isWhiteAI = true, bool isBlackAI = true) {
+		public async void StartNewGame(bool isWhiteAI = true, bool isBlackAI = true) {
 #else
 		public async void StartNewGame(bool isWhiteAI = false, bool isBlackAI = false) {
 #endif
-			game = new Game();
-
-			this.isWhiteAI = isWhiteAI;
-			this.isBlackAI = isBlackAI;
+			_game = new Game();
+			_isWhiteAI = isWhiteAI;
+			_isBlackAI = isBlackAI;
 
 			if (isWhiteAI || isBlackAI) {
-				if (uciEngine == null) {
-					uciEngine = new MockUCIEngine();
-					uciEngine.Start();
+				if (_uciEngine == null) {
+					_uciEngine = new MockUCIEngine();
+					_uciEngine.Start();
 				}
 
-				await uciEngine.SetupNewGame(game);
-				newGameStarted?.Invoke(game.BoardTimeline.Head);
+				await _uciEngine.SetupNewGame(_game);
+				NewGameStarted?.Invoke(_game.BoardTimeline.Head);
 
 				if (isWhiteAI) {
-					Movement bestMove = await uciEngine.GetBestMove(10_000);
+					Movement bestMove = await _uciEngine.GetBestMove(10_000);
 					DoAIMove(bestMove);
 				}
 			} else {
-				newGameStarted?.Invoke(game.BoardTimeline.Head);
+				NewGameStarted?.Invoke(_game.BoardTimeline.Head);
 			}
 		}
 
 		public string SerializeGame() {
-			return serializersByType.TryGetValue(selectedSerializationType, out IGameSerializer serializer)
-				? serializer?.Serialize(game)
+			return _serializersByType.TryGetValue(_selectedSerializationType, out IGameSerializer serializer)
+				? serializer?.Serialize(_game)
 				: null;
 		}
 
 		public void LoadGame(string serializedGame) {
-			game = serializersByType[selectedSerializationType].Deserialize(serializedGame);
-			newGameStarted?.Invoke(game.BoardTimeline.Head);
+			_game = _serializersByType[_selectedSerializationType].Deserialize(serializedGame);
+			NewGameStarted?.Invoke(_game.BoardTimeline.Head);
 		}
 
 		public void ResetGameToHalfMoveIndex(int halfMoveIndex) {
-			if (!game.ResetGameToHalfMoveIndex(halfMoveIndex)) { return; }
+			if (!_game.ResetGameToHalfMoveIndex(halfMoveIndex)) { return; }
 
-			promotionUITaskCancellationTokenSource?.Cancel();
-			gameResetToHalfMove?.Invoke(game.HalfMoveTimeline);
+			_currentPromotionInteraction?.TryCancel();
+			GameResetToHalfMove?.Invoke(_game.HalfMoveTimeline);
 		}
 
-		public bool TryExecuteMove(Square movedPieceInitialSquare, Square endSquare) {
-			if (!game.TryGetLegalMove(movedPieceInitialSquare, endSquare, out Movement move)) {
+		public async Task<bool> TryExecuteMoveAsync(Square startSquare, Square endSquare) {
+			if (!_game.TryGetLegalMove(startSquare, endSquare, out Movement move)) {
 				return false;
 			}
 
 			if (move is PromotionMove promotionMove) {
-				// ER TODO raise event to get promotion piece choice, and await it
-				promotionUITaskCancellationTokenSource?.Cancel();
-				promotionUITaskCancellationTokenSource = new CancellationTokenSource();
-
-				// ER TODO
-				/*ElectedPiece choice = await Task.Run(GetUserPromotionPieceChoice, promotionUITaskCancellationTokenSource.Token);*/
-				if (promotionUITaskCancellationTokenSource == null
-				    || promotionUITaskCancellationTokenSource.Token.IsCancellationRequested
-				   ) {
-					return false;
-				}
-
-				// ER TODO
-				/*promotionMove.SetPromotionPiece(
-						PromotionUtil.GeneratePromotionPiece(choice, SideToMove)
-					);*/
-				promotionUITaskCancellationTokenSource = null;
+				bool promotionReady = await ElectPieceAsync(promotionMove);
+				if (!promotionReady) { return false; }
 			}
 
-			if (!game.TryExecuteMove(movedPieceInitialSquare, endSquare, out HalfMove latestHalfMove)) {
+			if (!_game.TryExecuteMove(startSquare, endSquare, out HalfMove latestHalfMove)) {
 				return false;
 			}
 
-			moveExecuted?.Invoke(game.BoardTimeline.Head, latestHalfMove);
+			MoveExecuted?.Invoke(_game.BoardTimeline.Head, latestHalfMove);
 
 			if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
-				gameEnded?.Invoke(game.BoardTimeline.Head);
+				GameEnded?.Invoke(_game.BoardTimeline.Head);
 			}
-
 
 			return true;
 
 			// ER TODO do AI
-			/*bool gameIsOver = game.HalfMoveTimeline.TryGetCurrent(out HalfMove lastHalfMove)
+			/*bool gameIsOver = _game.HalfMoveTimeline.TryGetCurrent(out HalfMove lastHalfMove)
 				&& lastHalfMove.CausedStalemate || lastHalfMove.CausedCheckmate;
 			if (!gameIsOver
-			    && (SideToMove == Side.White && isWhiteAI
-			        || SideToMove == Side.Black && isBlackAI)
+			    && (SideToMove == Side.White && _isWhiteAI
+			        || SideToMove == Side.Black && _isBlackAI)
 			   ) {
-				Movement bestMove = await uciEngine.GetBestMove(10_000);
+				Movement bestMove = await _uciEngine.GetBestMove(10_000);
 				DoAIMove(bestMove);
 			}*/
 		}
 
+		private async Task<bool> ElectPieceAsync(PromotionMove moveNeedingPiece) {
+			_currentPromotionInteraction?.TryCancel();
+			_currentPromotionInteraction?.Dispose();
+
+			using PromotionInteraction promotionInteraction = new(moveNeedingPiece);
+			_currentPromotionInteraction = promotionInteraction;
+
+			ElectionRequested?.Invoke(promotionInteraction);
+
+			try {
+				ElectedPiece choice = await promotionInteraction.Task;
+				moveNeedingPiece.SetPromotionPiece(PromotionUtil.GeneratePromotionPiece(choice, SideToMove));
+				return true;
+			} catch (OperationCanceledException) {
+				return false;
+			} finally {
+				if (ReferenceEquals(_currentPromotionInteraction, promotionInteraction)) {
+					_currentPromotionInteraction = null;
+				}
+			}
+		}
+
 		private void DoAIMove(Movement move) {
 			// ER TODO remove, app layer should not know about presentation
-			/*GameObject movedPiece = BoardManager.Instance.GetPieceGOAtPosition(move.Start);
-			GameObject endSquareGO = BoardManager.Instance.GetSquareGOByPosition(move.End);
+			/*GameObject movedPiece = BoardManager.Instance.GetPieceGOAtPosition(Move.Start);
+			GameObject endSquareGO = BoardManager.Instance.GetSquareGOByPosition(Move.End);
 			OnPieceMoved(
-				move.Start,
+				Move.Start,
 				movedPiece.transform,
 				endSquareGO.transform,
-				(move as PromotionMove)?.PromotionPiece
+				(Move as PromotionMove)?.PromotionPiece
 			);*/
 		}
 	}

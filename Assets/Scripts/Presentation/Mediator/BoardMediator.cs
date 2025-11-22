@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityChess.Application;
 using UnityChess.Core;
 using UnityChess.Presentation.ViewModel;
@@ -12,11 +13,11 @@ namespace UnityChess.Presentation {
 			_boardVM = boardVM;
 
 			// To Presentation
-			_gameManager.newGameStarted += OnNewGameStarted;
-			_gameManager.moveExecuted += OnMoveExecuted;
+			_gameManager.NewGameStarted += OnNewGameStarted;
+			_gameManager.MoveExecuted += OnMoveExecuted;
 
 			// To Application
-			_boardVM.onSquareClicked = OnPieceDropped;
+			_boardVM.onPieceDropped = OnPieceDroppedAsync;
 		}
 
 		#region To Presentation Layer
@@ -35,10 +36,8 @@ namespace UnityChess.Presentation {
 
 		#region To Application Layer
 
-		// ER TODO question about whether this should return anything
-		// reason being that gameManager already raises event on successful move
-		private bool OnPieceDropped(Square fromSquare, Square toSquare) {
-			return _gameManager.TryExecuteMove(fromSquare, toSquare);
+		private async Task<bool> OnPieceDroppedAsync(Square fromSquare, Square toSquare) {
+			return await _gameManager.TryExecuteMoveAsync(fromSquare, toSquare);
 		}
 
 		#endregion

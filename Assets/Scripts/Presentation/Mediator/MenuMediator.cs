@@ -12,8 +12,8 @@ namespace UnityChess.Presentation {
 			_menuVM = menuVM;
 
 			// To Presentation
-			_gameManager.newGameStarted += OnNewGameStarted;
-			_gameManager.gameEnded += OnGameEnded;
+			_gameManager.NewGameStarted += OnNewGameStarted;
+			_gameManager.GameEnded += OnGameEnded;
 
 			// To Application
 			_menuVM.onStartNewGameClicked = OnStartNewGameClicked;
