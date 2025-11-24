@@ -21,14 +21,14 @@ namespace UnityChess.Presentation {
 		private void Awake() {
 			// ER TODO likely remove as part of rearchitecting
 			/*GameManager.NewGameStartedEvent += OnNewGameStarted;
-			GameManager.GameResetToHalfMoveEvent += OnGameResetToHalfMove;*/
+			GameManager.GameResetToHalfMoveEvent += OnGameResetToHalfMove;#1#
 
 			positionMap = new Dictionary<Square, GameObject>(64);
 			Transform boardTransform = transform;
 			Vector3 boardPosition = boardTransform.position;
 
-			for (int file = 1; file <= 8; file++) {
-				for (int rank = 1; rank <= 8; rank++) {
+			for (int file = 0; file < 8; file++) {
+				for (int rank = 0; rank < 8; rank++) {
 					GameObject squareGO = new GameObject(SquareToString(file, rank)) {
 						transform = {
 							position = new Vector3(boardPosition.x + FileOrRankToSidePosition(file),
@@ -39,7 +39,7 @@ namespace UnityChess.Presentation {
 					};
 
 					positionMap.Add(new Square(file, rank), squareGO);
-					allSquaresGO[(file - 1) * 8 + (rank - 1)] = squareGO;
+					allSquaresGO[file * 8 + rank] = squareGO;
 				}
 			}
 		}
@@ -52,7 +52,7 @@ namespace UnityChess.Presentation {
 				CreateAndPlacePieceGO(piece, square);
 			}
 
-			EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);*/
+			EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);#1#
 		}
 
 		private void OnGameResetToHalfMove() {
@@ -65,7 +65,7 @@ namespace UnityChess.Presentation {
 
 			GameManager.Instance.HalfMoveTimeline.TryGetCurrent(out HalfMove latestHalfMove);
 			if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) SetActiveAllPieces(false);
-			else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);*/
+			else EnsureOnlyPiecesOfSideAreEnabled(GameManager.Instance.SideToMove);#1#
 		}
 
 		public void CastleRook(Square rookPosition, Square endSquare) {
@@ -83,7 +83,7 @@ namespace UnityChess.Presentation {
 
 			/*if (!(piece is Knight) && !(piece is King)) {
 			pieceGO.transform.Rotate(0f, (float) rng.NextDouble() * 360f, 0f);
-		}*/
+		}#1#
 		}
 
 		public void GetSquareGOsWithinRadius(List<GameObject> squareGOs, Vector3 positionWS, float radius) {
@@ -107,7 +107,7 @@ namespace UnityChess.Presentation {
 
 				pieceBehaviour.enabled = pieceBehaviour.PieceColor == side
 				                         && GameManager.Instance.HasLegalMoves(piece);
-			}*/
+			}#1#
 		}
 
 		public void TryDestroyVisualPiece(Square position) {

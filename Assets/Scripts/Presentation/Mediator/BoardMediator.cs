@@ -45,8 +45,8 @@ namespace UnityChess.Presentation {
 		#region Helpers
 
 		private static void ConvertBoardToPieceTypes(Board board, PieceVM[,] pieceVMs) {
-			for (int file = 1; file <= 8; file++)
-			for (int rank = 1; rank <= 8; rank++) {
+			for (int file = 0; file < 8; file++)
+			for (int rank = 0; rank < 8; rank++) {
 				Piece piece = board[file, rank];
 
 				PieceVM pieceVM = null;
@@ -67,7 +67,7 @@ namespace UnityChess.Presentation {
 					};
 				}
 
-				pieceVMs[file - 1, rank - 1] = pieceVM;
+				pieceVMs[file, rank] = pieceVM;
 			}
 		}
 
