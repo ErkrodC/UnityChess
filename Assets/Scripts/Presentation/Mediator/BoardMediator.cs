@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using UnityChess.Application;
 using UnityChess.Core;
 using UnityChess.Presentation.ViewModel;
+using UnityChess.Util;
 
 namespace UnityChess.Presentation {
 	public class BoardMediator {

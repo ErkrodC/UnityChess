@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Timers;
 using UnityChess.Core;
+using UnityChess.Util;
 using Debug = UnityEngine.Debug;
 
 namespace UnityChess.Application {

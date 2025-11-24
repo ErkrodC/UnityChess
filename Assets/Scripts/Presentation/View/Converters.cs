@@ -1,4 +1,5 @@
-using UnityChess.Core;
+using UnityChess.Presentation.ViewModel;
+using UnityChess.Util;
 using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation {
@@ -13,8 +14,8 @@ namespace UnityChess.Presentation {
 			return currentSideToMove == Side.Black ? DisplayStyle.Flex : DisplayStyle.None;
 		}
 
-		public static string PieceToTextArt(ref Piece piece) {
-			return piece?.ToTextArt() ?? string.Empty;
+		public static string PieceToTextArt(ref PieceVM piece) {
+			return PieceUtil.GetPieceTextArt(piece.type, piece.side);
 		}
 	}
 }

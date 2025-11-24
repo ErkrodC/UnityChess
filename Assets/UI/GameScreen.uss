@@ -68,3 +68,9 @@
 
 .tab-label {
 }
+
+.square-label {
+    font-size: 90px;
+    -unity-text-align: middle-center;
+    position: absolute;
+}

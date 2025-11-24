@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using static UnityChess.Core.SquareUtil;
 
 namespace UnityChess.Presentation {
-	public class VisualPiece : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler {
+	/*public class VisualPiece : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler {
 		public delegate void VisualPieceMovedAction(Square movedPieceInitialSquare, Transform movedPieceTransform,
 			Transform closestBoardSquareTransform, Piece promotionPiece = null);
 
@@ -77,5 +77,5 @@ namespace UnityChess.Presentation {
 
 			VisualPieceMoved?.Invoke(CurrentSquare, thisTransform, closestSquareTransform);
 		}
-	}
+	}*/
 }

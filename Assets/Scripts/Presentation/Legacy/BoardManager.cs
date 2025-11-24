@@ -8,7 +8,7 @@ using Random = System.Random;
 
 namespace UnityChess.Presentation {
 	public class BoardManager : MonoBehaviourSingleton<BoardManager> {
-		private readonly GameObject[] allSquaresGO = new GameObject[64];
+		/*private readonly GameObject[] allSquaresGO = new GameObject[64];
 		private Dictionary<Square, GameObject> positionMap;
 
 		private const float
@@ -134,6 +134,6 @@ namespace UnityChess.Presentation {
 		}
 
 		public GameObject GetSquareGOByPosition(Square position) =>
-			Array.Find(allSquaresGO, go => go.name == SquareToString(position));
+			Array.Find(allSquaresGO, go => go.name == SquareToString(position));*/
 	}
 }

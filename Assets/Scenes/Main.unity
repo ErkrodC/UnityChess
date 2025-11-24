@@ -256,6 +256,77 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1 &217671239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 217671241}
+  - component: {fileID: 217671240}
+  - component: {fileID: 217671242}
+  m_Layer: 5
+  m_Name: UIDocument
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &217671240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217671239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: 3f96119439c2e534e942fd801ec0113d, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 24b103709978a2847b6d98671203ddba,
+    type: 3}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!4 &217671241
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217671239}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &217671242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217671239}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b310dc693724ade98ee02196d29b941, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityChess.Presentation::UnityChess.Presentation.View.BoardView
+  uiDocument: {fileID: 217671240}
+  vm: {fileID: 11400000, guid: ccf20dd3992beee4ca94df075bab076f, type: 2}
 --- !u!1 &1097727453
 GameObject:
   m_ObjectHideFlags: 0
@@ -285,9 +356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 039bd6078d84491f89b5d0ab23961e14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityChess.Presentation::UnityChess.Presentation.GameBootstrapper
-  _menuVM:
-    <fenString>k__BackingField: 
-    <gameResult>k__BackingField: 
+  _boardVM: {fileID: 11400000, guid: ccf20dd3992beee4ca94df075bab076f, type: 2}
 --- !u!4 &1097727455
 Transform:
   m_ObjectHideFlags: 0
@@ -309,3 +378,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 111311436}
   - {fileID: 1097727455}
+  - {fileID: 217671241}

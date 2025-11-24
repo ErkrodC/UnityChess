@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityChess.Core;
+using UnityChess.Util;
+using UnityEngine;
 
 namespace UnityChess.Presentation.ViewModel {
-	[Serializable]
-	public class BoardVM {
+	[CreateAssetMenu(fileName = "BoardVM", menuName = "ScriptableObjects/BoardVM", order = 1)]
+	public class BoardVM : ScriptableObject {
 		public PieceVM[,] currentBoard { get; set; }
 		public Square? selectedSquare { get; set; }
 		public List<Square> highlightedSquares { get; set; }

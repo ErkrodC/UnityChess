@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityChess.Core;
+using UnityChess.Util;
 
 namespace UnityChess.Application {
 	public class GameManager {

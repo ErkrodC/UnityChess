@@ -1,5 +1,5 @@
 using System;
-using UnityChess.Core;
+using UnityChess.Util;
 
 namespace UnityChess.Presentation.ViewModel {
 	[Serializable]
