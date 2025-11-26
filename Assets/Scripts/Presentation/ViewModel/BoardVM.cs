@@ -15,7 +15,7 @@ namespace UnityChess.Presentation.ViewModel {
 		public float whiteTimeRemaining { get; set; }
 		public float blackTimeRemaining { get; set; }
 
-		public Func<Square, Square, Task<bool>> onPieceDropped { get; set; }
+		public Func<string, string, Task<bool>> onPieceDropped { get; set; }
 
 		private static PieceVM[,] CreateEmptyPieceVMArray() {
 			PieceVM[,] result = new PieceVM[8, 8];

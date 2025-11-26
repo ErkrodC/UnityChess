@@ -1,17 +1,27 @@
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityChess.Presentation.ViewModel;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation.View {
 	public class DragAndDropManipulator : PointerManipulator {
-		private Vector2 _targetStartPosition;
-		private Vector3 _pointerStartPosition;
+		private readonly VisualElement _root;
+		private Vector3 _pointerStartWS;
+		private Vector3 _pointerStartDS;
 		private bool _isDragging;
-		private VisualElement _root;
+		private readonly VisualElement _dragLayer;
+		private readonly Label _dragLabel;
+		private readonly BoardVM _vm;
+		private Func<string, string, Task<bool>> DropHandler => _vm.onPieceDropped;
 
-		public DragAndDropManipulator(VisualElement target, VisualElement root) {
+		public DragAndDropManipulator(VisualElement target, VisualElement root, BoardVM vm) {
 			this.target = target;
 			_root = root;
+			_dragLayer = root.Q<VisualElement>("drag-layer");
+			_dragLabel = _dragLayer.Q<Label>();
+			_vm = vm;
 		}
 
 		protected override void RegisterCallbacksOnTarget() {
@@ -29,8 +39,16 @@ namespace UnityChess.Presentation.View {
 		}
 
 		private void PointerDownHandler(PointerDownEvent evt) {
-			_targetStartPosition = target.transform.position;
-			_pointerStartPosition = evt.position;
+			_pointerStartWS = evt.position;
+			_dragLabel.text = (target as Label)?.text;
+
+			target.style.visibility = Visibility.Hidden;
+			_dragLabel.style.visibility = Visibility.Visible;
+
+			_pointerStartDS = GetPosInDragLayerSpace(_pointerStartWS);
+			_dragLabel.style.left = _pointerStartDS.x;
+			_dragLabel.style.top = _pointerStartDS.y;
+
 			target.CapturePointer(evt.pointerId);
 			_isDragging = true;
 		}
@@ -38,13 +56,10 @@ namespace UnityChess.Presentation.View {
 		private void PointerMoveHandler(PointerMoveEvent evt) {
 			if (!_isDragging || !target.HasPointerCapture(evt.pointerId)) { return; }
 
-			Vector3 pointerDelta = evt.position - _pointerStartPosition;
+			Vector3 pointerDelta = evt.position - _pointerStartWS;
 
-			Rect worldBound = target.panel.visualTree.worldBound;
-			target.transform.position = new Vector2(
-				Mathf.Clamp(_targetStartPosition.x + pointerDelta.x, 0, worldBound.width),
-				Mathf.Clamp(_targetStartPosition.y + pointerDelta.y, 0, worldBound.height)
-			);
+			_dragLabel.style.left = _pointerStartDS.x + pointerDelta.x;
+			_dragLabel.style.top = _pointerStartDS.y + pointerDelta.y;
 		}
 
 		private void PointerUpHandler(PointerUpEvent evt) {
@@ -56,43 +71,43 @@ namespace UnityChess.Presentation.View {
 		private void PointerCaptureOutHandler(PointerCaptureOutEvent evt) {
 			if (!_isDragging) { return; }
 
-			VisualElement closestSquare = FindClosestSquare();
-			Vector3 closestPos = Vector3.zero;
-			if (closestSquare != null) {
-				closestPos = GetPosInRootSpace(closestSquare);
-				closestPos = new Vector2(closestPos.x - 5, closestPos.y - 5); // ER TODO ??? what's "- 5"
-			}
+			_dragLabel.style.visibility = Visibility.Hidden;
+			target.style.visibility = Visibility.Visible;
 
-			target.transform.position = closestSquare != null
-				? closestPos
-				: _targetStartPosition;
+			VisualElement closestSquare = FindClosestSquare();
+			// ER TODO could read the async return value to update immediately, but might not be necessary?
+			if (closestSquare != null) { DropHandler?.Invoke(target.parent.name, closestSquare.name); }
 
 			_isDragging = false;
 		}
 
 		private VisualElement FindClosestSquare() {
 			VisualElement board = _root.Q<VisualElement>("board");
-			UQueryBuilder<VisualElement> allSquares = board.Query<VisualElement>(className: "board-square");
-			UQueryBuilder<VisualElement> overlappingSquares = allSquares
-				.Where((square) => target.worldBound.Overlaps(square.worldBound));
-			List<VisualElement> squaresList = overlappingSquares.ToList();
+			List<VisualElement> overlappingSquares = board
+				.Query<VisualElement>(className: "board-square")
+				.Where((square) => _dragLabel.worldBound.Overlaps(square.worldBound))
+				.ToList();
 
 			float minSqrDist = float.MaxValue;
 			VisualElement result = null;
-			foreach (VisualElement square in squaresList) {
-				Vector3 targetToSquare = GetPosInRootSpace(square) - target.transform.position;
-				float sqrDist = targetToSquare.sqrMagnitude;
+			foreach (VisualElement overlappingSquare in overlappingSquares) {
+				Vector2 dragLabelToSquare = GetPosInWorldSpace(overlappingSquare) - GetPosInWorldSpace(_dragLabel);
+				float sqrDist = dragLabelToSquare.sqrMagnitude;
 				if (sqrDist < minSqrDist) {
 					minSqrDist = sqrDist;
-					result = square;
+					result = overlappingSquare;
 				}
 			}
 
 			return result;
 		}
 
-		private Vector3 GetPosInRootSpace(VisualElement square) {
-			return _root.WorldToLocal(square.parent.LocalToWorld(square.layout.position));
+		private Vector2 GetPosInWorldSpace(VisualElement element) {
+			return element.parent.LocalToWorld(element.layout.position);
+		}
+
+		private Vector2 GetPosInDragLayerSpace(Vector2 position) {
+			return _dragLayer.WorldToLocal(position);
 		}
 	}
 }

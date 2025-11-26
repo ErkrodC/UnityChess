@@ -33,14 +33,13 @@ namespace UnityChess.Presentation.View {
 		private void BindSquare(VisualElement root, int file, int rank) {
 			string squareName = SquareUtil.SquareToString(file, rank); // e.g., "a1", "e4", etc.
 			Label squareLabel = root.Q<VisualElement>(squareName).Q<Label>();
-			_dragAndDropManipulators.Add(new DragAndDropManipulator(squareLabel, root));
+			_dragAndDropManipulators.Add(new DragAndDropManipulator(squareLabel, root, vm));
 
 			if (squareLabel == null) { return; }
 
 			DataBinding binding = new() {
 				dataSource = vm.currentBoard[file, rank],
 				bindingMode = BindingMode.ToTarget,
-				updateTrigger = BindingUpdateTrigger.OnSourceChanged
 			};
 
 			// Create converter that extracts the piece at this specific square

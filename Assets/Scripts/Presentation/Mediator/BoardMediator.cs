@@ -35,8 +35,11 @@ namespace UnityChess.Presentation {
 
 		#region To Application Layer
 
-		private async Task<bool> OnPieceDroppedAsync(Square fromSquare, Square toSquare) {
-			return await _gameManager.TryExecuteMoveAsync(fromSquare, toSquare);
+		private async Task<bool> OnPieceDroppedAsync(string fromSquare, string toSquare) {
+			return await _gameManager.TryExecuteMoveAsync(
+				SquareUtil.StringToSquare(fromSquare),
+				SquareUtil.StringToSquare(toSquare)
+			);
 		}
 
 		#endregion
@@ -49,20 +52,16 @@ namespace UnityChess.Presentation {
 				Piece piece = board[file, rank];
 				PieceVM pieceVM = pieceVMs[file, rank];
 
-				if (piece != null) {
-					PieceType pieceType = piece switch {
-						Pawn => PieceType.Pawn,
-						Rook => PieceType.Rook,
-						Knight => PieceType.Knight,
-						Bishop => PieceType.Bishop,
-						Queen => PieceType.Queen,
-						King => PieceType.King,
-						_ => throw new System.ArgumentException($"Unknown piece type: {piece.GetType().Name}")
-					};
-
-					pieceVM.type = pieceType;
-					pieceVM.side = piece.Owner;
-				}
+				pieceVM.side = piece?.Owner ?? Side.None;
+				pieceVM.type = piece switch {
+					Pawn => PieceType.Pawn,
+					Rook => PieceType.Rook,
+					Knight => PieceType.Knight,
+					Bishop => PieceType.Bishop,
+					Queen => PieceType.Queen,
+					King => PieceType.King,
+					_ => PieceType.None
+				};
 			}
 		}
 

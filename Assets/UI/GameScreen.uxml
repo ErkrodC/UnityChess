@@ -209,6 +209,9 @@
                             <ui:Label name="piece-label" class="square-label" />
                         </ui:VisualElement>
                     </ui:VisualElement>
+                    <ui:VisualElement name="drag-layer" picking-mode="Ignore" style="position: absolute; top: 0; left: 3%; width: 97%; height: 100%;">
+                        <ui:Label picking-mode="Ignore" class="square-label" style="position: absolute; top: 0; left: 0;" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="bottom-board-container" style="flex-direction: row; flex-grow: 1;">
                     <ui:VisualElement name="files-spacer" class="files-spacer" />
