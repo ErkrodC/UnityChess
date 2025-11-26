@@ -24,9 +24,7 @@ namespace UnityChess.Presentation {
 		#region To Presentation Layer
 
 		private void OnNewGameStarted(Board board) {
-			PieceVM[,] pieceVMs = new PieceVM[8, 8];
-			ConvertBoardToPieceTypes(board, pieceVMs);
-			_boardVM.currentBoard = pieceVMs;
+			ConvertBoardToPieceTypes(board, _boardVM.currentBoard);
 		}
 
 		private void OnMoveExecuted(Board board, HalfMove _) {
@@ -49,8 +47,8 @@ namespace UnityChess.Presentation {
 			for (int file = 0; file < 8; file++)
 			for (int rank = 0; rank < 8; rank++) {
 				Piece piece = board[file, rank];
+				PieceVM pieceVM = pieceVMs[file, rank];
 
-				PieceVM pieceVM = null;
 				if (piece != null) {
 					PieceType pieceType = piece switch {
 						Pawn => PieceType.Pawn,
@@ -62,13 +60,9 @@ namespace UnityChess.Presentation {
 						_ => throw new System.ArgumentException($"Unknown piece type: {piece.GetType().Name}")
 					};
 
-					pieceVM = new PieceVM {
-						type = pieceType,
-						side = piece.Owner
-					};
+					pieceVM.type = pieceType;
+					pieceVM.side = piece.Owner;
 				}
-
-				pieceVMs[file, rank] = pieceVM;
 			}
 		}
 

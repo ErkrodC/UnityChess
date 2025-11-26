@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using UnityChess.Core;
-using UnityChess.Presentation.Presentation.View;
+using UnityChess.Presentation.ViewModel;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityChess.Presentation.ViewModel;
 
 namespace UnityChess.Presentation.View {
 	public class BoardView : MonoBehaviour {
 		[SerializeField] private UIDocument uiDocument;
-		[SerializeField] private BoardVM vm; // Assign in Inspector or via Initialize
+		[SerializeField] private BoardVM vm;
 
 		private List<DragAndDropManipulator> _dragAndDropManipulators;
 
@@ -40,7 +39,8 @@ namespace UnityChess.Presentation.View {
 
 			DataBinding binding = new() {
 				dataSource = vm.currentBoard[file, rank],
-				bindingMode = BindingMode.ToTarget
+				bindingMode = BindingMode.ToTarget,
+				updateTrigger = BindingUpdateTrigger.OnSourceChanged
 			};
 
 			// Create converter that extracts the piece at this specific square

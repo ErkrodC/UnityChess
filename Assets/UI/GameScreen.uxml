@@ -15,216 +15,198 @@
                         <ui:Label text="7" name="7-label" class="coord-label ranks" />
                         <ui:Label text="8" name="8-label" class="coord-label ranks" />
                     </ui:VisualElement>
-                    <ui:VisualElement name="board" style="flex-grow: 1;">
-                        <ui:VisualElement name="files" style="flex-grow: 1; flex-direction: row;">
-                            <ui:VisualElement name="a" style="flex-grow: 1; flex-direction: column-reverse;">
-                                <ui:VisualElement name="a1" class="dark-square board-square">
-                                    <ui:Label text="♟" name="piece-label" class="square-label"/>
-                                </ui:VisualElement>
-                                <ui:VisualElement name="a2" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="a3" class="dark-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="a4" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="a5" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="a6" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="a7" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="a8" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                            </ui:VisualElement>
-                            <ui:VisualElement name="b" style="flex-grow: 1; flex-direction: column-reverse;">
-                                <ui:VisualElement name="b1" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="b2" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="b3" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="b4" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="b5" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="b6" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="b7" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="b8" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                            </ui:VisualElement>
-                            <ui:VisualElement name="c" style="flex-grow: 1; flex-direction: column-reverse;">
-                                <ui:VisualElement name="c1" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="c2" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="c3" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="c4" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="c5" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="c6" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="c7" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="c8" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                            </ui:VisualElement>
-                            <ui:VisualElement name="d" style="flex-grow: 1; flex-direction: column-reverse;">
-                                <ui:VisualElement name="d1" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="d2" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="d3" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="d4" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="d5" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="d6" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="d7" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="d8" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                            </ui:VisualElement>
-                            <ui:VisualElement name="e" style="flex-grow: 1; flex-direction: column-reverse;">
-                                <ui:VisualElement name="e1" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="e2" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="e3" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="e4" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="e5" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="e6" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="e7" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="e8" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                            </ui:VisualElement>
-                            <ui:VisualElement name="f" style="flex-grow: 1; flex-direction: column-reverse;">
-                                <ui:VisualElement name="f1" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="f2" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="f3" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="f4" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="f5" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="f6" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="f7" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="f8" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                            </ui:VisualElement>
-                            <ui:VisualElement name="g" style="flex-grow: 1; flex-direction: column-reverse;">
-                                <ui:VisualElement name="g1" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="g2" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="g3" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="g4" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="g5" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="g6" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="g7" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="g8" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                            </ui:VisualElement>
-                            <ui:VisualElement name="h" style="flex-grow: 1; flex-direction: column-reverse;">
-                                <ui:VisualElement name="h1" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="h2" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="h3" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="h4" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="h5" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="h6" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="h7" class="light-square board-square">
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                                <ui:VisualElement name="h8" class="dark-square board-square" >
-									<ui:Label text="♟" name="piece-label" class="square-label"/>
-								</ui:VisualElement>
-                            </ui:VisualElement>
+                    <ui:VisualElement name="board" style="flex-grow: 1; flex-wrap: wrap; flex-shrink: 0;">
+                        <ui:VisualElement name="a8" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="a7" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="a6" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="a5" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="a4" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="a3" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="a2" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="a1" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="b8" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="b7" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="b6" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="b5" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="b4" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="b3" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="b2" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="b1" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="c8" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="c7" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="c6" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="c5" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="c4" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="c3" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="c2" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="c1" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="d8" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="d7" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="d6" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="d5" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="d4" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="d3" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="d2" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="d1" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="e8" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="e7" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="e6" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="e5" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="e4" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="e3" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="e2" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="e1" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="f8" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="f7" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="f6" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="f5" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="f4" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="f3" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="f2" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="f1" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="g8" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="g7" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="g6" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="g5" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="g4" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="g3" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="g2" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="g1" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="h8" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="h7" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="h6" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="h5" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="h4" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="h3" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="h2" class="board-square dark-square">
+                            <ui:Label name="piece-label" class="square-label" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="h1" class="board-square light-square">
+                            <ui:Label name="piece-label" class="square-label" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>

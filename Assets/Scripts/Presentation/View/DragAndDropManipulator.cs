@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace UnityChess.Presentation.Presentation.View {
+namespace UnityChess.Presentation.View {
 	public class DragAndDropManipulator : PointerManipulator {
 		private Vector2 _targetStartPosition;
 		private Vector3 _pointerStartPosition;

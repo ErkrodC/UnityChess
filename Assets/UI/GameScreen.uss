@@ -62,8 +62,11 @@
 }
 
 .board-square {
-    width: 100%;
-    height: 12.5%;
+    width: 12.5%;
+    flex-basis: 12.5%;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
 }
 
 .tab-label {
