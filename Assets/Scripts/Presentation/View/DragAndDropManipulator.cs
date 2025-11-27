@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityChess.Presentation.ViewModel;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -14,7 +12,6 @@ namespace UnityChess.Presentation.View {
 		private readonly VisualElement _dragLayer;
 		private readonly Label _dragLabel;
 		private readonly BoardVM _vm;
-		private Func<string, string, Task<bool>> DropHandler => _vm.onPieceDropped;
 
 		public DragAndDropManipulator(VisualElement target, VisualElement root, BoardVM vm) {
 			this.target = target;
@@ -87,7 +84,7 @@ namespace UnityChess.Presentation.View {
 
 			VisualElement closestSquare = FindClosestSquare();
 			// ER TODO could read the async return value to update immediately, but might not be necessary?
-			if (closestSquare != null) { DropHandler?.Invoke(target.parent.name, closestSquare.name); }
+			if (closestSquare != null) { _vm.onPieceDropped?.Invoke(target.parent.name, closestSquare.name); }
 
 			_isDragging = false;
 		}

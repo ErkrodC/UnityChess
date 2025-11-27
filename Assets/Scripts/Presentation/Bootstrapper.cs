@@ -7,10 +7,12 @@ namespace UnityChess.Presentation {
 		[SerializeField] private BoardVM _boardVM;
 		[SerializeField] private MoveHistoryVM _moveHistoryVM;
 		[SerializeField] private MenuVM _menuVM;
+		[SerializeField] private PromotionVM _promotionVM;
 
 		private BoardMediator _boardMediator;
 		private MoveHistoryMediator _moveHistoryMediator;
 		private MenuMediator _menuMediator;
+		private PromotionMediator _promotionMediator;
 
 		private void Awake() {
 			GameManager gameManager = new GameManager();
@@ -18,6 +20,7 @@ namespace UnityChess.Presentation {
 			_boardMediator = new BoardMediator(gameManager, _boardVM);
 			_moveHistoryMediator = new MoveHistoryMediator(gameManager, _moveHistoryVM);
 			_menuMediator = new MenuMediator(gameManager, _menuVM);
+			_promotionMediator = new PromotionMediator(gameManager, _promotionVM);
 
 			gameManager.StartNewGame();
 		}

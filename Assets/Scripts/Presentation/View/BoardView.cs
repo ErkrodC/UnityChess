@@ -45,7 +45,7 @@ namespace UnityChess.Presentation.View {
 			// Create converter that extracts the piece at this specific square
 			ConverterGroup converters = new($"{nameof(BoardView)}-{squareName}");
 
-			converters.AddConverter<PieceVM, string>(Converters.PieceToTextArt);
+			converters.AddConverter<PieceVM, string>(Converters.PieceVMToTextArt);
 			binding.ApplyConverterGroupToUI(converters);
 
 			squareLabel.SetBinding(nameof(Label.text), binding);

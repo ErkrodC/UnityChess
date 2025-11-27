@@ -103,7 +103,7 @@ namespace UnityChess.Application {
 			}
 
 			if (move is PromotionMove promotionMove) {
-				bool promotionReady = await ElectPieceAsync(promotionMove);
+				bool promotionReady = await ElectPieceAsync(SideToMove, promotionMove);
 				if (!promotionReady) { return false; }
 			}
 
@@ -131,11 +131,11 @@ namespace UnityChess.Application {
 			}*/
 		}
 
-		private async Task<bool> ElectPieceAsync(PromotionMove moveNeedingPiece) {
+		private async Task<bool> ElectPieceAsync(Side requestingSide, PromotionMove moveNeedingPiece) {
 			_currentPromotionInteraction?.TryCancel();
 			_currentPromotionInteraction?.Dispose();
 
-			using PromotionInteraction promotionInteraction = new(moveNeedingPiece);
+			using PromotionInteraction promotionInteraction = new(requestingSide, moveNeedingPiece);
 			_currentPromotionInteraction = promotionInteraction;
 
 			ElectionRequested?.Invoke(promotionInteraction);
