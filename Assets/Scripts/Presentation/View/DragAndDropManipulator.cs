@@ -8,8 +8,8 @@ using UnityEngine.UIElements;
 namespace UnityChess.Presentation.View {
 	public class DragAndDropManipulator : PointerManipulator {
 		private readonly VisualElement _root;
-		private Vector3 _pointerStartWS;
-		private Vector3 _pointerStartDS;
+		private Vector2 _pointerStartDS;
+		private Vector2 _pointerOffset;
 		private bool _isDragging;
 		private readonly VisualElement _dragLayer;
 		private readonly Label _dragLabel;
@@ -39,15 +39,17 @@ namespace UnityChess.Presentation.View {
 		}
 
 		private void PointerDownHandler(PointerDownEvent evt) {
-			_pointerStartWS = evt.position;
 			_dragLabel.text = (target as Label)?.text;
 
 			target.style.visibility = Visibility.Hidden;
 			_dragLabel.style.visibility = Visibility.Visible;
 
-			_pointerStartDS = GetPosInDragLayerSpace(_pointerStartWS);
-			_dragLabel.style.left = _pointerStartDS.x;
-			_dragLabel.style.top = _pointerStartDS.y;
+			_pointerStartDS = WSToDS(evt.position);
+			Vector2 labelOriginDS = WSToDS(LSToWS(target));
+			_pointerOffset = _pointerStartDS - labelOriginDS;
+
+			_dragLabel.style.left = Mathf.Clamp(_pointerStartDS.x - _pointerOffset.x, 0, _dragLayer.layout.width);
+			_dragLabel.style.top = Mathf.Clamp(_pointerStartDS.y - _pointerOffset.y, 0, _dragLayer.layout.height);
 
 			target.CapturePointer(evt.pointerId);
 			_isDragging = true;
@@ -56,10 +58,19 @@ namespace UnityChess.Presentation.View {
 		private void PointerMoveHandler(PointerMoveEvent evt) {
 			if (!_isDragging || !target.HasPointerCapture(evt.pointerId)) { return; }
 
-			Vector3 pointerDelta = evt.position - _pointerStartWS;
+			Vector2 pointerDS = WSToDS(evt.position);
+			Vector2 pointerDelta = pointerDS - _pointerStartDS;
 
-			_dragLabel.style.left = _pointerStartDS.x + pointerDelta.x;
-			_dragLabel.style.top = _pointerStartDS.y + pointerDelta.y;
+			_dragLabel.style.left = Mathf.Clamp(
+				_pointerStartDS.x + pointerDelta.x - _pointerOffset.x,
+				0,
+				_dragLayer.layout.width
+			);
+			_dragLabel.style.top = Mathf.Clamp(
+				_pointerStartDS.y + pointerDelta.y - _pointerOffset.y,
+				0,
+				_dragLayer.layout.height
+			);
 		}
 
 		private void PointerUpHandler(PointerUpEvent evt) {
@@ -91,7 +102,7 @@ namespace UnityChess.Presentation.View {
 			float minSqrDist = float.MaxValue;
 			VisualElement result = null;
 			foreach (VisualElement overlappingSquare in overlappingSquares) {
-				Vector2 dragLabelToSquare = GetPosInWorldSpace(overlappingSquare) - GetPosInWorldSpace(_dragLabel);
+				Vector2 dragLabelToSquare = LSToWS(overlappingSquare) - LSToWS(_dragLabel);
 				float sqrDist = dragLabelToSquare.sqrMagnitude;
 				if (sqrDist < minSqrDist) {
 					minSqrDist = sqrDist;
@@ -102,11 +113,15 @@ namespace UnityChess.Presentation.View {
 			return result;
 		}
 
-		private Vector2 GetPosInWorldSpace(VisualElement element) {
-			return element.parent.LocalToWorld(element.layout.position);
+		// ER NOTE
+		// LS: Local Space, relative to the parent
+		// DS: Drag Space,  relative to the drag layer
+		// WS: World Space, relative to the root
+		private Vector2 LSToWS(VisualElement element) {
+			return element.worldBound.position;
 		}
 
-		private Vector2 GetPosInDragLayerSpace(Vector2 position) {
+		private Vector2 WSToDS(Vector2 position) {
 			return _dragLayer.WorldToLocal(position);
 		}
 	}
