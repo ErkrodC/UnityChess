@@ -77,3 +77,29 @@
     -unity-text-align: middle-center;
     position: absolute;
 }
+
+TabView {
+    flex-grow: 1;
+}
+
+.unity-tab-view__content-container {
+    flex-grow: 1;
+}
+
+Tab {
+    flex-grow: 1;
+}
+
+.unity-tab__content-container {
+    flex-grow: 1;
+}
+
+#info-container TabView .unity-tab ScrollView {
+    flex-grow: 1;
+}
+
+.unity-collection-view {
+}
+
+.unity-list-view {
+}

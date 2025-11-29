@@ -238,6 +238,13 @@
             </ui:VisualElement>
             <ui:VisualElement name="bottom-player-info" style="flex-grow: 1;" />
         </ui:VisualElement>
-        <ui:VisualElement name="info-container" style="flex-grow: 0; background-color: rgb(99, 81, 81); flex-shrink: 0; flex-basis: 45%;" />
+        <ui:VisualElement name="info-container" style="flex-grow: 0; background-color: rgb(99, 81, 81); flex-shrink: 0; flex-basis: 45%;">
+            <ui:TabView style="font-size: 40px;">
+                <ui:Tab label="Moves" name="moves-tab">
+                    <ui:ListView allow-add="false" allow-remove="false" name="move-entries-list" selection-type="None" fixed-item-height="40" style="flex-grow: 1;" />
+                </ui:Tab>
+                <ui:Tab label="New Game" name="new-game-tab" />
+            </ui:TabView>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

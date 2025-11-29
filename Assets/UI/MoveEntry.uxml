@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="move-entry" style="flex-grow: 1; flex-direction: row; justify-content: flex-start;">
+        <ui:Label text="1." name="move-number-label" style="height: 100%; flex-basis: 10%; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+            <ui:Button text="Button" name="white-move-button" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; flex-direction: row; background-color: rgb(96, 113, 115); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+            <ui:Button text="Button" name="black-move-button" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; flex-direction: row; background-color: rgb(96, 113, 115); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

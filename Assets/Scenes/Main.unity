@@ -268,6 +268,7 @@ GameObject:
   - component: {fileID: 217671240}
   - component: {fileID: 217671242}
   - component: {fileID: 217671243}
+  - component: {fileID: 217671244}
   m_Layer: 5
   m_Name: UIDocument
   m_TagString: Untagged
@@ -342,6 +343,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityChess.Presentation::UnityChess.Presentation.View.PromotionView
   uiDocument: {fileID: 217671240}
   vm: {fileID: 11400000, guid: 98e23250076dcbc4c8d41babf30482a0, type: 2}
+--- !u!114 &217671244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217671239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f503ddaed32e4b66ac375efc80f56a0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityChess.Presentation::UnityChess.Presentation.View.MoveHistoryView
+  uiDocument: {fileID: 217671240}
+  vm: {fileID: 11400000, guid: 67acd3b35676d3b4e9fb869f29ee35d1, type: 2}
+  entryTemplate: {fileID: 9197481963319205126, guid: 12712eabf5f4ceb45883f37fd5473f67,
+    type: 3}
 --- !u!1 &1097727453
 GameObject:
   m_ObjectHideFlags: 0
@@ -372,6 +389,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityChess.Presentation::UnityChess.Presentation.GameBootstrapper
   _boardVM: {fileID: 11400000, guid: ccf20dd3992beee4ca94df075bab076f, type: 2}
+  _moveHistoryVM: {fileID: 11400000, guid: 67acd3b35676d3b4e9fb869f29ee35d1, type: 2}
   _promotionVM: {fileID: 11400000, guid: 98e23250076dcbc4c8d41babf30482a0, type: 2}
 --- !u!4 &1097727455
 Transform:
