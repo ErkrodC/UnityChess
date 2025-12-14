@@ -1,3 +1,4 @@
+using System;
 using UnityChess.Application;
 using UnityChess.Core;
 using UnityChess.Presentation.ViewModel;
@@ -47,19 +48,22 @@ namespace UnityChess.Presentation {
 		#region To Application Layer
 
 		private void OnToBeginningClicked() {
-			// ER TODO: Reset to beginning of game
+			_gameManager.ResetGameToHalfMoveIndex(0);
 		}
 
 		private void OnBackClicked() {
-			// ER TODO: Go back one Move
+			int targetIndex = Math.Max(_gameManager.CurrentHalfMoveIndex - 1, 0);
+			_gameManager.ResetGameToHalfMoveIndex(targetIndex);
 		}
 
 		private void OnForwardClicked() {
-			// ER TODO: Go forward one Move
+			int targetIndex = Math.Min(_gameManager.CurrentHalfMoveIndex + 1, _gameManager.HalfMoveTimelineCount - 1);
+			_gameManager.ResetGameToHalfMoveIndex(targetIndex);
 		}
 
 		private void OnToEndClicked() {
-			// ER TODO: Go to end of game
+			int targetIndex = Math.Max(_gameManager.HalfMoveTimelineCount - 1, 0);
+			_gameManager.ResetGameToHalfMoveIndex(targetIndex);
 		}
 
 		private void OnMoveClicked(int halfMoveIndex) {

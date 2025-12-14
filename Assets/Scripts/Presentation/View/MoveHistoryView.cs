@@ -13,6 +13,11 @@ namespace UnityChess.Presentation.View {
 		private void Awake() {
 			_root = uiDocument.rootVisualElement;
 			_entriesListView = _root.Q<ListView>("move-entries-list");
+			_root.Q<Button>("to-beginning-button").clicked += () => { vm.onToBeginningClicked?.Invoke(); };
+			_root.Q<Button>("back-button").clicked += () => { vm.onBackClicked?.Invoke(); };
+			_root.Q<Button>("forward-button").clicked += () => { vm.onForwardClicked?.Invoke(); };
+			_root.Q<Button>("to-end-button").clicked += () => { vm.onToEndClicked?.Invoke(); };
+
 
 			_entriesListView.makeItem = () => {
 				TemplateContainer element = entryTemplate.Instantiate();
@@ -25,7 +30,7 @@ namespace UnityChess.Presentation.View {
 
 			_entriesListView.bindItem = (element, moveIndex) => {
 				MoveHistoryEntryVM entry = vm.moveEntries[moveIndex];
-				element.Q<Label>("move-number-label").text = entry.moveNumber.ToString();
+				element.Q<Label>("move-number-label").text = $"{entry.moveNumber}.";
 
 				UpdateHalfMoveButton(
 					button: element.Q<Button>("white-move-button"),

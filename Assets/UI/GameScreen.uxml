@@ -241,7 +241,13 @@
         <ui:VisualElement name="info-container" style="flex-grow: 0; background-color: rgb(99, 81, 81); flex-shrink: 0; flex-basis: 45%;">
             <ui:TabView style="font-size: 40px;">
                 <ui:Tab label="Moves" name="moves-tab">
-                    <ui:ListView allow-add="false" allow-remove="false" name="move-entries-list" selection-type="None" fixed-item-height="40" show-bound-collection-size="false" style="flex-grow: 1;" />
+                    <ui:VisualElement name="navigation-bar" style="flex-grow: 1; flex-basis: 7%; flex-direction: row;">
+                        <ui:Button text="&lt;&lt;" name="to-beginning-button" class="move-history-navigation-button" />
+                        <ui:Button text="&lt;" name="back-button" class="move-history-navigation-button" />
+                        <ui:Button text="&gt;" name="forward-button" class="move-history-navigation-button" />
+                        <ui:Button text="&gt;&gt;" name="to-end-button" class="move-history-navigation-button" />
+                    </ui:VisualElement>
+                    <ui:ListView allow-add="false" allow-remove="false" name="move-entries-list" selection-type="None" fixed-item-height="40" show-bound-collection-size="false" style="flex-grow: 1; flex-basis: 93%;" />
                 </ui:Tab>
                 <ui:Tab label="New Game" name="new-game-tab" />
             </ui:TabView>

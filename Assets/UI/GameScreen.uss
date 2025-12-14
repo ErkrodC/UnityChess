@@ -107,3 +107,28 @@ Tab {
 .unity-list-view__empty-label {
     display: none;
 }
+
+.move-history-navigation-button {
+    flex-grow: 1;
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    font-size: 40px;
+    letter-spacing: -20px;
+    -unity-font-style: bold;
+    background-color: rgb(76, 75, 73);
+    color: rgb(204, 203, 203);
+}
