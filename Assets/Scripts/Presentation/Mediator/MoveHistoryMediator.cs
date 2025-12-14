@@ -33,12 +33,11 @@ namespace UnityChess.Presentation {
 		}
 
 		private void OnMoveExecuted(Board _, Timeline<HalfMove> halfMoveTimeline) {
-			int halfMoveIndex = ++_vm.currentHalfMoveIndex;
 			PopulateMoveEntries(halfMoveTimeline);
 			_vm.NotifyEntriesChanged();
 		}
 
-		private void OnGameResetToHalfMove(Board _, int halfMoveIndex, Timeline<HalfMove> halfMoveTimeline) {
+		private void OnGameResetToHalfMove(Board _, Timeline<HalfMove> halfMoveTimeline) {
 			PopulateMoveEntries(halfMoveTimeline);
 			_vm.NotifyEntriesChanged();
 		}

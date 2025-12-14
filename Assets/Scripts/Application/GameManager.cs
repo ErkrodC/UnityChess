@@ -8,7 +8,7 @@ namespace UnityChess.Application {
 	public class GameManager {
 		public event Action<Board> NewGameStarted;
 		public event Action<Board> GameEnded;
-		public event Action<Board, int, Timeline<HalfMove>> GameResetToHalfMove;
+		public event Action<Board, Timeline<HalfMove>> GameResetToHalfMove;
 		public event Action<Board, Timeline<HalfMove>> MoveExecuted;
 		public event Action<PromotionInteraction> ElectionRequested;
 
@@ -79,7 +79,7 @@ namespace UnityChess.Application {
 			if (!_game.ResetGameToHalfMoveIndex(halfMoveIndex)) { return; }
 
 			_currentPromotionInteraction?.TryCancel();
-			GameResetToHalfMove?.Invoke(_game.BoardTimeline.Head, halfMoveIndex, _game.HalfMoveTimeline);
+			GameResetToHalfMove?.Invoke(_game.BoardTimeline.Head, _game.HalfMoveTimeline);
 		}
 
 		public async Task<bool> TryExecuteMoveAsync(Square startSquare, Square endSquare) {

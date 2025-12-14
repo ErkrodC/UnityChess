@@ -32,7 +32,7 @@ namespace UnityChess.Presentation {
 			ConvertBoardToPieceTypes(board, _boardVM.currentBoard);
 		}
 
-		private void OnGameResetToHalfMove(Board board, int _, Timeline<HalfMove> __) {
+		private void OnGameResetToHalfMove(Board board, Timeline<HalfMove> _) {
 			ConvertBoardToPieceTypes(board, _boardVM.currentBoard);
 		}
 
