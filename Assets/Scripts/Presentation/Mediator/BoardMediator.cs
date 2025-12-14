@@ -16,6 +16,7 @@ namespace UnityChess.Presentation {
 			// To Presentation
 			_gameManager.NewGameStarted += OnNewGameStarted;
 			_gameManager.MoveExecuted += OnMoveExecuted;
+			_gameManager.GameResetToHalfMove += OnGameResetToHalfMove;
 
 			// To Application
 			_boardVM.onPieceDropped = OnPieceDroppedAsync;
@@ -28,6 +29,10 @@ namespace UnityChess.Presentation {
 		}
 
 		private void OnMoveExecuted(Board board, HalfMove _) {
+			ConvertBoardToPieceTypes(board, _boardVM.currentBoard);
+		}
+
+		private void OnGameResetToHalfMove(Board board, int _) {
 			ConvertBoardToPieceTypes(board, _boardVM.currentBoard);
 		}
 

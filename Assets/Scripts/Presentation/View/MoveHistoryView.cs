@@ -14,15 +14,32 @@ namespace UnityChess.Presentation.View {
 			_root = uiDocument.rootVisualElement;
 			_entriesListView = _root.Q<ListView>("move-entries-list");
 
-			_entriesListView.makeItem = entryTemplate.Instantiate;
-			_entriesListView.bindItem = (element, index) => {
-				MoveHistoryEntryVM entry = vm.moveEntries[index];
-				element.Q<Label>("move-number-label").text = entry.moveNumber.ToString();
-				element.Q<Button>("white-move-button").text = entry.whiteMove;
-				element.Q<Button>("black-move-button").text = entry.blackMove;
+			_entriesListView.makeItem = () => {
+				TemplateContainer element = entryTemplate.Instantiate();
 
-				// ER TODO alpha on button to show that it's the current move, and disable clickability if it is
+				RegisterHalfMoveButtonClickHandler(element.Q<Button>("white-move-button"));
+				RegisterHalfMoveButtonClickHandler(element.Q<Button>("black-move-button"));
+
+				return element;
 			};
+
+			_entriesListView.bindItem = (element, moveIndex) => {
+				MoveHistoryEntryVM entry = vm.moveEntries[moveIndex];
+				element.Q<Label>("move-number-label").text = entry.moveNumber.ToString();
+
+				UpdateHalfMoveButton(
+					button: element.Q<Button>("white-move-button"),
+					halfMoveIndex: entry.whiteHalfMoveIndex,
+					buttonText: entry.whiteMoveString
+				);
+
+				UpdateHalfMoveButton(
+					button: element.Q<Button>("black-move-button"),
+					halfMoveIndex: entry.blackHalfMoveIndex,
+					buttonText: entry.blackMoveString
+				);
+			};
+
 			_entriesListView.itemsSource = vm.moveEntries;
 		}
 
@@ -36,6 +53,17 @@ namespace UnityChess.Presentation.View {
 
 		private void OnEntriesChanged() {
 			_entriesListView.RefreshItems();
+		}
+
+		private void RegisterHalfMoveButtonClickHandler(Button button) {
+			button.clicked += () => vm.onMoveClicked?.Invoke((int)button.userData);
+		}
+
+		private static void UpdateHalfMoveButton(Button button, int halfMoveIndex, string buttonText) {
+			button.text = buttonText;
+			button.userData = halfMoveIndex;
+
+			// ER TODO: if index == vm.currentHalfMoveIndex, show button highlight or whatever
 		}
 	}
 }
