@@ -103,3 +103,7 @@ Tab {
 
 .unity-list-view {
 }
+
+.unity-list-view__empty-label {
+    display: none;
+}
