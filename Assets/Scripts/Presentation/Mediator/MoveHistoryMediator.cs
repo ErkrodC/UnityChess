@@ -32,26 +32,14 @@ namespace UnityChess.Presentation {
 			_vm.NotifyEntriesChanged();
 		}
 
-		private void OnMoveExecuted(Board _, HalfMove halfMove) {
+		private void OnMoveExecuted(Board _, Timeline<HalfMove> halfMoveTimeline) {
 			int halfMoveIndex = ++_vm.currentHalfMoveIndex;
-
-			// White's Move (even half-Move index)
-			if (halfMoveIndex % 2 == 0) {
-				_vm.moveEntries.Add(new MoveHistoryEntryVM {
-					moveNumber = halfMoveIndex / 2 + 1,
-					whiteMoveString = halfMove.ToAlgebraicNotation(),
-					blackMoveString = null
-				});
-			} else { // Black's Move (odd half-Move index)
-				MoveHistoryEntryVM lastEntry = _vm.moveEntries[^1];
-				lastEntry.blackMoveString = halfMove.ToAlgebraicNotation();
-			}
-
+			PopulateMoveEntries(halfMoveTimeline);
 			_vm.NotifyEntriesChanged();
 		}
 
-		private void OnGameResetToHalfMove(Board _, int halfMoveIndex) {
-			_vm.currentHalfMoveIndex = halfMoveIndex;
+		private void OnGameResetToHalfMove(Board _, int halfMoveIndex, Timeline<HalfMove> halfMoveTimeline) {
+			PopulateMoveEntries(halfMoveTimeline);
 			_vm.NotifyEntriesChanged();
 		}
 
@@ -77,6 +65,32 @@ namespace UnityChess.Presentation {
 
 		private void OnMoveClicked(int halfMoveIndex) {
 			_gameManager.ResetGameToHalfMoveIndex(halfMoveIndex);
+		}
+
+		#endregion
+
+		#region Helpers
+
+		private void PopulateMoveEntries(Timeline<HalfMove> halfMoveTimeline) {
+			_vm.moveEntries.Clear();
+
+			for (int halfMoveIndex = 0; halfMoveIndex < halfMoveTimeline.Count; halfMoveIndex++) {
+				HalfMove halfMove = halfMoveTimeline[halfMoveIndex];
+
+				// White's Move (even half-move index)
+				if (halfMoveIndex % 2 == 0) {
+					_vm.moveEntries.Add(new MoveHistoryEntryVM {
+						moveNumber = halfMoveIndex / 2 + 1,
+						whiteMoveString = halfMove.ToAlgebraicNotation(),
+						blackMoveString = null
+					});
+				} else { // Black's Move (odd half-move index)
+					MoveHistoryEntryVM lastEntry = _vm.moveEntries[^1];
+					lastEntry.blackMoveString = halfMove.ToAlgebraicNotation();
+				}
+			}
+
+			_vm.currentHalfMoveIndex = halfMoveTimeline.HeadIndex;
 		}
 
 		#endregion
