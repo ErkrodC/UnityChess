@@ -26,8 +26,8 @@ namespace UnityChess.Editor {
 				MessageType.Info);
 			EditorGUILayout.Space();
 
-			DrawMediatorsSection(composition);
-			DrawViewsSection(composition);
+			DrawTypeIncludeSection("Mediators", composition, composition.includedMediatorGUIDs, _allMediatorTypes, ShowDiscoveredMediatorDependencies);
+			DrawTypeIncludeSection("Views", composition, composition.includedViewGUIDs, _allViewTypes, ShowDiscoveredViewDependencies);
 
 			serializedObject.ApplyModifiedProperties();
 		}
@@ -62,18 +62,19 @@ namespace UnityChess.Editor {
 			_allViewTypes.Sort((a, b) => string.Compare(a.type.Name, b.type.Name, StringComparison.Ordinal));
 		}
 
-		private void DrawMediatorsSection(SceneComposition composition) {
+		private static void DrawTypeIncludeSection(string label, SceneComposition composition, List<string> compositionList,
+			List<(string guid, Type type)> allRelevantTypes, Action<Type> showDiscoveredDependencies) {
 			EditorGUILayout.Space();
-			EditorGUILayout.LabelField("Mediators", EditorStyles.boldLabel);
+			EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
 
-			if (_allMediatorTypes.Count == 0) {
+			if (allRelevantTypes.Count == 0) {
 				EditorGUILayout.HelpBox("No mediator types found implementing IMediator", MessageType.Info);
 				return;
 			}
 
-			foreach ((string guid, Type type) in _allMediatorTypes) {
+			foreach ((string guid, Type type) in allRelevantTypes) {
 				// Check if this GUID is in the included list
-				bool isIncluded = composition.includedMediatorGUIDs.Contains(guid);
+				bool isIncluded = compositionList.Contains(guid);
 
 				// Draw checkbox with type name
 				EditorGUI.BeginChangeCheck();
@@ -83,11 +84,11 @@ namespace UnityChess.Editor {
 
 					if (newIncluded && !isIncluded) {
 						// Add to list
-						composition.includedMediatorGUIDs.Add(guid);
-						composition.includedMediatorGUIDs.Sort(StringComparer.Ordinal);
+						compositionList.Add(guid);
+						compositionList.Sort(StringComparer.Ordinal);
 					} else if (!newIncluded && isIncluded) {
 						// Remove from list
-						composition.includedMediatorGUIDs.Remove(guid);
+						compositionList.Remove(guid);
 					}
 
 					EditorUtility.SetDirty(composition);
@@ -95,60 +96,30 @@ namespace UnityChess.Editor {
 
 				// Show discovered dependencies indented
 				if (newIncluded) {
-					ConstructorInfo ctor = type.GetConstructors().FirstOrDefault();
-					if (ctor != null) {
-						EditorGUI.indentLevel++;
-						foreach (ParameterInfo param in ctor.GetParameters()) {
-							EditorGUILayout.LabelField($"→ {param.ParameterType.Name}", EditorStyles.miniLabel);
-						}
-						EditorGUI.indentLevel--;
-					}
+					showDiscoveredDependencies(type);
 				}
 			}
 		}
 
-		private void DrawViewsSection(SceneComposition composition) {
-			EditorGUILayout.Space();
-			EditorGUILayout.LabelField("Views", EditorStyles.boldLabel);
-
-			if (_allViewTypes.Count == 0) {
-				EditorGUILayout.HelpBox("No view types found implementing IView<T>", MessageType.Info);
-				return;
+		private static void ShowDiscoveredMediatorDependencies(Type type) {
+			ConstructorInfo ctor = type.GetConstructors().FirstOrDefault();
+			if (ctor != null) {
+				EditorGUI.indentLevel++;
+				foreach (ParameterInfo param in ctor.GetParameters()) {
+					EditorGUILayout.LabelField($"→ {param.ParameterType.Name}", EditorStyles.miniLabel);
+				}
+				EditorGUI.indentLevel--;
 			}
+		}
 
-			foreach ((string guid, Type type) in _allViewTypes) {
-				// Check if this GUID is in the included list
-				bool isIncluded = composition.includedViewGUIDs.Contains(guid);
-
-				// Draw checkbox with type name
-				EditorGUI.BeginChangeCheck();
-				bool newIncluded = EditorGUILayout.Toggle(type.Name, isIncluded);
-				if (EditorGUI.EndChangeCheck()) {
-					Undo.RecordObject(composition, "Toggle View");
-
-					if (newIncluded && !isIncluded) {
-						// Add to list
-						composition.includedViewGUIDs.Add(guid);
-						composition.includedViewGUIDs.Sort(StringComparer.Ordinal);
-					} else if (!newIncluded && isIncluded) {
-						// Remove from list
-						composition.includedViewGUIDs.Remove(guid);
-					}
-
-					EditorUtility.SetDirty(composition);
-				}
-
-				// Show discovered ViewModel indented
-				if (newIncluded) {
-					Type viewInterface = type.GetInterfaces()
-						.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
-					if (viewInterface != null) {
-						Type vmType = viewInterface.GetGenericArguments()[0];
-						EditorGUI.indentLevel++;
-						EditorGUILayout.LabelField($"→ {vmType.Name}", EditorStyles.miniLabel);
-						EditorGUI.indentLevel--;
-					}
-				}
+		private static void ShowDiscoveredViewDependencies(Type type) {
+			Type viewInterface = type.GetInterfaces()
+				.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
+			if (viewInterface != null) {
+				Type vmType = viewInterface.GetGenericArguments()[0];
+				EditorGUI.indentLevel++;
+				EditorGUILayout.LabelField($"→ {vmType.Name}", EditorStyles.miniLabel);
+				EditorGUI.indentLevel--;
 			}
 		}
 	}
