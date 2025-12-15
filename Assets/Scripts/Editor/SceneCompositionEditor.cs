@@ -22,7 +22,7 @@ namespace UnityChess.Editor {
 			// Info box about code generation
 			EditorGUILayout.HelpBox(
 				"Check mediators and views to include in this composition. " +
-				"Code generation will trigger automatically when you save this asset (Ctrl+S).",
+				"Code generation will trigger automatically when you save this asset (Ctrl/Cmd+S).",
 				MessageType.Info);
 			EditorGUILayout.Space();
 
