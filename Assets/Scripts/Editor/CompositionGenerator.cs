@@ -45,11 +45,11 @@ namespace UnityChess.Editor {
 			HashSet<Type> managerTypes = new();
 			HashSet<Type> viewModelTypes = new();
 
-			// Resolve mediator GUIDs to types
-			foreach (var mediatorRef in composition.mediators.Where(m => m.isIncluded)) {
-				string path = AssetDatabase.GUIDToAssetPath(mediatorRef.guid);
+			// Resolve included mediator GUIDs to types
+			foreach (string guid in composition.includedMediatorGUIDs) {
+				string path = AssetDatabase.GUIDToAssetPath(guid);
 				if (string.IsNullOrEmpty(path)) {
-					Debug.LogError($"Could not resolve GUID {mediatorRef.guid} to script path");
+					Debug.LogError($"Could not resolve GUID {guid} to script path");
 					continue;
 				}
 
@@ -76,11 +76,11 @@ namespace UnityChess.Editor {
 				}
 			}
 
-			// Resolve view GUIDs to types
-			foreach (var viewRef in composition.views.Where(v => v.isIncluded)) {
-				string path = AssetDatabase.GUIDToAssetPath(viewRef.guid);
+			// Resolve included view GUIDs to types
+			foreach (string guid in composition.includedViewGUIDs) {
+				string path = AssetDatabase.GUIDToAssetPath(guid);
 				if (string.IsNullOrEmpty(path)) {
-					Debug.LogError($"Could not resolve GUID {viewRef.guid} to script path");
+					Debug.LogError($"Could not resolve GUID {guid} to script path");
 					continue;
 				}
 

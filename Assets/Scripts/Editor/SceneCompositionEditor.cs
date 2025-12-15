@@ -22,7 +22,7 @@ namespace UnityChess.Editor {
 			// Info box about code generation
 			EditorGUILayout.HelpBox(
 				"Check mediators and views to include in this composition. " +
-				"Code generation will trigger automatically when you save this asset (Cmd/Ctrl+S).",
+				"Code generation will trigger automatically when you save this asset (Ctrl+S).",
 				MessageType.Info);
 			EditorGUILayout.Space();
 
@@ -72,24 +72,28 @@ namespace UnityChess.Editor {
 			}
 
 			foreach (var (guid, type) in _allMediatorTypes) {
-				// Find or create entry for this GUID
-				var entry = composition.mediators.FirstOrDefault(m => m.guid == guid);
-				if (entry == null) {
-					entry = new SceneComposition.TypeReference { guid = guid, isIncluded = false };
-					composition.mediators.Add(entry);
-				}
+				// Check if this GUID is in the included list
+				bool isIncluded = composition.includedMediatorGUIDs.Contains(guid);
 
 				// Draw checkbox with type name
 				EditorGUI.BeginChangeCheck();
-				bool isIncluded = EditorGUILayout.Toggle(type.Name, entry.isIncluded);
+				bool newIncluded = EditorGUILayout.Toggle(type.Name, isIncluded);
 				if (EditorGUI.EndChangeCheck()) {
 					Undo.RecordObject(composition, "Toggle Mediator");
-					entry.isIncluded = isIncluded;
+
+					if (newIncluded && !isIncluded) {
+						// Add to list
+						composition.includedMediatorGUIDs.Add(guid);
+					} else if (!newIncluded && isIncluded) {
+						// Remove from list
+						composition.includedMediatorGUIDs.Remove(guid);
+					}
+
 					EditorUtility.SetDirty(composition);
 				}
 
 				// Show discovered dependencies indented
-				if (entry.isIncluded) {
+				if (newIncluded) {
 					var ctor = type.GetConstructors().FirstOrDefault();
 					if (ctor != null) {
 						EditorGUI.indentLevel++;
@@ -100,10 +104,6 @@ namespace UnityChess.Editor {
 					}
 				}
 			}
-
-			// Clean up stale entries (scripts that no longer exist)
-			composition.mediators.RemoveAll(m =>
-				!_allMediatorTypes.Any(t => t.guid == m.guid));
 		}
 
 		private void DrawViewsSection(SceneComposition composition) {
@@ -116,24 +116,28 @@ namespace UnityChess.Editor {
 			}
 
 			foreach (var (guid, type) in _allViewTypes) {
-				// Find or create entry for this GUID
-				var entry = composition.views.FirstOrDefault(v => v.guid == guid);
-				if (entry == null) {
-					entry = new SceneComposition.TypeReference { guid = guid, isIncluded = false };
-					composition.views.Add(entry);
-				}
+				// Check if this GUID is in the included list
+				bool isIncluded = composition.includedViewGUIDs.Contains(guid);
 
 				// Draw checkbox with type name
 				EditorGUI.BeginChangeCheck();
-				bool isIncluded = EditorGUILayout.Toggle(type.Name, entry.isIncluded);
+				bool newIncluded = EditorGUILayout.Toggle(type.Name, isIncluded);
 				if (EditorGUI.EndChangeCheck()) {
 					Undo.RecordObject(composition, "Toggle View");
-					entry.isIncluded = isIncluded;
+
+					if (newIncluded && !isIncluded) {
+						// Add to list
+						composition.includedViewGUIDs.Add(guid);
+					} else if (!newIncluded && isIncluded) {
+						// Remove from list
+						composition.includedViewGUIDs.Remove(guid);
+					}
+
 					EditorUtility.SetDirty(composition);
 				}
 
 				// Show discovered ViewModel indented
-				if (entry.isIncluded) {
+				if (newIncluded) {
 					var viewInterface = type.GetInterfaces()
 						.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
 					if (viewInterface != null) {
@@ -144,10 +148,6 @@ namespace UnityChess.Editor {
 					}
 				}
 			}
-
-			// Clean up stale entries
-			composition.views.RemoveAll(v =>
-				!_allViewTypes.Any(t => t.guid == v.guid));
 		}
 	}
 }
