@@ -64,9 +64,9 @@ namespace UnityChess.Editor {
 				mediatorTypes.Add(type);
 
 				// Inspect constructor to find managers and view models
-				var ctor = type.GetConstructors().FirstOrDefault();
+				ConstructorInfo ctor = type.GetConstructors().FirstOrDefault();
 				if (ctor != null) {
-					foreach (var param in ctor.GetParameters()) {
+					foreach (ParameterInfo param in ctor.GetParameters()) {
 						if (typeof(IManager).IsAssignableFrom(param.ParameterType)) {
 							managerTypes.Add(param.ParameterType);
 						} else if (typeof(IViewModel).IsAssignableFrom(param.ParameterType)) {
@@ -92,7 +92,7 @@ namespace UnityChess.Editor {
 					continue;
 				}
 
-				var viewInterface = type.GetInterfaces()
+				Type viewInterface = type.GetInterfaces()
 					.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
 
 				if (viewInterface == null) {
@@ -129,7 +129,7 @@ namespace UnityChess.Editor {
 
 			// Register managers
 			sb.AppendLine("\t\t\t// Register Managers");
-			foreach (Type managerType in managerTypes) {
+			foreach (Type managerType in managerTypes.OrderBy(x => x.Name)) {
 				sb.AppendLine($"\t\t\tregistry.RegisterSingleton<{managerType.Name}>(() => new {managerType.Name}());");
 			}
 
@@ -137,7 +137,7 @@ namespace UnityChess.Editor {
 
 			// Register view models
 			sb.AppendLine("\t\t\t// Register ViewModels");
-			foreach (Type vmType in viewModelTypes) {
+			foreach (Type vmType in viewModelTypes.OrderBy(x => x.Name)) {
 				sb.AppendLine($"\t\t\tregistry.RegisterSingleton<{vmType.Name}>(() => new {vmType.Name}());");
 			}
 
@@ -145,7 +145,7 @@ namespace UnityChess.Editor {
 
 			// Register mediators
 			sb.AppendLine("\t\t\t// Register Mediators");
-			foreach (Type mediatorType in mediatorTypes) {
+			foreach (Type mediatorType in mediatorTypes.OrderBy(x => x.Name)) {
 				ConstructorInfo ctor = mediatorType.GetConstructors()[0];
 				ParameterInfo[] parameters = ctor.GetParameters();
 
@@ -161,7 +161,7 @@ namespace UnityChess.Editor {
 
 			// Instantiate mediators (force resolution to run constructors)
 			sb.AppendLine("\t\t\t// Instantiate Mediators");
-			foreach (Type mediatorType in mediatorTypes) {
+			foreach (Type mediatorType in mediatorTypes.OrderBy(x => x.Name)) {
 				sb.AppendLine($"\t\t\tregistry.Resolve<{mediatorType.Name}>();");
 			}
 
@@ -169,7 +169,7 @@ namespace UnityChess.Editor {
 
 			// Initialize views
 			sb.AppendLine("\t\t\t// Initialize Views");
-			foreach (Type viewType in viewTypes) {
+			foreach (Type viewType in viewTypes.OrderBy(x => x.Name)) {
 				Type viewInterface = viewType.GetInterfaces()
 					.First(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
 				Type vmType = viewInterface.GetGenericArguments()[0];
