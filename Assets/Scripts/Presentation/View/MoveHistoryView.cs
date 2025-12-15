@@ -1,34 +1,36 @@
+using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation.View {
-	public class MoveHistoryView : MonoBehaviour {
-		[SerializeField] private UIDocument uiDocument;
-		[SerializeField] private MoveHistoryVM vm;
-		[SerializeField] private VisualTreeAsset entryTemplate;
+	public class MoveHistoryView : MonoBehaviour, IView<MoveHistoryVM> {
+		[SerializeField] private VisualTreeAsset _entryTemplate;
 
-		private VisualElement _root;
-		private ListView _entriesListView;
-		private void Awake() {
-			_root = uiDocument.rootVisualElement;
-			_entriesListView = _root.Q<ListView>("move-entries-list");
-			_root.Q<Button>("to-beginning-button").clicked += () => { vm.onToBeginningClicked?.Invoke(); };
-			_root.Q<Button>("back-button").clicked += () => { vm.onBackClicked?.Invoke(); };
-			_root.Q<Button>("forward-button").clicked += () => { vm.onForwardClicked?.Invoke(); };
-			_root.Q<Button>("to-end-button").clicked += () => { vm.onToEndClicked?.Invoke(); };
+		public void Initialize(MoveHistoryVM vm, UIDocument uiDocument) {
+			VisualElement root = uiDocument.rootVisualElement;
 
+			root.Q<Button>("to-beginning-button").clicked += () => { vm.onToBeginningClicked?.Invoke(); };
+			root.Q<Button>("back-button").clicked += () => { vm.onBackClicked?.Invoke(); };
+			root.Q<Button>("forward-button").clicked += () => { vm.onForwardClicked?.Invoke(); };
+			root.Q<Button>("to-end-button").clicked += () => { vm.onToEndClicked?.Invoke(); };
 
-			_entriesListView.makeItem = () => {
-				TemplateContainer element = entryTemplate.Instantiate();
+			SetupListViewBinding(vm, root.Q<ListView>("move-entries-list"));
+		}
 
-				RegisterHalfMoveButtonClickHandler(element.Q<Button>("white-move-button"));
-				RegisterHalfMoveButtonClickHandler(element.Q<Button>("black-move-button"));
+		private void SetupListViewBinding(MoveHistoryVM vm, ListView entriesListView) {
+			vm.EntriesChanged += entriesListView.RefreshItems;
+
+			entriesListView.makeItem = () => {
+				TemplateContainer element = _entryTemplate.Instantiate();
+
+				RegisterHalfMoveButtonClickHandler(vm, element.Q<Button>("white-move-button"));
+				RegisterHalfMoveButtonClickHandler(vm, element.Q<Button>("black-move-button"));
 
 				return element;
 			};
 
-			_entriesListView.bindItem = (element, moveIndex) => {
+			entriesListView.bindItem = (element, moveIndex) => {
 				MoveHistoryEntryVM entry = vm.moveEntries[moveIndex];
 				element.Q<Label>("move-number-label").text = $"{entry.moveNumber}.";
 
@@ -45,22 +47,10 @@ namespace UnityChess.Presentation.View {
 				);
 			};
 
-			_entriesListView.itemsSource = vm.moveEntries;
+			entriesListView.itemsSource = vm.moveEntries;
 		}
 
-		private void OnEnable() {
-			vm.EntriesChanged += OnEntriesChanged;
-		}
-
-		private void OnDisable() {
-			vm.EntriesChanged -= OnEntriesChanged;
-		}
-
-		private void OnEntriesChanged() {
-			_entriesListView.RefreshItems();
-		}
-
-		private void RegisterHalfMoveButtonClickHandler(Button button) {
+		private void RegisterHalfMoveButtonClickHandler(MoveHistoryVM vm, Button button) {
 			button.clicked += () => vm.onMoveClicked?.Invoke((int)button.userData);
 		}
 

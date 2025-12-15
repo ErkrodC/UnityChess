@@ -256,109 +256,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!1 &217671239
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 217671241}
-  - component: {fileID: 217671240}
-  - component: {fileID: 217671242}
-  - component: {fileID: 217671243}
-  - component: {fileID: 217671244}
-  m_Layer: 5
-  m_Name: UIDocument
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &217671240
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 217671239}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
-  m_PanelSettings: {fileID: 11400000, guid: 3f96119439c2e534e942fd801ec0113d, type: 2}
-  m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 24b103709978a2847b6d98671203ddba,
-    type: 3}
-  m_SortingOrder: 0
-  m_Position: 0
-  m_WorldSpaceSizeMode: 1
-  m_WorldSpaceWidth: 1920
-  m_WorldSpaceHeight: 1080
-  m_PivotReferenceSize: 0
-  m_Pivot: 0
-  m_WorldSpaceCollider: {fileID: 0}
---- !u!4 &217671241
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 217671239}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &217671242
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 217671239}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b310dc693724ade98ee02196d29b941, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityChess.Presentation::UnityChess.Presentation.View.BoardView
-  uiDocument: {fileID: 217671240}
-  vm: {fileID: 11400000, guid: ccf20dd3992beee4ca94df075bab076f, type: 2}
---- !u!114 &217671243
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 217671239}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93fecd96aaff4fbdba2122fd050368eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityChess.Presentation::UnityChess.Presentation.View.PromotionView
-  uiDocument: {fileID: 217671240}
-  vm: {fileID: 11400000, guid: 98e23250076dcbc4c8d41babf30482a0, type: 2}
---- !u!114 &217671244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 217671239}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f503ddaed32e4b66ac375efc80f56a0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityChess.Presentation::UnityChess.Presentation.View.MoveHistoryView
-  uiDocument: {fileID: 217671240}
-  vm: {fileID: 11400000, guid: 67acd3b35676d3b4e9fb869f29ee35d1, type: 2}
-  entryTemplate: {fileID: 9197481963319205126, guid: 12712eabf5f4ceb45883f37fd5473f67,
-    type: 3}
 --- !u!1 &1097727453
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,6 +266,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1097727455}
   - component: {fileID: 1097727454}
+  - component: {fileID: 1097727456}
+  - component: {fileID: 1097727457}
   m_Layer: 0
   m_Name: Bootstrapper
   m_TagString: Untagged
@@ -388,9 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 039bd6078d84491f89b5d0ab23961e14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityChess.Presentation::UnityChess.Presentation.GameBootstrapper
-  _boardVM: {fileID: 11400000, guid: ccf20dd3992beee4ca94df075bab076f, type: 2}
-  _moveHistoryVM: {fileID: 11400000, guid: 67acd3b35676d3b4e9fb869f29ee35d1, type: 2}
-  _promotionVM: {fileID: 11400000, guid: 98e23250076dcbc4c8d41babf30482a0, type: 2}
+  composition: {fileID: 11400000, guid: 0c6aeff71000809439564cc71883375d, type: 2}
 --- !u!4 &1097727455
 Transform:
   m_ObjectHideFlags: 0
@@ -406,10 +303,47 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1097727456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097727453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: 3f96119439c2e534e942fd801ec0113d, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 24b103709978a2847b6d98671203ddba,
+    type: 3}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &1097727457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097727453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f503ddaed32e4b66ac375efc80f56a0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityChess.Presentation::UnityChess.Presentation.View.MoveHistoryView
+  _entryTemplate: {fileID: 9197481963319205126, guid: 12712eabf5f4ceb45883f37fd5473f67,
+    type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 111311436}
   - {fileID: 1097727455}
-  - {fileID: 217671241}

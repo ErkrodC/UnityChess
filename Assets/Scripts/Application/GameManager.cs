@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityChess.Core;
+using UnityChess.DependencyInjection;
 using UnityChess.Util;
 
 namespace UnityChess.Application {
-	public class GameManager {
+	public class GameManager : IManager {
 		public event Action<Board> NewGameStarted;
 		public event Action<Board> GameEnded;
 		public event Action<Board, Timeline<HalfMove>> GameResetToHalfMove;

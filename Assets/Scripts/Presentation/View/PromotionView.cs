@@ -1,33 +1,25 @@
 using Unity.Properties;
 using UnityChess.Core;
+using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
 using UnityChess.Util;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation.View {
-	public class PromotionView : MonoBehaviour {
-		[SerializeField] private UIDocument uiDocument;
-		[SerializeField] private PromotionVM vm;
+	public class PromotionView : MonoBehaviour, IView<PromotionVM> {
+		public void Initialize(PromotionVM vm, UIDocument uiDocument) {
+			VisualElement root = uiDocument.rootVisualElement;
 
-		private VisualElement _root;
-
-		private void Awake() {
-			_root = uiDocument.rootVisualElement;
+			SetupButtonBinding(vm, root.Q<Button>("knight-election-button"), ElectedPiece.Knight);
+			SetupButtonBinding(vm, root.Q<Button>("bishop-election-button"), ElectedPiece.Bishop);
+			SetupButtonBinding(vm, root.Q<Button>("rook-election-button"), ElectedPiece.Rook);
+			SetupButtonBinding(vm, root.Q<Button>("queen-election-button"), ElectedPiece.Queen);
+			SetupPanelBinding(vm, root.Q<VisualElement>("promotion-panel"));
+			root.Q<Button>("promotion-cancel-button").clicked += () => vm.OnCancelled?.Invoke();
 		}
 
-		private void OnEnable() {
-			SetupButtonBinding("knight-election-button", ElectedPiece.Knight);
-			SetupButtonBinding("bishop-election-button", ElectedPiece.Bishop);
-			SetupButtonBinding("rook-election-button", ElectedPiece.Rook);
-			SetupButtonBinding("queen-election-button", ElectedPiece.Queen);
-			SetupCancelButtonBinding();
-			SetupPanelBinding();
-		}
-
-		private void SetupButtonBinding(string buttonName, ElectedPiece piece) {
-			Button button = _root.Q<Button>(buttonName);
-
+		private void SetupButtonBinding(PromotionVM vm, Button button, ElectedPiece piece) {
 			DataBinding binding = new() {
 				dataSource = vm,
 				dataSourcePath = new PropertyPath(nameof(PromotionVM.requestingSide)),
@@ -42,20 +34,14 @@ namespace UnityChess.Presentation.View {
 			button.clicked += () => vm.OnPieceElected?.Invoke(piece);
 		}
 
-		private void SetupCancelButtonBinding() {
-			Button cancelButton = _root.Q<Button>("promotion-cancel-button");
-			cancelButton.clicked += () => vm.OnCancelled?.Invoke();
-		}
-
-		private void SetupPanelBinding() {
+		private void SetupPanelBinding(PromotionVM vm, VisualElement promotionPanel) {
 			DataBinding binding = new() {
 				dataSource = vm,
 				dataSourcePath = new PropertyPath(nameof(PromotionVM.isRequesting)),
 				bindingMode = BindingMode.ToTarget
 			};
 
-			_root.Q<VisualElement>("promotion-panel")
-				.SetBinding(nameof(VisualElement.visible), binding);
+			promotionPanel.SetBinding(nameof(VisualElement.visible), binding);
 		}
 	}
 }

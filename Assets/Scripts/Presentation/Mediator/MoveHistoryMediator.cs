@@ -1,10 +1,11 @@
 using System;
 using UnityChess.Application;
 using UnityChess.Core;
+using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
 
 namespace UnityChess.Presentation {
-	public class MoveHistoryMediator {
+	public class MoveHistoryMediator : IMediator {
 		private readonly MoveHistoryVM _vm;
 		private readonly GameManager _gameManager;
 

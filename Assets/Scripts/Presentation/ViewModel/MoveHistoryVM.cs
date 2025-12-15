@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using UnityChess.DependencyInjection;
 
 namespace UnityChess.Presentation.ViewModel {
-	[CreateAssetMenu(fileName = "MoveHistoryVM", menuName = "ScriptableObjects/MoveHistoryVM", order = 1)]
-	public class MoveHistoryVM : ScriptableObject {
+	public class MoveHistoryVM : IViewModel {
 		public event Action EntriesChanged;
 
 		public List<MoveHistoryEntryVM> moveEntries = new();

@@ -1,0 +1,22 @@
+// This file is auto-generated. Do not modify manually.
+using System;
+using System.Collections.Generic;
+using UnityChess.DependencyInjection;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace UnityChess.Presentation {
+	public partial class Bootstrapper {
+		private static readonly Dictionary<string, Action<Bootstrapper, ServiceRegistry, GameObject, UIDocument>> _installers = new() {
+			["Main"] = (self, registry, viewRoot, uiDocument) => self.InstallMain(registry, viewRoot, uiDocument),
+		};
+
+		partial void InstallComposition(string compositionName, ServiceRegistry registry, GameObject viewRoot, UIDocument uiDocument) {
+			if (_installers.TryGetValue(compositionName, out var installer)) {
+				installer(this, registry, viewRoot, uiDocument);
+			} else {
+				Debug.LogError($"No installer found for composition '{compositionName}'. Available compositions: {string.Join(", ", _installers.Keys)}");
+			}
+		}
+	}
+}

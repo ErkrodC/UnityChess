@@ -1,19 +1,20 @@
 using Unity.Properties;
 using UnityChess.Core;
+using UnityChess.DependencyInjection;
+using UnityChess.Presentation.ViewModel;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityChess.Presentation.ViewModel;
 
 namespace UnityChess.Presentation.View {
-	public class TurnView : MonoBehaviour {
-		/*[SerializeField] private UIDocument uiDocument;
-		[SerializeField] private GameVM gameVM; // ER TODO Assign in Inspector or via Initialize
+	public class TurnView : MonoBehaviour, IView<BoardVM> {
+		//[SerializeField] private UIDocument uiDocument;
 
-		private void OnEnable() {
+		public void Initialize(BoardVM vm, UIDocument uiDocument) {
 			SetupBindings();
 		}
 
 		private void SetupBindings() {
+		/*
 			var root = uiDocument.rootVisualElement;
 
 			{ // turn label binding and formatting
@@ -63,6 +64,7 @@ namespace UnityChess.Presentation.View {
 
 				blackIndicator.SetBinding("style.display", binding);
 			}
-		}*/
+		*/
+		}
 	}
 }

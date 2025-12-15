@@ -1,10 +1,11 @@
 using UnityChess.Application;
 using UnityChess.Core;
+using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
 using UnityChess.Util;
 
 namespace UnityChess.Presentation {
-	public class PromotionMediator {
+	public class PromotionMediator : IMediator {
 		private readonly GameManager _gameManager;
 		private PromotionInteraction _interaction;
 		private PromotionVM _vm;

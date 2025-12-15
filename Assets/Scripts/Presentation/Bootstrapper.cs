@@ -1,28 +1,28 @@
 using UnityChess.Application;
-using UnityChess.Presentation.ViewModel;
+using UnityChess.DependencyInjection;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation {
-	public class Bootstrapper : MonoBehaviour {
-		[SerializeField] private BoardVM _boardVM;
-		[SerializeField] private MoveHistoryVM _moveHistoryVM;
-		[SerializeField] private MenuVM _menuVM;
-		[SerializeField] private PromotionVM _promotionVM;
+	[RequireComponent(typeof(UIDocument))]
+	public partial class Bootstrapper : MonoBehaviour {
+		[SerializeField] private SceneComposition composition;
 
-		private BoardMediator _boardMediator;
-		private MoveHistoryMediator _moveHistoryMediator;
-		private MenuMediator _menuMediator;
-		private PromotionMediator _promotionMediator;
+		partial void InstallComposition(string compositionName, ServiceRegistry registry, GameObject viewRoot, UIDocument uiDocument);
 
 		private void Awake() {
-			GameManager gameManager = new GameManager();
+			if (composition == null) {
+				Debug.LogError("Bootstrapper requires a SceneComposition reference.");
+				return;
+			}
 
-			_boardMediator = new BoardMediator(gameManager, _boardVM);
-			_moveHistoryMediator = new MoveHistoryMediator(gameManager, _moveHistoryVM);
-			_menuMediator = new MenuMediator(gameManager, _menuVM);
-			_promotionMediator = new PromotionMediator(gameManager, _promotionVM);
+			ServiceRegistry registry = new();
+			InstallComposition(composition.name, registry, gameObject, GetComponent<UIDocument>());
 
-			gameManager.StartNewGame();
+			// ER TODO: remove this, to be start view in-game menu
+			// Start managers (if they have a Start method)
+			GameManager gameManager = registry.Resolve<GameManager>();
+			gameManager?.Start();
 		}
 
 		// ER TODO here be a good spot to pass calls application layer from Unity Update, say for timers?

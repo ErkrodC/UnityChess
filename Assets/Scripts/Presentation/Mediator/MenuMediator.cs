@@ -1,9 +1,10 @@
 using UnityChess.Application;
 using UnityChess.Core;
+using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
 
 namespace UnityChess.Presentation {
-	public class MenuMediator {
+	public class MenuMediator : IMediator {
 		private readonly MenuVM _menuVM;
 		private readonly GameManager _gameManager;
 

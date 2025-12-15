@@ -1,8 +1,9 @@
 using System;
+using UnityChess.DependencyInjection;
 
 namespace UnityChess.Presentation.ViewModel {
 	[Serializable]
-	public class MenuVM {
+	public class MenuVM : IViewModel {
 		public string fenString { get; set; }
 		public string gameResult { get; set; }
 
