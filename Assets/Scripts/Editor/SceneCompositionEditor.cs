@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using UnityChess.DependencyInjection;
 using UnityEditor;
+using UnityEngine;
 
 namespace UnityChess.Editor {
 	[CustomEditor(typeof(SceneComposition))]
@@ -13,13 +14,10 @@ namespace UnityChess.Editor {
 
 		public override void OnInspectorGUI() {
 			SceneComposition composition = (SceneComposition)target;
-
-			// Discover all types on every inspector draw
 			DiscoverAllTypes();
 
 			serializedObject.Update();
 
-			// Info box about code generation
 			EditorGUILayout.HelpBox(
 				"Check mediators and views to include in this composition. " +
 				"Code generation will trigger automatically when you save this asset (Ctrl/Cmd+S).",
@@ -40,9 +38,10 @@ namespace UnityChess.Editor {
 			string[] guids = AssetDatabase.FindAssets("t:MonoScript");
 
 			foreach (string guid in guids) {
-				string path = AssetDatabase.GUIDToAssetPath(guid);
-				MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
-				Type type = script?.GetClass();
+				if (!EditorReflectionUtil.TryGetTypeByMonoScriptGuid(guid, out Type type, out string path)) {
+					Debug.LogError($"Failed to get type for MonoScript GUID: {guid}, Path: {path}");
+					continue;
+				}
 
 				if (type == null || type.IsAbstract) continue;
 

@@ -47,16 +47,12 @@ namespace UnityChess.Editor {
 
 			// Resolve included mediator GUIDs to types
 			foreach (string guid in composition.includedMediatorGUIDs) {
-				string path = AssetDatabase.GUIDToAssetPath(guid);
-				if (string.IsNullOrEmpty(path)) {
-					Debug.LogError($"Could not resolve GUID {guid} to script path");
+				if (!EditorReflectionUtil.TryGetTypeByMonoScriptGuid(guid, out Type type, out string path)) {
+					Debug.LogError($"Failed to get type for MonoScript GUID: {guid}, Path: {path}");
 					continue;
 				}
 
-				MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
-				Type type = script?.GetClass();
-
-				if (type == null || !typeof(IMediator).IsAssignableFrom(type)) {
+				if (!typeof(IMediator).IsAssignableFrom(type)) {
 					Debug.LogError($"Script at {path} does not implement IMediator");
 					continue;
 				}
@@ -78,17 +74,8 @@ namespace UnityChess.Editor {
 
 			// Resolve included view GUIDs to types
 			foreach (string guid in composition.includedViewGUIDs) {
-				string path = AssetDatabase.GUIDToAssetPath(guid);
-				if (string.IsNullOrEmpty(path)) {
-					Debug.LogError($"Could not resolve GUID {guid} to script path");
-					continue;
-				}
-
-				MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
-				Type type = script?.GetClass();
-
-				if (type == null) {
-					Debug.LogError($"Script at {path} could not be loaded");
+				if (!EditorReflectionUtil.TryGetTypeByMonoScriptGuid(guid, out Type type, out string path)) {
+					Debug.LogError($"Failed to get type for MonoScript GUID: {guid}, Path: {path}");
 					continue;
 				}
 
@@ -239,35 +226,6 @@ namespace UnityChess.Editor {
 			File.WriteAllText(outputPath, sb.ToString());
 
 			Debug.Log($"Generated composition registry at {outputPath}");
-		}
-	}
-
-	// Asset postprocessor to detect SceneComposition changes and trigger regeneration
-	public class SceneCompositionPostprocessor : AssetPostprocessor {
-		private static void OnPostprocessAllAssets(
-			string[] importedAssets,
-			string[] deletedAssets,
-			string[] movedAssets,
-			string[] movedFromAssetPaths) {
-
-			bool compositionChanged = false;
-
-			// Check if any SceneComposition assets were modified
-			foreach (string path in importedAssets) {
-				if (path.EndsWith(".asset")) {
-					SceneComposition composition = AssetDatabase.LoadAssetAtPath<SceneComposition>(path);
-					if (composition != null) {
-						compositionChanged = true;
-						break;
-					}
-				}
-			}
-
-			// Regenerate if any composition changed
-			if (compositionChanged) {
-				Debug.Log("SceneComposition asset changed, regenerating installers...");
-				CompositionGenerator.GenerateAllCompositions();
-			}
 		}
 	}
 }
