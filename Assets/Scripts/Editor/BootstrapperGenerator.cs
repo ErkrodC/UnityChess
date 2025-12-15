@@ -5,35 +5,105 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityChess.DependencyInjection;
+using UnityChess.Presentation;
 using UnityEditor;
 using UnityEngine;
 
 namespace UnityChess.Editor {
 	[InitializeOnLoad]
 	public static class BootstrapperGenerator {
+		private const string OUTPUT_DIR = "Assets/Scripts/Presentation/Generated";
+		private const string REGISTRY_PATH = "Assets/Scripts/Presentation/Generated/Bootstrapper.Registry.Generated.cs";
+		private const string DELETED_FILES_KEY = "BootstrapperGenerator_DeletedFiles";
+
 		static BootstrapperGenerator() {
+			LogDeletedOrphanedFiles();
+
 			// Trigger generation after scripts compile
 			EditorApplication.delayCall += GenerateAllCompositions;
 		}
 
+		private static void LogDeletedOrphanedFiles() {
+			// Check if there are deleted files to log after domain reload
+			if (!EditorPrefs.HasKey(DELETED_FILES_KEY)) {
+				return;
+			}
+
+			string deletedFilesStr = EditorPrefs.GetString(DELETED_FILES_KEY);
+			EditorPrefs.DeleteKey(DELETED_FILES_KEY);
+
+			if (!string.IsNullOrEmpty(deletedFilesStr)) {
+				string[] deletedFiles = deletedFilesStr.Split('|');
+				foreach (string file in deletedFiles) {
+					Debug.LogWarning($"Deleted orphaned generated file: {file}");
+				}
+			}
+		}
+
 		[MenuItem("Tools/Regenerate DI Compositions")]
 		public static void GenerateAllCompositions() {
+			if (File.Exists(REGISTRY_PATH)) {
+				File.Delete(REGISTRY_PATH);
+			}
+
 			string[] guids = AssetDatabase.FindAssets("t:SceneComposition");
-			List<string> compositionNames = new();
+			List<SceneComposition> compositions = new();
 
 			foreach (string guid in guids) {
 				string path = AssetDatabase.GUIDToAssetPath(guid);
 				SceneComposition composition = AssetDatabase.LoadAssetAtPath<SceneComposition>(path);
-				if (composition != null) {
-					GenerateComposition(composition);
-					compositionNames.Add(composition.name);
-				}
+				if (composition != null) { compositions.Add(composition); }
+			}
+
+			// Clean up generated files that don't have corresponding composition assets
+			List<string> compositionNames = compositions.Select(composition => composition.name).ToList();
+			DeleteOrphanedGeneratedFiles(compositionNames);
+
+			foreach (SceneComposition composition in compositions) {
+				GenerateComposition(composition);
 			}
 
 			// Generate the registry file with method dictionary
 			GenerateRegistry(compositionNames);
 
 			AssetDatabase.Refresh();
+		}
+
+		private static void DeleteOrphanedGeneratedFiles(List<string> validCompositionNames) {
+			if (!Directory.Exists(OUTPUT_DIR)) {
+				return;
+			}
+
+			// Find all generated composition files (excluding Registry.Generated.cs)
+			string[] generatedFiles = Directory.GetFiles(OUTPUT_DIR, "Bootstrapper.*.Generated.cs")
+				.Where(f => !f.EndsWith("Registry.Generated.cs"))
+				.ToArray();
+
+			List<string> deletedFiles = new();
+			foreach (string filePath in generatedFiles) {
+				// Extract composition name from file name
+				// Expected format: Bootstrapper.{CompositionName}.Generated.cs
+				string fileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(filePath)); // Remove .cs then .Generated
+				string compositionName = fileName.Substring("Bootstrapper.".Length);
+
+				// Check if this composition still exists
+				if (!validCompositionNames.Contains(compositionName)) {
+					File.Delete(filePath);
+
+					// Also delete the .meta file if it exists
+					string metaFile = filePath + ".meta";
+					if (File.Exists(metaFile)) {
+						File.Delete(metaFile);
+					}
+
+					deletedFiles.Add(filePath.Replace('\\', '/'));
+				}
+			}
+
+			// Store deleted files in EditorPrefs to survive domain reload
+			if (deletedFiles.Count > 0) {
+				EditorPrefs.SetString(DELETED_FILES_KEY, string.Join("|", deletedFiles));
+			}
 		}
 
 		private static void GenerateComposition(SceneComposition composition) {
@@ -169,16 +239,15 @@ namespace UnityChess.Editor {
 			sb.AppendLine("}");
 
 			// Ensure directory exists
-			string outputDir = "Assets/Scripts/Presentation/Generated";
-			if (!Directory.Exists(outputDir)) {
-				Directory.CreateDirectory(outputDir);
+			if (!Directory.Exists(OUTPUT_DIR)) {
+				Directory.CreateDirectory(OUTPUT_DIR);
 			}
 
 			// Write to file
-			string outputPath = $"{outputDir}/Bootstrapper.{compositionName}.Generated.cs";
+			string outputPath = $"{OUTPUT_DIR}/Bootstrapper.{compositionName}.Generated.cs";
 			File.WriteAllText(outputPath, sb.ToString());
 
-			Debug.Log($"Generated composition installer for {compositionName} at {outputPath}");
+			Debug.Log($"Generated {nameof(Bootstrapper)} for {nameof(SceneComposition)} asset \"{compositionName}\" at {outputPath}");
 		}
 
 		private static void GenerateRegistry(List<string> compositionNames) {
@@ -194,7 +263,7 @@ namespace UnityChess.Editor {
 			sb.AppendLine("\tpublic partial class Bootstrapper {");
 			sb.AppendLine("\t\tprivate static readonly Dictionary<string, Action<Bootstrapper, ServiceRegistry>> _installers = new() {");
 
-			foreach (string compositionName in compositionNames) {
+			foreach (string compositionName in compositionNames.OrderBy(x => x)) {
 				sb.AppendLine($"\t\t\t[\"{compositionName}\"] = (self, registry) => self.Install{compositionName}(registry),");
 			}
 
@@ -211,16 +280,15 @@ namespace UnityChess.Editor {
 			sb.AppendLine("}");
 
 			// Ensure directory exists
-			string outputDir = "Assets/Scripts/Presentation/Generated";
-			if (!Directory.Exists(outputDir)) {
-				Directory.CreateDirectory(outputDir);
+			if (!Directory.Exists(OUTPUT_DIR)) {
+				Directory.CreateDirectory(OUTPUT_DIR);
 			}
 
 			// Write to file
-			string outputPath = $"{outputDir}/Bootstrapper.Registry.Generated.cs";
+			string outputPath = $"{OUTPUT_DIR}/Bootstrapper.Registry.Generated.cs";
 			File.WriteAllText(outputPath, sb.ToString());
 
-			Debug.Log($"Generated composition registry at {outputPath}");
+			Debug.Log($"Generated installer registry at {outputPath}");
 		}
 	}
 }

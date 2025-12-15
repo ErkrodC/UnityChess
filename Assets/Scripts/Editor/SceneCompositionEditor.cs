@@ -39,8 +39,7 @@ namespace UnityChess.Editor {
 			string[] guids = AssetDatabase.FindAssets("t:MonoScript");
 
 			foreach (string guid in guids) {
-				if (!EditorReflectionUtil.TryGetTypeByMonoScriptGuid(guid, out Type type, out string path)) {
-					Debug.LogError($"Failed to get type for MonoScript GUID: {guid}, Path: {path}");
+				if (!EditorReflectionUtil.TryGetTypeByMonoScriptGuid(guid, out Type type, out _)) {
 					continue;
 				}
 
