@@ -45,22 +45,28 @@ namespace UnityChess.Editor {
 			HashSet<Type> managerTypes = new();
 			HashSet<Type> viewModelTypes = new();
 
-			// Process mediators
-			foreach (MonoScript script in composition.mediatorScripts) {
-				if (script == null) { continue; }
-
-				Type type = script.GetClass();
-				if (type == null || !typeof(IMediator).IsAssignableFrom(type)) {
-					Debug.LogError($"Script {script.name} does not implement IMediator, yet it is referenced as a mediator in scene composition \"{compositionName}\".");
+			// Resolve mediator GUIDs to types
+			foreach (var mediatorRef in composition.mediators.Where(m => m.isIncluded)) {
+				string path = AssetDatabase.GUIDToAssetPath(mediatorRef.guid);
+				if (string.IsNullOrEmpty(path)) {
+					Debug.LogError($"Could not resolve GUID {mediatorRef.guid} to script path");
 					continue;
 				}
+
+				MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
+				Type type = script?.GetClass();
+
+				if (type == null || !typeof(IMediator).IsAssignableFrom(type)) {
+					Debug.LogError($"Script at {path} does not implement IMediator");
+					continue;
+				}
+
 				mediatorTypes.Add(type);
 
 				// Inspect constructor to find managers and view models
-				ConstructorInfo[] constructors = type.GetConstructors();
-				if (constructors.Length > 0) {
-					ConstructorInfo ctor = constructors[0]; // Use first constructor
-					foreach (ParameterInfo param in ctor.GetParameters()) {
+				var ctor = type.GetConstructors().FirstOrDefault();
+				if (ctor != null) {
+					foreach (var param in ctor.GetParameters()) {
 						if (typeof(IManager).IsAssignableFrom(param.ParameterType)) {
 							managerTypes.Add(param.ParameterType);
 						} else if (typeof(IViewModel).IsAssignableFrom(param.ParameterType)) {
@@ -70,30 +76,32 @@ namespace UnityChess.Editor {
 				}
 			}
 
-			// Process views
-			foreach (MonoScript script in composition.viewScripts) {
-				if (script == null) {
+			// Resolve view GUIDs to types
+			foreach (var viewRef in composition.views.Where(v => v.isIncluded)) {
+				string path = AssetDatabase.GUIDToAssetPath(viewRef.guid);
+				if (string.IsNullOrEmpty(path)) {
+					Debug.LogError($"Could not resolve GUID {viewRef.guid} to script path");
 					continue;
 				}
 
-				Type type = script.GetClass();
-				if (type == null || !typeof(MonoBehaviour).IsAssignableFrom(type)) {
-					Debug.LogError($"Script {script.name} is not a MonoBehaviour, yet it is referenced as a view in scene composition \"{compositionName}\"");
+				MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
+				Type type = script?.GetClass();
+
+				if (type == null) {
+					Debug.LogError($"Script at {path} could not be loaded");
 					continue;
 				}
 
-				// Find IView<T> interface
-				Type viewInterface = type.GetInterfaces()
+				var viewInterface = type.GetInterfaces()
 					.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
 
 				if (viewInterface == null) {
-					Debug.LogWarning($"Script {script.name} does not implement IView<T>, yet it is referenced as a view in scene composition \"{compositionName}\"");
+					Debug.LogError($"Script at {path} does not implement IView<T>");
 					continue;
 				}
 
 				viewTypes.Add(type);
-				Type viewModelType = viewInterface.GetGenericArguments()[0];
-				viewModelTypes.Add(viewModelType);
+				viewModelTypes.Add(viewInterface.GetGenericArguments()[0]);
 			}
 
 			// Generate code
@@ -231,6 +239,35 @@ namespace UnityChess.Editor {
 			File.WriteAllText(outputPath, sb.ToString());
 
 			Debug.Log($"Generated composition registry at {outputPath}");
+		}
+	}
+
+	// Asset postprocessor to detect SceneComposition changes and trigger regeneration
+	public class SceneCompositionPostprocessor : AssetPostprocessor {
+		private static void OnPostprocessAllAssets(
+			string[] importedAssets,
+			string[] deletedAssets,
+			string[] movedAssets,
+			string[] movedFromAssetPaths) {
+
+			bool compositionChanged = false;
+
+			// Check if any SceneComposition assets were modified
+			foreach (string path in importedAssets) {
+				if (path.EndsWith(".asset")) {
+					SceneComposition composition = AssetDatabase.LoadAssetAtPath<SceneComposition>(path);
+					if (composition != null) {
+						compositionChanged = true;
+						break;
+					}
+				}
+			}
+
+			// Regenerate if any composition changed
+			if (compositionChanged) {
+				Debug.Log("SceneComposition asset changed, regenerating installers...");
+				CompositionGenerator.GenerateAllCompositions();
+			}
 		}
 	}
 }
