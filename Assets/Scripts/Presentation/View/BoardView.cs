@@ -11,15 +11,15 @@ namespace UnityChess.Presentation.View {
 			// Bind all 64 squares (a1-h8) to display pieces
 			for (int file = 0; file < 8; file++) {
 				for (int rank = 0; rank < 8; rank++) {
-					BindSquare(vm, _root, file, rank);
+					BindSquare(vm, file, rank);
 				}
 			}
 		}
 
-		private void BindSquare(BoardVM vm, VisualElement root, int file, int rank) {
+		private void BindSquare(BoardVM vm, int file, int rank) {
 			string squareName = SquareUtil.SquareToString(file, rank); // e.g., "a1", "e4", etc.
-			Label squareLabel = root.Q<VisualElement>(squareName).Q<Label>();
-			_dragAndDropManipulators.Add(new DragAndDropManipulator(squareLabel, root, vm));
+			Label squareLabel = _root.Q<VisualElement>(squareName).Q<Label>();
+			_dragAndDropManipulators.Add(new DragAndDropManipulator(squareLabel, _root, vm));
 
 			if (squareLabel == null) { return; }
 
