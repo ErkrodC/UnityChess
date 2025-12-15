@@ -112,7 +112,7 @@ namespace UnityChess.Editor {
 			sb.AppendLine();
 			sb.AppendLine("namespace UnityChess.Presentation {");
 			sb.AppendLine("\tpublic partial class Bootstrapper {");
-			sb.AppendLine($"\t\tprivate void Install{compositionName}(ServiceRegistry registry, GameObject viewRoot, UIDocument uiDocument) {{");
+			sb.AppendLine($"\t\tprivate void Install{compositionName}(ServiceRegistry registry) {{");
 
 			// Register managers
 			sb.AppendLine("\t\t\t// Register Managers");
@@ -161,7 +161,7 @@ namespace UnityChess.Editor {
 					.First(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
 				Type vmType = viewInterface.GetGenericArguments()[0];
 
-				sb.AppendLine($"\t\t\tviewRoot.GetOrCreateComponent<{viewType.Name}>().Initialize(registry.Resolve<{vmType.Name}>(), uiDocument);");
+				sb.AppendLine($"\t\t\tgameObject.GetOrCreateComponent<{viewType.Name}>().Initialize(registry.Resolve<{vmType.Name}>());");
 			}
 
 			sb.AppendLine("\t\t}");
@@ -192,17 +192,17 @@ namespace UnityChess.Editor {
 			sb.AppendLine();
 			sb.AppendLine("namespace UnityChess.Presentation {");
 			sb.AppendLine("\tpublic partial class Bootstrapper {");
-			sb.AppendLine("\t\tprivate static readonly Dictionary<string, Action<Bootstrapper, ServiceRegistry, GameObject, UIDocument>> _installers = new() {");
+			sb.AppendLine("\t\tprivate static readonly Dictionary<string, Action<Bootstrapper, ServiceRegistry>> _installers = new() {");
 
 			foreach (string compositionName in compositionNames) {
-				sb.AppendLine($"\t\t\t[\"{compositionName}\"] = (self, registry, viewRoot, uiDocument) => self.Install{compositionName}(registry, viewRoot, uiDocument),");
+				sb.AppendLine($"\t\t\t[\"{compositionName}\"] = (self, registry) => self.Install{compositionName}(registry),");
 			}
 
 			sb.AppendLine("\t\t};");
 			sb.AppendLine();
-			sb.AppendLine("\t\tpartial void InstallComposition(string compositionName, ServiceRegistry registry, GameObject viewRoot, UIDocument uiDocument) {");
+			sb.AppendLine("\t\tpartial void InstallComposition(string compositionName, ServiceRegistry registry) {");
 			sb.AppendLine("\t\t\tif (_installers.TryGetValue(compositionName, out var installer)) {");
-			sb.AppendLine("\t\t\t\tinstaller(this, registry, viewRoot, uiDocument);");
+			sb.AppendLine("\t\t\t\tinstaller(this, registry);");
 			sb.AppendLine("\t\t\t} else {");
 			sb.AppendLine("\t\t\t\tDebug.LogError($\"No installer found for composition '{compositionName}'. Available compositions: {string.Join(\", \", _installers.Keys)}\");");
 			sb.AppendLine("\t\t\t}");

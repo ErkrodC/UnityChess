@@ -1,22 +1,18 @@
 using Unity.Properties;
 using UnityChess.Core;
-using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
 using UnityChess.Util;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation.View {
-	public class PromotionView : MonoBehaviour, IView<PromotionVM> {
-		public void Initialize(PromotionVM vm, UIDocument uiDocument) {
-			VisualElement root = uiDocument.rootVisualElement;
-
-			SetupButtonBinding(vm, root.Q<Button>("knight-election-button"), ElectedPiece.Knight);
-			SetupButtonBinding(vm, root.Q<Button>("bishop-election-button"), ElectedPiece.Bishop);
-			SetupButtonBinding(vm, root.Q<Button>("rook-election-button"), ElectedPiece.Rook);
-			SetupButtonBinding(vm, root.Q<Button>("queen-election-button"), ElectedPiece.Queen);
-			SetupPanelBinding(vm, root.Q<VisualElement>("promotion-panel"));
-			root.Q<Button>("promotion-cancel-button").clicked += () => vm.OnCancelled?.Invoke();
+	public class PromotionView : BaseView<PromotionVM> {
+		public override void Initialize(PromotionVM vm) {
+			SetupButtonBinding(vm, _root.Q<Button>("knight-election-button"), ElectedPiece.Knight);
+			SetupButtonBinding(vm, _root.Q<Button>("bishop-election-button"), ElectedPiece.Bishop);
+			SetupButtonBinding(vm, _root.Q<Button>("rook-election-button"), ElectedPiece.Rook);
+			SetupButtonBinding(vm, _root.Q<Button>("queen-election-button"), ElectedPiece.Queen);
+			SetupPanelBinding(vm, _root.Q<VisualElement>("promotion-panel"));
+			_root.Q<Button>("promotion-cancel-button").clicked += () => vm.OnCancelled?.Invoke();
 		}
 
 		private void SetupButtonBinding(PromotionVM vm, Button button, ElectedPiece piece) {

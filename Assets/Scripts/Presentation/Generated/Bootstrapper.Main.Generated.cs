@@ -9,7 +9,7 @@ using UnityChess.Presentation.ViewModel;
 
 namespace UnityChess.Presentation {
 	public partial class Bootstrapper {
-		private void InstallMain(ServiceRegistry registry, GameObject viewRoot, UIDocument uiDocument) {
+		private void InstallMain(ServiceRegistry registry) {
 			// Register Managers
 			registry.RegisterSingleton<GameManager>(() => new GameManager());
 
@@ -32,9 +32,9 @@ namespace UnityChess.Presentation {
 			registry.Resolve<PromotionMediator>();
 
 			// Initialize Views
-			viewRoot.GetOrCreateComponent<BoardView>().Initialize(registry.Resolve<BoardVM>(), uiDocument);
-			viewRoot.GetOrCreateComponent<MoveHistoryView>().Initialize(registry.Resolve<MoveHistoryVM>(), uiDocument);
-			viewRoot.GetOrCreateComponent<PromotionView>().Initialize(registry.Resolve<PromotionVM>(), uiDocument);
+			gameObject.GetOrCreateComponent<BoardView>().Initialize(registry.Resolve<BoardVM>());
+			gameObject.GetOrCreateComponent<MoveHistoryView>().Initialize(registry.Resolve<MoveHistoryVM>());
+			gameObject.GetOrCreateComponent<PromotionView>().Initialize(registry.Resolve<PromotionVM>());
 		}
 	}
 }

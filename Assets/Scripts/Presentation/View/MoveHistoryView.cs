@@ -1,21 +1,18 @@
-using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation.View {
-	public class MoveHistoryView : MonoBehaviour, IView<MoveHistoryVM> {
+	public class MoveHistoryView : BaseView<MoveHistoryVM> {
 		[SerializeField] private VisualTreeAsset _entryTemplate;
 
-		public void Initialize(MoveHistoryVM vm, UIDocument uiDocument) {
-			VisualElement root = uiDocument.rootVisualElement;
+		public override void Initialize(MoveHistoryVM vm) {
+			_root.Q<Button>("to-beginning-button").clicked += () => { vm.onToBeginningClicked?.Invoke(); };
+			_root.Q<Button>("back-button").clicked += () => { vm.onBackClicked?.Invoke(); };
+			_root.Q<Button>("forward-button").clicked += () => { vm.onForwardClicked?.Invoke(); };
+			_root.Q<Button>("to-end-button").clicked += () => { vm.onToEndClicked?.Invoke(); };
 
-			root.Q<Button>("to-beginning-button").clicked += () => { vm.onToBeginningClicked?.Invoke(); };
-			root.Q<Button>("back-button").clicked += () => { vm.onBackClicked?.Invoke(); };
-			root.Q<Button>("forward-button").clicked += () => { vm.onForwardClicked?.Invoke(); };
-			root.Q<Button>("to-end-button").clicked += () => { vm.onToEndClicked?.Invoke(); };
-
-			SetupListViewBinding(vm, root.Q<ListView>("move-entries-list"));
+			SetupListViewBinding(vm, _root.Q<ListView>("move-entries-list"));
 		}
 
 		private void SetupListViewBinding(MoveHistoryVM vm, ListView entriesListView) {

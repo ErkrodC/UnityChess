@@ -1,24 +1,18 @@
 using Unity.Properties;
 using UnityChess.Core;
-using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation.View {
-	public class TurnView : MonoBehaviour, IView<BoardVM> {
-		//[SerializeField] private UIDocument uiDocument;
-
-		public void Initialize(BoardVM vm, UIDocument uiDocument) {
+	public class TurnView : BaseView<BoardVM> {
+		public override void Initialize(BoardVM vm) {
 			SetupBindings();
 		}
 
 		private void SetupBindings() {
 		/*
-			var root = uiDocument.rootVisualElement;
-
 			{ // turn label binding and formatting
-				var turnLabel = root.Q<Label>("turn-label");
+				var turnLabel = _root.Q<Label>("turn-label");
 
 				DataBinding binding = new DataBinding {
 					dataSource = gameVM.boardVM,
@@ -34,7 +28,7 @@ namespace UnityChess.Presentation.View {
 			}
 
 			{ // white turn indicator visibility binding
-				var whiteIndicator = root.Q<VisualElement>("white-turn-indicator");
+				var whiteIndicator = _root.Q<VisualElement>("white-turn-indicator");
 
 				DataBinding binding = new DataBinding {
 					dataSource = gameVM.boardVM,
@@ -50,7 +44,7 @@ namespace UnityChess.Presentation.View {
 			}
 
 			{ // black turn indicator visibility binding
-				var blackIndicator = root.Q<VisualElement>("black-turn-indicator");
+				var blackIndicator = _root.Q<VisualElement>("black-turn-indicator");
 
 				DataBinding binding = new DataBinding {
 					dataSource = gameVM.boardVM,

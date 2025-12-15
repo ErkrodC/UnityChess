@@ -7,13 +7,13 @@ using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation {
 	public partial class Bootstrapper {
-		private static readonly Dictionary<string, Action<Bootstrapper, ServiceRegistry, GameObject, UIDocument>> _installers = new() {
-			["Main"] = (self, registry, viewRoot, uiDocument) => self.InstallMain(registry, viewRoot, uiDocument),
+		private static readonly Dictionary<string, Action<Bootstrapper, ServiceRegistry>> _installers = new() {
+			["Main"] = (self, registry) => self.InstallMain(registry),
 		};
 
-		partial void InstallComposition(string compositionName, ServiceRegistry registry, GameObject viewRoot, UIDocument uiDocument) {
+		partial void InstallComposition(string compositionName, ServiceRegistry registry) {
 			if (_installers.TryGetValue(compositionName, out var installer)) {
-				installer(this, registry, viewRoot, uiDocument);
+				installer(this, registry);
 			} else {
 				Debug.LogError($"No installer found for composition '{compositionName}'. Available compositions: {string.Join(", ", _installers.Keys)}");
 			}

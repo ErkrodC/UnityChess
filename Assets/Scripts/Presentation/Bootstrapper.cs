@@ -8,19 +8,19 @@ namespace UnityChess.Presentation {
 	public partial class Bootstrapper : MonoBehaviour {
 		[SerializeField] private SceneComposition composition;
 
-		partial void InstallComposition(string compositionName, ServiceRegistry registry, GameObject viewRoot, UIDocument uiDocument);
+		partial void InstallComposition(string compositionName, ServiceRegistry registry);
 
-		private void Awake() {
+		private void Start() {
 			if (composition == null) {
 				Debug.LogError("Bootstrapper requires a SceneComposition reference.");
 				return;
 			}
 
 			ServiceRegistry registry = new();
-			InstallComposition(composition.name, registry, gameObject, GetComponent<UIDocument>());
+			InstallComposition(composition.name, registry);
 
-			// ER TODO: remove this, to be start view in-game menu
-			// Start managers (if they have a Start method)
+			// ER TODO: remove this, to be started via in-game menu
+			// ER TODO: once thats done, also move registry object into InstallComposition call
 			GameManager gameManager = registry.Resolve<GameManager>();
 			gameManager?.Start();
 		}

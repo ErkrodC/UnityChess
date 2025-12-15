@@ -8,7 +8,7 @@ namespace UnityChess.DependencyInjection {
 
 		public void RegisterSingleton<T>(Func<T> factory) where T : class {
 			Type type = typeof(T);
-			_factories[type] = () => factory();
+			_factories[type] = factory;
 		}
 
 		public T Resolve<T>() where T : class {

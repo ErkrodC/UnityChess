@@ -1,21 +1,17 @@
 using System.Collections.Generic;
 using UnityChess.Core;
-using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation.View {
-	public class BoardView : MonoBehaviour, IView<BoardVM> {
+	public class BoardView : BaseView<BoardVM> {
 		private List<DragAndDropManipulator> _dragAndDropManipulators = new();
 
-		public void Initialize(BoardVM vm, UIDocument uiDocument) {
-			VisualElement root = uiDocument.rootVisualElement;
-
+		public override void Initialize(BoardVM vm) {
 			// Bind all 64 squares (a1-h8) to display pieces
 			for (int file = 0; file < 8; file++) {
 				for (int rank = 0; rank < 8; rank++) {
-					BindSquare(vm, root, file, rank);
+					BindSquare(vm, _root, file, rank);
 				}
 			}
 		}
