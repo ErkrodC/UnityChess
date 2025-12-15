@@ -12,10 +12,11 @@ namespace UnityChess.Presentation.View {
 			_root.Q<Button>("forward-button").clicked += () => { vm.onForwardClicked?.Invoke(); };
 			_root.Q<Button>("to-end-button").clicked += () => { vm.onToEndClicked?.Invoke(); };
 
-			SetupListViewBinding(vm, _root.Q<ListView>("move-entries-list"));
+			SetupListViewBinding(vm);
 		}
 
-		private void SetupListViewBinding(MoveHistoryVM vm, ListView entriesListView) {
+		private void SetupListViewBinding(MoveHistoryVM vm) {
+			ListView entriesListView = _root.Q<ListView>("move-entries-list");
 			vm.EntriesChanged += entriesListView.RefreshItems;
 
 			entriesListView.makeItem = () => {
