@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityChess.DependencyInjection;
 using UnityEditor;
-using UnityEngine;
 
 namespace UnityChess.Editor {
 	[CustomEditor(typeof(SceneComposition))]
@@ -71,7 +71,7 @@ namespace UnityChess.Editor {
 				return;
 			}
 
-			foreach (var (guid, type) in _allMediatorTypes) {
+			foreach ((string guid, Type type) in _allMediatorTypes) {
 				// Check if this GUID is in the included list
 				bool isIncluded = composition.includedMediatorGUIDs.Contains(guid);
 
@@ -84,6 +84,7 @@ namespace UnityChess.Editor {
 					if (newIncluded && !isIncluded) {
 						// Add to list
 						composition.includedMediatorGUIDs.Add(guid);
+						composition.includedMediatorGUIDs.Sort(StringComparer.Ordinal);
 					} else if (!newIncluded && isIncluded) {
 						// Remove from list
 						composition.includedMediatorGUIDs.Remove(guid);
@@ -94,10 +95,10 @@ namespace UnityChess.Editor {
 
 				// Show discovered dependencies indented
 				if (newIncluded) {
-					var ctor = type.GetConstructors().FirstOrDefault();
+					ConstructorInfo ctor = type.GetConstructors().FirstOrDefault();
 					if (ctor != null) {
 						EditorGUI.indentLevel++;
-						foreach (var param in ctor.GetParameters()) {
+						foreach (ParameterInfo param in ctor.GetParameters()) {
 							EditorGUILayout.LabelField($"→ {param.ParameterType.Name}", EditorStyles.miniLabel);
 						}
 						EditorGUI.indentLevel--;
@@ -115,7 +116,7 @@ namespace UnityChess.Editor {
 				return;
 			}
 
-			foreach (var (guid, type) in _allViewTypes) {
+			foreach ((string guid, Type type) in _allViewTypes) {
 				// Check if this GUID is in the included list
 				bool isIncluded = composition.includedViewGUIDs.Contains(guid);
 
@@ -128,6 +129,7 @@ namespace UnityChess.Editor {
 					if (newIncluded && !isIncluded) {
 						// Add to list
 						composition.includedViewGUIDs.Add(guid);
+						composition.includedMediatorGUIDs.Sort(StringComparer.Ordinal);
 					} else if (!newIncluded && isIncluded) {
 						// Remove from list
 						composition.includedViewGUIDs.Remove(guid);
@@ -138,10 +140,10 @@ namespace UnityChess.Editor {
 
 				// Show discovered ViewModel indented
 				if (newIncluded) {
-					var viewInterface = type.GetInterfaces()
+					Type viewInterface = type.GetInterfaces()
 						.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
 					if (viewInterface != null) {
-						var vmType = viewInterface.GetGenericArguments()[0];
+						Type vmType = viewInterface.GetGenericArguments()[0];
 						EditorGUI.indentLevel++;
 						EditorGUILayout.LabelField($"→ {vmType.Name}", EditorStyles.miniLabel);
 						EditorGUI.indentLevel--;
