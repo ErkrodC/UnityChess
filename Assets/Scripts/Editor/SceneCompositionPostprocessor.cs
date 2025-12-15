@@ -21,7 +21,7 @@ namespace UnityChess.Editor {
 			// Regenerate if any composition changed
 			if (compositionChanged) {
 				Debug.Log("SceneComposition asset changed, regenerating installers...");
-				CompositionGenerator.GenerateAllCompositions();
+				BootstrapperGenerator.GenerateAllCompositions();
 			}
 		}
 	}
