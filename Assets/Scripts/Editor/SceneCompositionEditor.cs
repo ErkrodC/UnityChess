@@ -129,7 +129,7 @@ namespace UnityChess.Editor {
 					if (newIncluded && !isIncluded) {
 						// Add to list
 						composition.includedViewGUIDs.Add(guid);
-						composition.includedMediatorGUIDs.Sort(StringComparer.Ordinal);
+						composition.includedViewGUIDs.Sort(StringComparer.Ordinal);
 					} else if (!newIncluded && isIncluded) {
 						// Remove from list
 						composition.includedViewGUIDs.Remove(guid);
