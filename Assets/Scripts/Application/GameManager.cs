@@ -20,30 +20,28 @@ namespace UnityChess.Application {
 		private Game _game;
 		private FENSerializer _fenSerializer;
 		private PGNSerializer _pgnSerializer;
-		private GameSerializationType _selectedSerializationType = GameSerializationType.FEN;
-		private Dictionary<GameSerializationType, IGameSerializer> _serializersByType;
+		private readonly GameSerializationType _selectedSerializationType = GameSerializationType.FEN;
+		private readonly Dictionary<GameSerializationType, IGameSerializer> _serializersByType;
 		private PromotionInteraction _currentPromotionInteraction;
 		private IUCIEngine _uciEngine;
 		private bool _isWhiteAI;
 		private bool _isBlackAI;
 
-		public void Start() {
+		public GameManager() {
 			_serializersByType = new Dictionary<GameSerializationType, IGameSerializer> {
 				[GameSerializationType.FEN] = new FENSerializer(),
 				[GameSerializationType.PGN] = new PGNSerializer()
 			};
-
-			StartNewGame();
 		}
 
-		private void OnDestroy() {
+		~GameManager() {
 			_uciEngine?.ShutDown();
 		}
 
 #if AI_TEST
-		public async void StartNewGame(bool isWhiteAI = true, bool isBlackAI = true) {
+		public async Task StartNewGame(bool isWhiteAI = true, bool isBlackAI = true) {
 #else
-		public async void StartNewGame(bool isWhiteAI = false, bool isBlackAI = false) {
+		public async Task StartNewGame(bool isWhiteAI = false, bool isBlackAI = false) {
 #endif
 			_game = new Game();
 			_isWhiteAI = isWhiteAI;

@@ -22,7 +22,7 @@ namespace UnityChess.Presentation {
 			// ER TODO: remove this, to be started via in-game menu
 			// ER TODO: once thats done, also move registry object into InstallComposition call
 			GameManager gameManager = registry.Resolve<GameManager>();
-			gameManager?.Start();
+			gameManager?.StartNewGame();
 		}
 
 		// ER TODO here be a good spot to pass calls application layer from Unity Update, say for timers?
