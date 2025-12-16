@@ -8,30 +8,30 @@ using Debug = UnityEngine.Debug;
 
 namespace UnityChess.Application {
 	public class MockUCIEngine : IUCIEngine {
-		private Process engineProcess;
-		private string exePath = UnityEngine.Application.streamingAssetsPath + "/UCIEngines/pigeon-1.5.1/pigeon-1.5.1.exe";
-		private bool isReady;
-		private Timer timer;
-		private float timeMS;
+		private Process _engineProcess;
+		private readonly string _exePath = UnityEngine.Application.streamingAssetsPath + "/UCIEngines/pigeon-1.5.1/pigeon-1.5.1.exe";
+		private bool _isReady;
+		private Timer _timer;
+		private float _timeMS;
 
-		private FENSerializer fenSerializer = new FENSerializer();
-		private bool isSearchingForBestMove;
-		private Game game;
+		private readonly FENSerializer _fenSerializer = new();
+		private bool _isSearchingForBestMove;
+		private Game _game;
 
 		public async void Start() {
-			timer = new Timer(100);
-			timer.Elapsed += (_, _) => timeMS += 100;
+			_timer = new Timer(100);
+			_timer.Elapsed += (_, _) => _timeMS += 100;
 
-			engineProcess = new Process();
-			engineProcess.StartInfo = new ProcessStartInfo(
-				exePath
+			_engineProcess = new Process();
+			_engineProcess.StartInfo = new ProcessStartInfo(
+				_exePath
 			) {
 				UseShellExecute = false,
 				RedirectStandardInput = true,
 				RedirectStandardOutput = true,
 				CreateNoWindow = true
 			};
-			engineProcess.Start();
+			_engineProcess.Start();
 
 			await foreach (string engineOutputLine in Receive()) {
 				Debug.Log(engineOutputLine);
@@ -46,17 +46,17 @@ namespace UnityChess.Application {
 			await foreach (string engineOutputLine in Receive("readyok")) {
 				Debug.Log(engineOutputLine);
 			}
-			isReady = true;
+			_isReady = true;
 		}
 
 		public void ShutDown() {
-			engineProcess.Close();
+			_engineProcess.Close();
 		}
 
 		public async Task SetupNewGame(Game game) {
-			this.game = game;
+			_game = game;
 
-			while (!isReady) {
+			while (!_isReady) {
 				await Task.Yield();
 			}
 
@@ -64,18 +64,18 @@ namespace UnityChess.Application {
 		}
 
 		public async Task<Movement> GetBestMove(int timeoutMS = -1) {
-			Side sideToMove = game.ConditionsTimeline.Head.SideToMove;
-			await Send($"position fen {fenSerializer.Serialize(game)}");
+			Side sideToMove = _game.ConditionsTimeline.Head.SideToMove;
+			await Send($"position fen {_fenSerializer.Serialize(_game)}");
 
-			if (!isSearchingForBestMove) {
-				isSearchingForBestMove = true;
+			if (!_isSearchingForBestMove) {
+				_isSearchingForBestMove = true;
 				await Send($"go movetime {timeoutMS}");
 			}
 
 			await foreach (string line in Receive("bestmove")) {
 				Debug.Log(line);
 				if (line.StartsWith("bestmove")) {
-					isSearchingForBestMove = false;
+					_isSearchingForBestMove = false;
 					return ParseUCIMove(line.Split(" ")[1], sideToMove);
 				}
 			}
@@ -86,7 +86,7 @@ namespace UnityChess.Application {
 			await foreach (string line in Receive("bestmove")) {
 				Debug.Log(line);
 				if (line.StartsWith("bestmove")) {
-					isSearchingForBestMove = false;
+					_isSearchingForBestMove = false;
 					result = ParseUCIMove(line.Split(" ")[1], sideToMove);
 				}
 			}
@@ -124,20 +124,20 @@ namespace UnityChess.Application {
 		}
 
 		private async Task Send(string data) {
-			await engineProcess.StandardInput.WriteLineAsync($"{data}\n");
+			await _engineProcess.StandardInput.WriteLineAsync($"{data}\n");
 		}
 
 		private async IAsyncEnumerable<string> Receive(string responseBreak = null, int timeoutMS = -1) {
 			string line = null;
-			float startTime = timeMS;
+			float startTime = _timeMS;
 
-			while (!ResponseFinished() && (timeoutMS < 0 || timeMS - startTime < timeoutMS)) {
-				line = await engineProcess.StandardOutput.ReadLineAsync();
+			while (!ResponseFinished() && (timeoutMS < 0 || _timeMS - startTime < timeoutMS)) {
+				line = await _engineProcess.StandardOutput.ReadLineAsync();
 				yield return line;
 			}
 
 			bool ResponseFinished() => responseBreak switch {
-				null => engineProcess.StandardOutput.Peek() == -1,
+				null => _engineProcess.StandardOutput.Peek() == -1,
 				_ => line?.StartsWith(responseBreak) ?? false
 			};
 		}

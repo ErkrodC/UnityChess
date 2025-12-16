@@ -12,7 +12,7 @@ namespace UnityChess.Editor {
 	[InitializeOnLoad]
 	public static class BootstrapperGenerator {
 		private const string OUTPUT_DIR = "Assets/Scripts/Presentation/Generated";
-		private const string INSTALL_COMPOSTION_PATH = OUTPUT_DIR + "/Bootstrapper.InstallComposition.Generated.cs";
+		private const string INSTALL_COMPOSITION_PATH = OUTPUT_DIR + "/Bootstrapper.InstallComposition.Generated.cs";
 		private const string DELETED_FILES_KEY = "BootstrapperGenerator_DeletedFiles";
 
 		static BootstrapperGenerator() {
@@ -41,8 +41,8 @@ namespace UnityChess.Editor {
 
 		[MenuItem("Tools/Regenerate DI Compositions")]
 		public static void GenerateAllCompositions() {
-			if (File.Exists(INSTALL_COMPOSTION_PATH)) {
-				File.Delete(INSTALL_COMPOSTION_PATH);
+			if (File.Exists(INSTALL_COMPOSITION_PATH)) {
+				File.Delete(INSTALL_COMPOSITION_PATH);
 			}
 
 			string[] guids = AssetDatabase.FindAssets("t:SceneComposition");
@@ -83,7 +83,7 @@ namespace UnityChess.Editor {
 				// Extract composition name from file name
 				// Expected format: Bootstrapper.{CompositionName}.Generated.cs
 				string fileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(filePath)); // Remove .cs then .Generated
-				string compositionName = fileName.Substring("Bootstrapper.".Length);
+				string compositionName = fileName.Substring("Bootstrapper.Install".Length);
 
 				// Check if this composition still exists
 				if (!validCompositionNames.Contains(compositionName)) {
@@ -286,7 +286,7 @@ namespace UnityChess.Editor {
 			}
 
 			// Write to file
-			File.WriteAllText(INSTALL_COMPOSTION_PATH, sb.ToString());
+			File.WriteAllText(INSTALL_COMPOSITION_PATH, sb.ToString());
 		}
 	}
 }

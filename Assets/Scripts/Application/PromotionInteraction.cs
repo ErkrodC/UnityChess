@@ -6,16 +6,14 @@ using UnityChess.Util;
 
 namespace UnityChess.Application {
 	public sealed class PromotionInteraction : IDisposable {
-		public Side RequestingSide { get; private set; }
-		public PromotionMove Move { get; private set; }
-		public Task<ElectedPiece> Task => _tcs.Task;
+		public Side requestingSide { get; private set; }
+		public Task<ElectedPiece> task => _tcs.Task;
 
 		private readonly TaskCompletionSource<ElectedPiece> _tcs = new (TaskCreationOptions.RunContinuationsAsynchronously);
 		private CancellationTokenSource _cts = new();
 
-		public PromotionInteraction(Side requestingSide, PromotionMove promotionMove) {
-			RequestingSide = requestingSide;
-			Move = promotionMove;
+		public PromotionInteraction(Side requestingSide) {
+			this.requestingSide = requestingSide;
 		}
 
 		// ER TODO DragAndDropManipulator should probably be the one to register this

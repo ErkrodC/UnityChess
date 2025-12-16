@@ -8,13 +8,13 @@ using static UnityChess.DependencyInjection.DependencyRegistry;
 namespace UnityChess.Presentation {
 	[RequireComponent(typeof(UIDocument))]
 	public partial class Bootstrapper : MonoBehaviour {
-		[SerializeField] private SceneComposition composition;
+		[SerializeField] private SceneComposition _composition;
 		private DependencyRegistry _registry;
 
 		partial void InstallComposition(string compositionName, DependencyRegistry registry);
 
 		private void Awake() {
-			if (composition == null) {
+			if (_composition == null) {
 				Debug.LogError($"Bootstrapper requires a {nameof(SceneComposition)} reference.");
 				return;
 			}
@@ -33,7 +33,7 @@ namespace UnityChess.Presentation {
 		}
 
 		private void OnSceneLoaded(Scene loadedScene, LoadSceneMode loadSceneMode) {
-			InstallComposition(composition.name, _registry);
+			InstallComposition(_composition.name, _registry);
 
 			// ER TODO remove
 			_registry.Resolve<GameManager>().StartNewGame();

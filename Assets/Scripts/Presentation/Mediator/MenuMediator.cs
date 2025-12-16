@@ -13,12 +13,12 @@ namespace UnityChess.Presentation {
 			_menuVM = menuVM;
 
 			// To Presentation
-			_gameManager.NewGameStarted += OnNewGameStarted;
-			_gameManager.GameEnded += OnGameEnded;
+			_gameManager.newGameStarted += OnNewGameStarted;
+			_gameManager.gameEnded += OnGameEnded;
 
 			// To Application
 			_menuVM.onStartNewGameClicked = OnStartNewGameClicked;
-			_menuVM.onLoadFenClicked = OnLoadFenClicked;
+			_menuVM.onLoadFENClicked = OnLoadFenClicked;
 		}
 
 		#region To Presentation Layer

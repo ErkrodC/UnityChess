@@ -7,15 +7,15 @@ using UnityChess.Util;
 
 namespace UnityChess.Application {
 	public class GameManager : IManager {
-		public event Action<Board> NewGameStarted;
-		public event Action<Board> GameEnded;
-		public event Action<Board, Timeline<HalfMove>> GameResetToHalfMove;
-		public event Action<Board, Timeline<HalfMove>> MoveExecuted;
-		public event Action<PromotionInteraction> ElectionRequested;
-		public int CurrentHalfMoveIndex => _game.HalfMoveTimeline.HeadIndex;
+		public event Action<Board> newGameStarted;
+		public event Action<Board> gameEnded;
+		public event Action<Board, Timeline<HalfMove>> gameResetToHalfMove;
+		public event Action<Board, Timeline<HalfMove>> moveExecuted;
+		public event Action<PromotionInteraction> electionRequested;
+		public int currentHalfMoveIndex => _game.HalfMoveTimeline.HeadIndex;
 
-		private Side SideToMove => _game.ConditionsTimeline.Head.SideToMove;
-		public int HalfMoveTimelineCount => _game.HalfMoveTimeline.Count;
+		private Side _sideToMove => _game.ConditionsTimeline.Head.SideToMove;
+		public int halfMoveTimelineCount => _game.HalfMoveTimeline.Count;
 
 		private Game _game;
 		private FENSerializer _fenSerializer;
@@ -54,14 +54,14 @@ namespace UnityChess.Application {
 				}
 
 				await _uciEngine.SetupNewGame(_game);
-				NewGameStarted?.Invoke(_game.BoardTimeline.Head);
+				newGameStarted?.Invoke(_game.BoardTimeline.Head);
 
 				if (isWhiteAI) {
 					Movement bestMove = await _uciEngine.GetBestMove(10_000);
 					DoAIMove(bestMove);
 				}
 			} else {
-				NewGameStarted?.Invoke(_game.BoardTimeline.Head);
+				newGameStarted?.Invoke(_game.BoardTimeline.Head);
 			}
 		}
 
@@ -73,14 +73,14 @@ namespace UnityChess.Application {
 
 		public void LoadGame(string serializedGame) {
 			_game = _serializersByType[_selectedSerializationType].Deserialize(serializedGame);
-			NewGameStarted?.Invoke(_game.BoardTimeline.Head);
+			newGameStarted?.Invoke(_game.BoardTimeline.Head);
 		}
 
 		public void ResetGameToHalfMoveIndex(int halfMoveIndex) {
 			if (!_game.ResetGameToHalfMoveIndex(halfMoveIndex)) { return; }
 
 			_currentPromotionInteraction?.TryCancel();
-			GameResetToHalfMove?.Invoke(_game.BoardTimeline.Head, _game.HalfMoveTimeline);
+			gameResetToHalfMove?.Invoke(_game.BoardTimeline.Head, _game.HalfMoveTimeline);
 		}
 
 		public async Task<bool> TryExecuteMoveAsync(Square startSquare, Square endSquare) {
@@ -89,7 +89,7 @@ namespace UnityChess.Application {
 			}
 
 			if (move is PromotionMove promotionMove) {
-				bool promotionReady = await ElectPieceAsync(SideToMove, promotionMove);
+				bool promotionReady = await ElectPieceAsync(_sideToMove, promotionMove);
 				if (!promotionReady) { return false; }
 			}
 
@@ -97,10 +97,10 @@ namespace UnityChess.Application {
 				return false;
 			}
 
-			MoveExecuted?.Invoke(_game.BoardTimeline.Head, _game.HalfMoveTimeline);
+			moveExecuted?.Invoke(_game.BoardTimeline.Head, _game.HalfMoveTimeline);
 
 			if (latestHalfMove.CausedCheckmate || latestHalfMove.CausedStalemate) {
-				GameEnded?.Invoke(_game.BoardTimeline.Head);
+				gameEnded?.Invoke(_game.BoardTimeline.Head);
 			}
 
 			return true;
@@ -121,14 +121,14 @@ namespace UnityChess.Application {
 			_currentPromotionInteraction?.TryCancel();
 			_currentPromotionInteraction?.Dispose();
 
-			using PromotionInteraction promotionInteraction = new(requestingSide, moveNeedingPiece);
+			using PromotionInteraction promotionInteraction = new(requestingSide);
 			_currentPromotionInteraction = promotionInteraction;
 
-			ElectionRequested?.Invoke(promotionInteraction);
+			electionRequested?.Invoke(promotionInteraction);
 
 			try {
-				ElectedPiece choice = await promotionInteraction.Task;
-				moveNeedingPiece.SetPromotionPiece(PromotionUtil.GeneratePromotionPiece(choice, SideToMove));
+				ElectedPiece choice = await promotionInteraction.task;
+				moveNeedingPiece.SetPromotionPiece(PromotionUtil.GeneratePromotionPiece(choice, _sideToMove));
 				return true;
 			} catch (OperationCanceledException) {
 				return false;

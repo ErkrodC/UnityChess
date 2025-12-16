@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityChess.DependencyInjection;
-using UnityChess.Presentation;
 using UnityEditor;
-using UnityEngine;
 
 namespace UnityChess.Editor {
 	[CustomEditor(typeof(SceneComposition))]

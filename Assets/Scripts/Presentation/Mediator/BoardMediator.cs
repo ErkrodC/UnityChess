@@ -15,9 +15,9 @@ namespace UnityChess.Presentation {
 			_boardVM = boardVM;
 
 			// To Presentation
-			_gameManager.NewGameStarted += OnNewGameStarted;
-			_gameManager.MoveExecuted += OnMoveExecuted;
-			_gameManager.GameResetToHalfMove += OnGameResetToHalfMove;
+			_gameManager.newGameStarted += OnNewGameStarted;
+			_gameManager.moveExecuted += OnMoveExecuted;
+			_gameManager.gameResetToHalfMove += OnGameResetToHalfMove;
 
 			// To Application
 			_boardVM.onPieceDropped = OnPieceDroppedAsync;

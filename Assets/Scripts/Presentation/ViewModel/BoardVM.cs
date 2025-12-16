@@ -7,14 +7,14 @@ using UnityChess.Util;
 
 namespace UnityChess.Presentation.ViewModel {
 	public class BoardVM : IViewModel {
-		public PieceVM[,] currentBoard { get; set; } = CreateEmptyPieceVMArray();
-		public Square? selectedSquare { get; set; }
-		public List<Square> highlightedSquares { get; set; } = new();
-		public Side currentSideToMove { get; set; }
-		public float whiteTimeRemaining { get; set; }
-		public float blackTimeRemaining { get; set; }
+		public readonly PieceVM[,] currentBoard = CreateEmptyPieceVMArray();
+		public Square? selectedSquare;
+		public List<Square> highlightedSquares = new();
+		public Side currentSideToMove;
+		public float whiteTimeRemaining;
+		public float blackTimeRemaining;
 
-		public Func<string, string, Task<bool>> onPieceDropped { get; set; }
+		public Func<string, string, Task<bool>> onPieceDropped;
 
 		private static PieceVM[,] CreateEmptyPieceVMArray() {
 			PieceVM[,] result = new PieceVM[8, 8];

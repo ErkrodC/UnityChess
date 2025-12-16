@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation.View {
 	public class BoardView : BaseView<BoardVM> {
-		private List<DragAndDropManipulator> _dragAndDropManipulators = new();
+		private readonly List<DragAndDropManipulator> _dragAndDropManipulators = new();
 
 		public override void Initialize(BoardVM vm) {
 			// Bind all 64 squares (a1-h8) to display pieces

@@ -24,7 +24,7 @@ namespace UnityChess.Editor {
 		private void OnSceneSaved(Scene scene) {
 			// Get the scene path and directory
 			string scenePath = scene.path;
-			string sceneDirectory = Path.GetDirectoryName(scenePath);
+			string sceneDirectory = Path.GetDirectoryName(scenePath) ?? throw new System.Exception("Scene directory is null");
 			string sceneNameWithoutExtension = Path.GetFileNameWithoutExtension(scenePath);
 
 			// Create the SceneComposition asset path

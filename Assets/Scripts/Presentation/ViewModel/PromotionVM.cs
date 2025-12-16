@@ -8,7 +8,7 @@ namespace UnityChess.Presentation.ViewModel {
 		public bool isRequesting;
 		public Side requestingSide;
 
-		public Action<ElectedPiece> OnPieceElected;
-		public Action OnCancelled;
+		public Action<ElectedPiece> onPieceElected;
+		public Action onCancelled;
 	}
 }

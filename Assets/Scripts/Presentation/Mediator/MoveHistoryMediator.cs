@@ -14,9 +14,9 @@ namespace UnityChess.Presentation {
 			_vm = vm;
 
 			// To Presentation
-			_gameManager.NewGameStarted += OnNewGameStarted;
-			_gameManager.MoveExecuted += OnMoveExecuted;
-			_gameManager.GameResetToHalfMove += OnGameResetToHalfMove;
+			_gameManager.newGameStarted += OnNewGameStarted;
+			_gameManager.moveExecuted += OnMoveExecuted;
+			_gameManager.gameResetToHalfMove += OnGameResetToHalfMove;
 
 			// To Application
 			_vm.onToBeginningClicked = OnToBeginningClicked;
@@ -53,17 +53,17 @@ namespace UnityChess.Presentation {
 		}
 
 		private void OnBackClicked() {
-			int targetIndex = Math.Max(_gameManager.CurrentHalfMoveIndex - 1, 0);
+			int targetIndex = Math.Max(_gameManager.currentHalfMoveIndex - 1, 0);
 			_gameManager.ResetGameToHalfMoveIndex(targetIndex);
 		}
 
 		private void OnForwardClicked() {
-			int targetIndex = Math.Min(_gameManager.CurrentHalfMoveIndex + 1, _gameManager.HalfMoveTimelineCount - 1);
+			int targetIndex = Math.Min(_gameManager.currentHalfMoveIndex + 1, _gameManager.halfMoveTimelineCount - 1);
 			_gameManager.ResetGameToHalfMoveIndex(targetIndex);
 		}
 
 		private void OnToEndClicked() {
-			int targetIndex = Math.Max(_gameManager.HalfMoveTimelineCount - 1, 0);
+			int targetIndex = Math.Max(_gameManager.halfMoveTimelineCount - 1, 0);
 			_gameManager.ResetGameToHalfMoveIndex(targetIndex);
 		}
 

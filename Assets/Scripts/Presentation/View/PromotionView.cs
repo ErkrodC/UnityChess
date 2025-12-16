@@ -12,10 +12,10 @@ namespace UnityChess.Presentation.View {
 			SetupButtonBinding(vm, _root.Q<Button>("rook-election-button"), ElectedPiece.Rook);
 			SetupButtonBinding(vm, _root.Q<Button>("queen-election-button"), ElectedPiece.Queen);
 			SetupPanelBinding(vm, _root.Q<VisualElement>("promotion-panel"));
-			_root.Q<Button>("promotion-cancel-button").clicked += () => vm.OnCancelled?.Invoke();
+			_root.Q<Button>("promotion-cancel-button").clicked += () => vm.onCancelled?.Invoke();
 		}
 
-		private void SetupButtonBinding(PromotionVM vm, Button button, ElectedPiece piece) {
+		private static void SetupButtonBinding(PromotionVM vm, Button button, ElectedPiece piece) {
 			DataBinding binding = new() {
 				dataSource = vm,
 				dataSourcePath = new PropertyPath(nameof(PromotionVM.requestingSide)),
@@ -27,10 +27,10 @@ namespace UnityChess.Presentation.View {
 			binding.ApplyConverterGroupToUI(converters);
 
 			button.SetBinding(nameof(Button.text), binding);
-			button.clicked += () => vm.OnPieceElected?.Invoke(piece);
+			button.clicked += () => vm.onPieceElected?.Invoke(piece);
 		}
 
-		private void SetupPanelBinding(PromotionVM vm, VisualElement promotionPanel) {
+		private static void SetupPanelBinding(PromotionVM vm, VisualElement promotionPanel) {
 			DataBinding binding = new() {
 				dataSource = vm,
 				dataSourcePath = new PropertyPath(nameof(PromotionVM.isRequesting)),

@@ -15,11 +15,11 @@ namespace UnityChess.Presentation {
 			_vm = vm;
 
 			// To Presentation
-			_gameManager.ElectionRequested += OnElectionRequested;
+			_gameManager.electionRequested += OnElectionRequested;
 
 			// To Application
-			_vm.OnPieceElected = OnPieceElected;
-			_vm.OnCancelled = OnCancelled;
+			_vm.onPieceElected = OnPieceElected;
+			_vm.onCancelled = OnCancelled;
 
 			_vm.requestingSide = Side.None;
 			_vm.isRequesting = false;
@@ -29,7 +29,7 @@ namespace UnityChess.Presentation {
 
 		private void OnElectionRequested(PromotionInteraction interaction) {
 			_interaction = interaction;
-			_vm.requestingSide = _interaction.RequestingSide;
+			_vm.requestingSide = _interaction.requestingSide;
 			_vm.isRequesting = true;
 		}
 
