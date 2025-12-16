@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 namespace UnityChess.DependencyInjection {
-	public class ServiceRegistry {
+	public class DependencyRegistry {
 		private readonly Dictionary<Type, object> _singletons = new();
 		private readonly Dictionary<Type, Func<object>> _factories = new();
 

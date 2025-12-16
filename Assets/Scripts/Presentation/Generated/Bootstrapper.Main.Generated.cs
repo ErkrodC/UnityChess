@@ -9,7 +9,7 @@ using UnityChess.Presentation.ViewModel;
 
 namespace UnityChess.Presentation {
 	public partial class Bootstrapper {
-		private void InstallMain(ServiceRegistry registry) {
+		private void InstallMain(DependencyRegistry registry) {
 			// Register Managers
 			registry.RegisterSingleton<GameManager>(() => new GameManager());
 
