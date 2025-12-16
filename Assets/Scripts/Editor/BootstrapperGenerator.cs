@@ -179,59 +179,64 @@ namespace UnityChess.Editor {
 				sb.AppendLine($"using {ns};");
 			}
 
+			sb.AppendLine("using static UnityChess.DependencyInjection.DependencyRegistry.Scope;");
+			sb.AppendLine("using static UnityChess.DependencyInjection.ScopedRegistry.InstantiationTime;");
+
 			sb.AppendLine();
 			sb.AppendLine("namespace UnityChess.Presentation {");
 			sb.AppendLine("\tpublic partial class Bootstrapper {");
 			sb.AppendLine($"\t\tprivate void Install{compositionName}(DependencyRegistry registry) {{");
 
 			// Register managers
-			sb.AppendLine("\t\t\t// Register Managers");
-			foreach (Type managerType in managerTypes.OrderBy(x => x.Name)) {
-				sb.AppendLine($"\t\t\tregistry.RegisterSingleton<{managerType.Name}>(() => new {managerType.Name}());");
+			if (managerTypes.Count > 0) {
+				sb.AppendLine("\t\t\t// Register Managers");
+				foreach (Type managerType in managerTypes.OrderBy(x => x.Name)) {
+					sb.AppendLine($"\t\t\tregistry.RegisterSingleton(new {managerType.Name}());");
+				}
+				sb.AppendLine();
 			}
 
-			sb.AppendLine();
+			// Begin scene registry scope
+			sb.AppendLine("\t\t\t// Begin scene registry scope");
+			sb.AppendLine("\t\t\tScopedRegistry sceneRegistry = registry.BeginScope(Scene);");
 
 			// Register view models
-			sb.AppendLine("\t\t\t// Register ViewModels");
-			foreach (Type vmType in viewModelTypes.OrderBy(x => x.Name)) {
-				sb.AppendLine($"\t\t\tregistry.RegisterSingleton<{vmType.Name}>(() => new {vmType.Name}());");
-			}
-
-			sb.AppendLine();
-
-			// Register mediators
-			sb.AppendLine("\t\t\t// Register Mediators");
-			foreach (Type mediatorType in mediatorTypes.OrderBy(x => x.Name)) {
-				ConstructorInfo ctor = mediatorType.GetConstructors()[0];
-				ParameterInfo[] parameters = ctor.GetParameters();
-
-				if (parameters.Length == 0) {
-					sb.AppendLine($"\t\t\tregistry.RegisterSingleton<{mediatorType.Name}>(() => new {mediatorType.Name}());");
-				} else {
-					string resolveParams = string.Join(", ", parameters.Select(p => $"registry.Resolve<{p.ParameterType.Name}>()"));
-					sb.AppendLine($"\t\t\tregistry.RegisterSingleton<{mediatorType.Name}>(() => new {mediatorType.Name}({resolveParams}));");
+			if (viewModelTypes.Count > 0) {
+				sb.AppendLine();
+				sb.AppendLine("\t\t\t// Register ViewModels");
+				foreach (Type vmType in viewModelTypes.OrderBy(x => x.Name)) {
+					sb.AppendLine($"\t\t\tsceneRegistry.Register(Lazy, () => new {vmType.Name}());");
 				}
 			}
 
-			sb.AppendLine();
+			// Register mediators
+			if (mediatorTypes.Count > 0) {
+				sb.AppendLine();
+				sb.AppendLine("\t\t\t// Register Mediators");
+				foreach (Type mediatorType in mediatorTypes.OrderBy(x => x.Name)) {
+					ConstructorInfo ctor = mediatorType.GetConstructors()[0];
+					ParameterInfo[] parameters = ctor.GetParameters();
 
-			// Instantiate mediators (force resolution to run constructors)
-			sb.AppendLine("\t\t\t// Instantiate Mediators");
-			foreach (Type mediatorType in mediatorTypes.OrderBy(x => x.Name)) {
-				sb.AppendLine($"\t\t\tregistry.Resolve<{mediatorType.Name}>();");
+					if (parameters.Length == 0) {
+						sb.AppendLine($"\t\t\tsceneRegistry.Register(Eager, () => new {mediatorType.Name}());");
+					} else {
+						string resolveParams = string.Join(", ", parameters.Select(p => $"registry.Resolve<{p.ParameterType.Name}>()"));
+						sb.AppendLine($"\t\t\tsceneRegistry.Register(Eager, () => new {mediatorType.Name}({resolveParams}));");
+					}
+				}
 			}
 
-			sb.AppendLine();
-
 			// Initialize views
-			sb.AppendLine("\t\t\t// Initialize Views");
-			foreach (Type viewType in viewTypes.OrderBy(x => x.Name)) {
-				Type viewInterface = viewType.GetInterfaces()
-					.First(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
-				Type vmType = viewInterface.GetGenericArguments()[0];
+			if (viewTypes.Count > 0) {
+				sb.AppendLine();
+				sb.AppendLine("\t\t\t// Initialize Views");
+				foreach (Type viewType in viewTypes.OrderBy(x => x.Name)) {
+					Type viewInterface = viewType.GetInterfaces()
+						.First(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
+					Type vmType = viewInterface.GetGenericArguments()[0];
 
-				sb.AppendLine($"\t\t\tgameObject.GetOrCreateComponent<{viewType.Name}>().Initialize(registry.Resolve<{vmType.Name}>());");
+					sb.AppendLine($"\t\t\tgameObject.GetOrCreateComponent<{viewType.Name}>().Initialize(registry.Resolve<{vmType.Name}>());");
+				}
 			}
 
 			sb.AppendLine("\t\t}");

@@ -1,7 +1,9 @@
+using UnityChess.Application;
 using UnityChess.DependencyInjection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
+using static UnityChess.DependencyInjection.DependencyRegistry;
 
 namespace UnityChess.Presentation {
 	[RequireComponent(typeof(UIDocument))]
@@ -12,20 +14,37 @@ namespace UnityChess.Presentation {
 		partial void InstallComposition(string compositionName, DependencyRegistry registry);
 
 		private void Awake() {
-			_registry = new DependencyRegistry();
-			DontDestroyOnLoad(gameObject);
-			SceneManager.sceneLoaded += OnSceneLoaded;
-			OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
-		}
-
-		private void OnSceneLoaded(Scene loadedScene, LoadSceneMode loadSceneMode) {
 			if (composition == null) {
-				Debug.LogError("Bootstrapper requires a SceneComposition reference.");
+				Debug.LogError($"Bootstrapper requires a {nameof(SceneComposition)} reference.");
 				return;
 			}
 
-			InstallComposition(composition.name, _registry);
+			_registry = new DependencyRegistry();
+			SceneManager.sceneLoaded += OnSceneLoaded;
+			SceneManager.sceneUnloaded += OnSceneUnloaded;
+			DontDestroyOnLoad(gameObject);
+
+			OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
 		}
+
+		private void OnDestroy() {
+			SceneManager.sceneLoaded -= OnSceneLoaded;
+			SceneManager.sceneUnloaded -= OnSceneUnloaded;
+		}
+
+		private void OnSceneLoaded(Scene loadedScene, LoadSceneMode loadSceneMode) {
+			InstallComposition(composition.name, _registry);
+
+			// ER TODO remove
+			_registry.Resolve<GameManager>().StartNewGame();
+		}
+
+
+		private void OnSceneUnloaded(Scene unloadedScene) {
+			_registry.EndScope(Scope.Scene);
+		}
+
+
 
 		// ER TODO here be a good spot to pass calls application layer from Unity Update, say for timers?
 	}

@@ -6,30 +6,29 @@ using UnityChess.Application;
 using UnityChess.Presentation;
 using UnityChess.Presentation.View;
 using UnityChess.Presentation.ViewModel;
+using static UnityChess.DependencyInjection.DependencyRegistry.Scope;
+using static UnityChess.DependencyInjection.ScopedRegistry.InstantiationTime;
 
 namespace UnityChess.Presentation {
 	public partial class Bootstrapper {
 		private void InstallMain(DependencyRegistry registry) {
 			// Register Managers
-			registry.RegisterSingleton<GameManager>(() => new GameManager());
+			registry.RegisterSingleton(new GameManager());
+
+			// Begin scene registry scope
+			ScopedRegistry sceneRegistry = registry.BeginScope(Scene);
 
 			// Register ViewModels
-			registry.RegisterSingleton<BoardVM>(() => new BoardVM());
-			registry.RegisterSingleton<MenuVM>(() => new MenuVM());
-			registry.RegisterSingleton<MoveHistoryVM>(() => new MoveHistoryVM());
-			registry.RegisterSingleton<PromotionVM>(() => new PromotionVM());
+			sceneRegistry.Register(Lazy, () => new BoardVM());
+			sceneRegistry.Register(Lazy, () => new MenuVM());
+			sceneRegistry.Register(Lazy, () => new MoveHistoryVM());
+			sceneRegistry.Register(Lazy, () => new PromotionVM());
 
 			// Register Mediators
-			registry.RegisterSingleton<BoardMediator>(() => new BoardMediator(registry.Resolve<GameManager>(), registry.Resolve<BoardVM>()));
-			registry.RegisterSingleton<MenuMediator>(() => new MenuMediator(registry.Resolve<GameManager>(), registry.Resolve<MenuVM>()));
-			registry.RegisterSingleton<MoveHistoryMediator>(() => new MoveHistoryMediator(registry.Resolve<GameManager>(), registry.Resolve<MoveHistoryVM>()));
-			registry.RegisterSingleton<PromotionMediator>(() => new PromotionMediator(registry.Resolve<GameManager>(), registry.Resolve<PromotionVM>()));
-
-			// Instantiate Mediators
-			registry.Resolve<BoardMediator>();
-			registry.Resolve<MenuMediator>();
-			registry.Resolve<MoveHistoryMediator>();
-			registry.Resolve<PromotionMediator>();
+			sceneRegistry.Register(Eager, () => new BoardMediator(registry.Resolve<GameManager>(), registry.Resolve<BoardVM>()));
+			sceneRegistry.Register(Eager, () => new MenuMediator(registry.Resolve<GameManager>(), registry.Resolve<MenuVM>()));
+			sceneRegistry.Register(Eager, () => new MoveHistoryMediator(registry.Resolve<GameManager>(), registry.Resolve<MoveHistoryVM>()));
+			sceneRegistry.Register(Eager, () => new PromotionMediator(registry.Resolve<GameManager>(), registry.Resolve<PromotionVM>()));
 
 			// Initialize Views
 			gameObject.GetOrCreateComponent<BoardView>().Initialize(registry.Resolve<BoardVM>());
