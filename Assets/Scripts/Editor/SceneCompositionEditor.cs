@@ -19,10 +19,13 @@ namespace UnityChess.Editor {
 
 			serializedObject.Update();
 
-			EditorGUILayout.HelpBox(
-				"Check mediators and views to include in this composition. " +
-				"Code generation will trigger automatically when you save this asset (Ctrl/Cmd+S).",
-				MessageType.Info);
+			if (EditorUtility.IsDirty(composition)) {
+				EditorGUILayout.HelpBox(
+					"Save (Ctrl/Cmd+S) to trigger code generation.",
+					MessageType.Warning
+				);
+			}
+
 			EditorGUILayout.Space();
 
 			DrawTypeIncludeSection("Mediators", composition, composition.includedMediatorGUIDs, _allMediatorTypes, ShowDiscoveredMediatorDependencies);
@@ -85,12 +88,12 @@ namespace UnityChess.Editor {
 						// Add to list
 						compositionList.Add(guid);
 						compositionList.Sort(StringComparer.Ordinal);
+						EditorUtility.SetDirty(composition);
 					} else if (!newIncluded && isIncluded) {
 						// Remove from list
 						compositionList.Remove(guid);
+						EditorUtility.SetDirty(composition);
 					}
-
-					EditorUtility.SetDirty(composition);
 				}
 
 				// Show discovered dependencies indented

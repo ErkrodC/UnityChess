@@ -13,10 +13,24 @@ namespace UnityChess.DependencyInjection {
 
 #if UNITY_EDITOR
 		private void OnValidate() {
-			// Sort both list to ensure consistent serialization order
-			includedMediatorGUIDs.Sort(StringComparer.Ordinal);
-			includedViewGUIDs.Sort(StringComparer.Ordinal);
-			EditorUtility.SetDirty(this);
+			if (!IsSorted(includedMediatorGUIDs)) {
+				includedMediatorGUIDs.Sort(StringComparer.Ordinal);
+				EditorUtility.SetDirty(this);
+			}
+
+			if (!IsSorted(includedViewGUIDs)) {
+				includedViewGUIDs.Sort(StringComparer.Ordinal);
+				EditorUtility.SetDirty(this);
+			}
+		}
+
+		private static bool IsSorted(List<string> list) {
+			for (int i = 1; i < list.Count; i++) {
+				if (StringComparer.Ordinal.Compare(list[i - 1], list[i]) > 0) {
+					return false;
+				}
+			}
+			return true;
 		}
 #endif
 	}
