@@ -246,8 +246,6 @@ namespace UnityChess.Editor {
 			// Write to file
 			string outputPath = $"{OUTPUT_DIR}/Bootstrapper.{compositionName}.Generated.cs";
 			File.WriteAllText(outputPath, sb.ToString());
-
-			Debug.Log($"Generated {nameof(Bootstrapper)} for {nameof(SceneComposition)} asset \"{compositionName}\" at {outputPath}");
 		}
 
 		private static void GenerateRegistry(List<string> compositionNames) {
@@ -287,8 +285,6 @@ namespace UnityChess.Editor {
 			// Write to file
 			string outputPath = $"{OUTPUT_DIR}/Bootstrapper.Registry.Generated.cs";
 			File.WriteAllText(outputPath, sb.ToString());
-
-			Debug.Log($"Generated installer registry at {outputPath}");
 		}
 	}
 }
