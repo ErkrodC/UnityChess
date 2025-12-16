@@ -39,12 +39,9 @@ namespace UnityChess.Presentation {
 			_registry.Resolve<GameManager>().StartNewGame();
 		}
 
-
 		private void OnSceneUnloaded(Scene unloadedScene) {
 			_registry.EndScope(Scope.Scene);
 		}
-
-
 
 		// ER TODO here be a good spot to pass calls application layer from Unity Update, say for timers?
 	}
