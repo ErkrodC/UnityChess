@@ -6,12 +6,12 @@ using UnityChess.Application;
 using UnityChess.Presentation;
 using UnityChess.Presentation.View;
 using UnityChess.Presentation.ViewModel;
-using static UnityChess.DependencyInjection.DependencyRegistry.Scope;
+using static UnityChess.DependencyInjection.ServiceRegistry.Scope;
 using static UnityChess.DependencyInjection.ScopedRegistry.InstantiationTime;
 
 namespace UnityChess.Presentation {
 	public partial class Bootstrapper {
-		private void InstallMain(DependencyRegistry registry) {
+		private void InstallMain(ServiceRegistry registry) {
 			// Register Managers
 			registry.RegisterSingleton(new GameManager());
 

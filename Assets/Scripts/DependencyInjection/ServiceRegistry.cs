@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 
 namespace UnityChess.DependencyInjection {
-	public class DependencyRegistry {
+	public class ServiceRegistry {
 		public enum Scope { Scene }
 
 		private readonly Dictionary<Type, object> _singletons = new();
 		private readonly Dictionary<Scope, ScopedRegistry> _scopedRegistries;
 
-		public DependencyRegistry() {
+		public ServiceRegistry() {
 			_scopedRegistries = new Dictionary<Scope, ScopedRegistry> {
 				[Scope.Scene] = null
 			};

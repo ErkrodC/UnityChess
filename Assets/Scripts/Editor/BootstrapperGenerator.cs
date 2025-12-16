@@ -178,13 +178,13 @@ namespace UnityChess.Editor {
 				sb.AppendLine($"using {ns};");
 			}
 
-			sb.AppendLine("using static UnityChess.DependencyInjection.DependencyRegistry.Scope;");
+			sb.AppendLine("using static UnityChess.DependencyInjection.ServiceRegistry.Scope;");
 			sb.AppendLine("using static UnityChess.DependencyInjection.ScopedRegistry.InstantiationTime;");
 
 			sb.AppendLine();
 			sb.AppendLine("namespace UnityChess.Presentation {");
 			sb.AppendLine("\tpublic partial class Bootstrapper {");
-			sb.AppendLine($"\t\tprivate void Install{compositionName}(DependencyRegistry registry) {{");
+			sb.AppendLine($"\t\tprivate void Install{compositionName}(ServiceRegistry registry) {{");
 
 			// Register managers
 			if (managerTypes.Count > 0) {
@@ -262,7 +262,7 @@ namespace UnityChess.Editor {
 			sb.AppendLine();
 			sb.AppendLine("namespace UnityChess.Presentation {");
 			sb.AppendLine("\tpublic partial class Bootstrapper {");
-			sb.AppendLine("\t\tprivate static readonly Dictionary<string, Action<Bootstrapper, DependencyRegistry>> _installers = new() {");
+			sb.AppendLine("\t\tprivate static readonly Dictionary<string, Action<Bootstrapper, ServiceRegistry>> _installers = new() {");
 
 			foreach (string compositionName in compositionNames.OrderBy(x => x)) {
 				sb.AppendLine($"\t\t\t[\"{compositionName}\"] = (self, registry) => self.Install{compositionName}(registry),");
@@ -270,7 +270,7 @@ namespace UnityChess.Editor {
 
 			sb.AppendLine("\t\t};");
 			sb.AppendLine();
-			sb.AppendLine("\t\tpartial void InstallComposition(string compositionName, DependencyRegistry registry) {");
+			sb.AppendLine("\t\tpartial void InstallComposition(string compositionName, ServiceRegistry registry) {");
 			sb.AppendLine("\t\t\tif (_installers.TryGetValue(compositionName, out var installer)) {");
 			sb.AppendLine("\t\t\t\tinstaller(this, registry);");
 			sb.AppendLine("\t\t\t} else {");

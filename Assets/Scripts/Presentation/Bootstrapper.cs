@@ -3,15 +3,15 @@ using UnityChess.DependencyInjection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
-using static UnityChess.DependencyInjection.DependencyRegistry;
+using static UnityChess.DependencyInjection.ServiceRegistry;
 
 namespace UnityChess.Presentation {
 	[RequireComponent(typeof(UIDocument))]
 	public partial class Bootstrapper : MonoBehaviour {
 		[SerializeField] private SceneComposition _composition;
-		private DependencyRegistry _registry;
+		private ServiceRegistry _registry;
 
-		partial void InstallComposition(string compositionName, DependencyRegistry registry);
+		partial void InstallComposition(string compositionName, ServiceRegistry registry);
 
 		private void Awake() {
 			if (_composition == null) {
@@ -19,7 +19,7 @@ namespace UnityChess.Presentation {
 				return;
 			}
 
-			_registry = new DependencyRegistry();
+			_registry = new ServiceRegistry();
 			SceneManager.sceneLoaded += OnSceneLoaded;
 			SceneManager.sceneUnloaded += OnSceneUnloaded;
 			DontDestroyOnLoad(gameObject);

@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityChess.Presentation;
 using UnityChess.Presentation.ViewModel;
-using static UnityChess.DependencyInjection.DependencyRegistry.Scope;
+using static UnityChess.DependencyInjection.ServiceRegistry.Scope;
 using static UnityChess.DependencyInjection.ScopedRegistry.InstantiationTime;
 
 namespace UnityChess.Presentation {
 	public partial class Bootstrapper {
-		private void InstallTitle(DependencyRegistry registry) {
+		private void InstallTitle(ServiceRegistry registry) {
 			// Begin scene registry scope
 			ScopedRegistry sceneRegistry = registry.BeginScope(Scene);
 

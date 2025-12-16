@@ -6,12 +6,12 @@ using UnityEngine;
 
 namespace UnityChess.Presentation {
 	public partial class Bootstrapper {
-		private static readonly Dictionary<string, Action<Bootstrapper, DependencyRegistry>> _installers = new() {
+		private static readonly Dictionary<string, Action<Bootstrapper, ServiceRegistry>> _installers = new() {
 			["Main"] = (self, registry) => self.InstallMain(registry),
 			["Title"] = (self, registry) => self.InstallTitle(registry),
 		};
 
-		partial void InstallComposition(string compositionName, DependencyRegistry registry) {
+		partial void InstallComposition(string compositionName, ServiceRegistry registry) {
 			if (_installers.TryGetValue(compositionName, out var installer)) {
 				installer(this, registry);
 			} else {
