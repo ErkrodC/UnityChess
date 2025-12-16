@@ -36,7 +36,7 @@ namespace UnityChess.DependencyInjection {
 				// ER TODO: in the future, BeginScope could push new registries onto a stack, EndScope could pop them off
 				// to allow for nested scopes. Resolve would check the topmost scope first and traverse down the stack
 				throw new InvalidOperationException($"A scope of type {scope} is already active." +
-				                                    $"Call {nameof(EndScope)} before beginning a new scope of the same type.");
+				                                    $" Call {nameof(EndScope)} before beginning a new scope of the same type.");
 			}
 
 			_scopedRegistries[scope] = new ScopedRegistry();
