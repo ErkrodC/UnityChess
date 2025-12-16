@@ -1,27 +1,35 @@
 using UnityChess.Application;
 using UnityChess.DependencyInjection;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation {
 	[RequireComponent(typeof(UIDocument))]
 	public partial class Bootstrapper : MonoBehaviour {
 		[SerializeField] private SceneComposition composition;
+		private ServiceRegistry _registry;
 
 		partial void InstallComposition(string compositionName, ServiceRegistry registry);
 
-		private void Start() {
+		private void Awake() {
+			_registry = new ServiceRegistry();
+			DontDestroyOnLoad(gameObject);
+			SceneManager.sceneLoaded += OnSceneLoaded;
+			OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+		}
+
+		private void OnSceneLoaded(Scene loadedScene, LoadSceneMode loadSceneMode) {
 			if (composition == null) {
 				Debug.LogError("Bootstrapper requires a SceneComposition reference.");
 				return;
 			}
 
-			ServiceRegistry registry = new();
-			InstallComposition(composition.name, registry);
+			InstallComposition(composition.name, _registry);
 
 			// ER TODO: remove this, to be started via in-game menu
 			// ER TODO: once thats done, also move registry object into InstallComposition call
-			GameManager gameManager = registry.Resolve<GameManager>();
+			GameManager gameManager = _registry.Resolve<GameManager>();
 			gameManager?.StartNewGame();
 		}
 
