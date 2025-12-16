@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using UnityChess.DependencyInjection;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation {
 	public partial class Bootstrapper {
