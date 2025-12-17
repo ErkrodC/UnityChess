@@ -13,16 +13,15 @@ namespace UnityChess.Presentation {
 		public PromotionMediator(GameManager gameManager, PromotionVM vm) {
 			_gameManager = gameManager;
 			_vm = vm;
-
-			// To Presentation
-			_gameManager.electionRequested += OnElectionRequested;
-
-			// To Application
-			_vm.onPieceElected = OnPieceElected;
-			_vm.onCancelled = OnCancelled;
-
 			_vm.requestingSide = Side.None;
 			_vm.isRequesting = false;
+
+			// To Presentation (subscriptions to application events)
+			_gameManager.electionRequested += OnElectionRequested;
+
+			// To Application (assignments to VM commands)
+			_vm.onPieceElected = OnPieceElected;
+			_vm.onCancelled = OnCancelled;
 		}
 
 		#region To Presentation Layer

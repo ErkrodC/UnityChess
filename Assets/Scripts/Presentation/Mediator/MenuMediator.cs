@@ -12,11 +12,11 @@ namespace UnityChess.Presentation {
 			_gameManager = gameManager;
 			_menuVM = menuVM;
 
-			// To Presentation
+			// To Presentation (subscriptions to application events)
 			_gameManager.newGameStarted += OnNewGameStarted;
 			_gameManager.gameEnded += OnGameEnded;
 
-			// To Application
+			// To Application (assignments to VM commands)
 			_menuVM.onStartNewGameClicked = OnStartNewGameClicked;
 			_menuVM.onLoadFENClicked = OnLoadFenClicked;
 		}

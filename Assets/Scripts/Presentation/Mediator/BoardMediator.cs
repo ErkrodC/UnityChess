@@ -14,12 +14,12 @@ namespace UnityChess.Presentation {
 			_gameManager = gameManager;
 			_boardVM = boardVM;
 
-			// To Presentation
+			// To Presentation (subscriptions to application events)
 			_gameManager.newGameStarted += OnNewGameStarted;
 			_gameManager.moveExecuted += OnMoveExecuted;
 			_gameManager.gameResetToHalfMove += OnGameResetToHalfMove;
 
-			// To Application
+			// To Application (assignments to VM commands)
 			_boardVM.onPieceDropped = OnPieceDroppedAsync;
 		}
 
