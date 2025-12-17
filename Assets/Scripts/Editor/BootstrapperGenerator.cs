@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityChess.DependencyInjection;
+using UnityChess.Presentation.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace UnityChess.Editor {
 			LogDeletedOrphanedFiles();
 
 			// Trigger generation after scripts compile
-			EditorApplication.delayCall += GenerateAllCompositions;
+			EditorApplication.delayCall += Generate;
 		}
 
 		private static void LogDeletedOrphanedFiles() {
@@ -39,8 +40,15 @@ namespace UnityChess.Editor {
 			}
 		}
 
-		[MenuItem("Tools/Regenerate DI Compositions")]
-		public static void GenerateAllCompositions() {
+		[MenuItem("Tools/Bootstrapper Generation/Delete...", priority = 1)]
+		public static void DeleteGeneratedFiles() {
+			foreach (string filePath in Directory.GetFiles(OUTPUT_DIR, "Bootstrapper.*.Generated.cs*")) {
+				File.Delete(filePath);
+			}
+		}
+
+		[MenuItem("Tools/Bootstrapper Generation/Generate...", priority = 0)]
+		public static void Generate() {
 			if (File.Exists(INSTALL_COMPOSITION_PATH)) {
 				File.Delete(INSTALL_COMPOSITION_PATH);
 			}
@@ -117,7 +125,7 @@ namespace UnityChess.Editor {
 			// Resolve included mediator GUIDs to types
 			foreach (string guid in composition.includedMediatorGUIDs) {
 				if (!EditorReflectionUtil.TryGetTypeByMonoScriptGuid(guid, out Type type, out string path)) {
-					Debug.LogError($"Failed to get type for MonoScript GUID: {guid}, Path: {path}");
+					Debug.LogError($"For {nameof(SceneComposition)} asset \"{composition.name}\", failed to get type for {nameof(IMediator)} script GUID: {guid}, Path: {path}");
 					continue;
 				}
 
@@ -144,7 +152,7 @@ namespace UnityChess.Editor {
 			// Resolve included view GUIDs to types
 			foreach (string guid in composition.includedViewGUIDs) {
 				if (!EditorReflectionUtil.TryGetTypeByMonoScriptGuid(guid, out Type type, out string path)) {
-					Debug.LogError($"Failed to get type for MonoScript GUID: {guid}, Path: {path}");
+					Debug.LogError($"For ${nameof(SceneComposition)} asset \"{composition.name}\", failed to get type for {typeof(IView<>).Name} script GUID: {guid}, Path: {path}");
 					continue;
 				}
 
@@ -166,6 +174,7 @@ namespace UnityChess.Editor {
 			sb.AppendLine("using UnityChess.DependencyInjection;");
 			sb.AppendLine("using UnityEngine;");
 			sb.AppendLine("using UnityEngine.UIElements;");
+			sb.AppendLine("using UnityChess.Presentation.Util;");
 
 			// Add necessary using statements
 			HashSet<string> namespaces = new();

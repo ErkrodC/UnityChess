@@ -13,10 +13,9 @@ namespace UnityChess.Application {
 		public event Action<Board, Timeline<HalfMove>> moveExecuted;
 		public event Action<PromotionInteraction> electionRequested;
 		public int currentHalfMoveIndex => _game.HalfMoveTimeline.HeadIndex;
-
-		private Side _sideToMove => _game.ConditionsTimeline.Head.SideToMove;
 		public int halfMoveTimelineCount => _game.HalfMoveTimeline.Count;
 
+		private Side _sideToMove => _game.ConditionsTimeline.Head.SideToMove;
 		private Game _game;
 		private FENSerializer _fenSerializer;
 		private PGNSerializer _pgnSerializer;
