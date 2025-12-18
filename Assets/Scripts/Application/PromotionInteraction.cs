@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityChess.Core;
-using UnityChess.Util;
+using UnityChess.Core.Util;
 
 namespace UnityChess.Application {
 	public sealed class PromotionInteraction : IDisposable {
