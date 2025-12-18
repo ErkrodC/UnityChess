@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityChess.Core;
+using UnityChess.Core.Resource;
 using UnityChess.DependencyInjection;
-using UnityChess.Util;
+using UnityChess.Core.Util;
+using UnityChess.ResourceAcces;
 
 namespace UnityChess.Application {
 	public class GameManager : IManager {
@@ -16,6 +18,8 @@ namespace UnityChess.Application {
 		public int halfMoveTimelineCount => _game.HalfMoveTimeline.Count;
 
 		private Side _sideToMove => _game.ConditionsTimeline.Head.SideToMove;
+		private readonly ILogger _logger;
+		private readonly IResourcePathProvider _resourcePathProvider;
 		private Game _game;
 		private FENSerializer _fenSerializer;
 		private PGNSerializer _pgnSerializer;
@@ -26,7 +30,10 @@ namespace UnityChess.Application {
 		private bool _isWhiteAI;
 		private bool _isBlackAI;
 
-		public GameManager() {
+		public GameManager(ILogger logger, IResourcePathProvider resourcePathProvider) {
+			_logger = logger;
+			_resourcePathProvider = resourcePathProvider;
+
 			_serializersByType = new Dictionary<GameSerializationType, IGameSerializer> {
 				[GameSerializationType.FEN] = new FENSerializer(),
 				[GameSerializationType.PGN] = new PGNSerializer()
@@ -34,7 +41,7 @@ namespace UnityChess.Application {
 		}
 
 		~GameManager() {
-			_uciEngine?.ShutDown();
+			//_uciEngine?.ShutDown();
 		}
 
 #if AI_TEST
@@ -48,8 +55,8 @@ namespace UnityChess.Application {
 
 			if (isWhiteAI || isBlackAI) {
 				if (_uciEngine == null) {
-					_uciEngine = new MockUCIEngine();
-					_uciEngine.Start();
+					_uciEngine = new PigeonUCIEngine(_logger, _resourcePathProvider);
+					_uciEngine.StartAsync();
 				}
 
 				await _uciEngine.SetupNewGame(_game);
@@ -140,10 +147,10 @@ namespace UnityChess.Application {
 
 		private void DoAIMove(Movement move) {
 			// ER TODO remove, app layer should not know about presentation
-			/*GameObject movedPiece = BoardManager.Instance.GetPieceGOAtPosition(Move.Start);
+			/*GameObject movedPiece = BoardManager.Instance.GetPieceGOAtPosition(Move.StartAsync);
 			GameObject endSquareGO = BoardManager.Instance.GetSquareGOByPosition(Move.End);
 			OnPieceMoved(
-				Move.Start,
+				Move.StartAsync,
 				movedPiece.transform,
 				endSquareGO.transform,
 				(Move as PromotionMove)?.PromotionPiece
