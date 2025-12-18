@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
-using UnityChess.Util;
+using UnityChess.Core.Util;
 
 namespace UnityChess.Core.Test {
 	[TestFixture]

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using Moq;
-using UnityChess.Util;
+using UnityChess.Core.Util;
 
 namespace UnityChess.Core.Test {
 	[TestFixture]
