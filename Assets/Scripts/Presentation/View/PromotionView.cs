@@ -1,7 +1,7 @@
 using Unity.Properties;
 using UnityChess.Core;
+using UnityChess.Core.Util;
 using UnityChess.Presentation.ViewModel;
-using UnityChess.Util;
 using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation.View {
