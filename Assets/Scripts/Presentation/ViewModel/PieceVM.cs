@@ -1,4 +1,4 @@
-using UnityChess.Util;
+using UnityChess.Core.Util;
 
 namespace UnityChess.Presentation.ViewModel {
 	public class PieceVM {

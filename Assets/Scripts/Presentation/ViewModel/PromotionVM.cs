@@ -1,7 +1,7 @@
 using System;
 using UnityChess.Core;
+using UnityChess.Core.Util;
 using UnityChess.DependencyInjection;
-using UnityChess.Util;
 
 namespace UnityChess.Presentation.ViewModel {
 	public class PromotionVM : IViewModel {

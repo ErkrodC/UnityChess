@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityChess.Core;
+using UnityChess.Core.Util;
 using UnityChess.DependencyInjection;
-using UnityChess.Util;
 
 namespace UnityChess.Presentation.ViewModel {
 	public class BoardVM : IViewModel {
