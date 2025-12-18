@@ -1,7 +1,8 @@
 {
-    "name": "UnityChess.DependencyInjection",
+    "name": "UnityChess.DependencyInjection.Unity",
     "rootNamespace": "",
     "references": [
+        "GUID:769a62037a9c48a458f6dd76ffb797b2",
         "GUID:d2fad16bc48b9214c9d1611ae0b10825"
     ],
     "includePlatforms": [],

@@ -3,7 +3,7 @@ using UnityEditor.SceneTemplate;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
-using UnityChess.DependencyInjection;
+using UnityChess.DependencyInjection.Unity;
 using UnityChess.Presentation;
 using UnityEditor.SceneManagement;
 

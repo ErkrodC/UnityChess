@@ -1,5 +1,6 @@
 using UnityChess.Application;
 using UnityChess.DependencyInjection;
+using UnityChess.DependencyInjection.Unity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;

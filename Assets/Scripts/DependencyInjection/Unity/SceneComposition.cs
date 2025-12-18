@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+
 #if UNITY_EDITOR
 using UnityChess.Presentation.Util;
 using UnityEditor;
 #endif
 
-namespace UnityChess.DependencyInjection {
+namespace UnityChess.DependencyInjection.Unity {
 	[CreateAssetMenu(fileName = "SceneComposition", menuName = "ScriptableObjects/SceneComposition")]
 	public class SceneComposition : ScriptableObject {
 		public List<string> includedMediatorGUIDs = new();

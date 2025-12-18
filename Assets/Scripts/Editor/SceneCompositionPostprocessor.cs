@@ -1,5 +1,5 @@
 using System.Linq;
-using UnityChess.DependencyInjection;
+using UnityChess.DependencyInjection.Unity;
 using UnityEditor;
 using UnityEngine;
 

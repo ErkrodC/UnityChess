@@ -6,7 +6,7 @@ using UnityChess.Core;
 using UnityChess.Core.Resource;
 using UnityChess.Core.Util;
 
-namespace UnityChess.ResourceAcces {
+namespace UnityChess.ResourceAccess {
 	public class PigeonUCIEngine : IUCIEngine {
 		private const string EXE_PATH = "/UCIEngines/pigeon-1.5.1/pigeon-1.5.1.exe";
 		private readonly ILogger _logger;

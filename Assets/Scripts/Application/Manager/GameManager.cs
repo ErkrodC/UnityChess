@@ -5,7 +5,7 @@ using UnityChess.Core;
 using UnityChess.Core.Resource;
 using UnityChess.DependencyInjection;
 using UnityChess.Core.Util;
-using UnityChess.ResourceAcces;
+using UnityChess.ResourceAccess;
 
 namespace UnityChess.Application {
 	public class GameManager : IManager {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityChess.DependencyInjection;
+using UnityChess.DependencyInjection.Unity;
 using UnityChess.Presentation.Util;
 using UnityEditor;
 using UnityEngine;

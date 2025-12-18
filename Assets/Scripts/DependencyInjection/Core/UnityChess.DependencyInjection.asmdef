@@ -1,10 +1,7 @@
 {
-    "name": "UnityChess.ResourceAccess",
-    "rootNamespace": "UnityChess.ResourceAccess",
-    "references": [
-        "GUID:9430a4ae04d98e84fbcc83f20af86bd1",
-        "GUID:1d7804ef8c5cca548a3f51457e0ea08d"
-    ],
+    "name": "UnityChess.DependencyInjection",
+    "rootNamespace": "UnityChess.DependencyInjection",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
