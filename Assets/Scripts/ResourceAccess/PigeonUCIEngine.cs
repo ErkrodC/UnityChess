@@ -3,29 +3,33 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Timers;
 using UnityChess.Core;
-using UnityChess.Util;
-using Debug = UnityEngine.Debug;
+using UnityChess.Core.Resource;
+using UnityChess.Core.Util;
 
-namespace UnityChess.Application {
-	public class MockUCIEngine : IUCIEngine {
+namespace UnityChess.ResourceAcces {
+	public class PigeonUCIEngine : IUCIEngine {
+		private const string EXE_PATH = "/UCIEngines/pigeon-1.5.1/pigeon-1.5.1.exe";
+		private readonly ILogger _logger;
+		private readonly IResourcePathProvider _resourcePathProvider;
+		private readonly FENSerializer _fenSerializer = new();
 		private Process _engineProcess;
-		private readonly string _exePath = UnityEngine.Application.streamingAssetsPath + "/UCIEngines/pigeon-1.5.1/pigeon-1.5.1.exe";
 		private bool _isReady;
 		private Timer _timer;
 		private float _timeMS;
-
-		private readonly FENSerializer _fenSerializer = new();
 		private bool _isSearchingForBestMove;
 		private Game _game;
 
-		public async void Start() {
+		public PigeonUCIEngine(ILogger logger, IResourcePathProvider resourcePathProvider) {
+			_logger = logger;
+			_resourcePathProvider = resourcePathProvider;
+		}
+
+		public async void StartAsync() {
 			_timer = new Timer(100);
 			_timer.Elapsed += (_, _) => _timeMS += 100;
 
 			_engineProcess = new Process();
-			_engineProcess.StartInfo = new ProcessStartInfo(
-				_exePath
-			) {
+			_engineProcess.StartInfo = new ProcessStartInfo(_resourcePathProvider.streamingAssetsPath + EXE_PATH) {
 				UseShellExecute = false,
 				RedirectStandardInput = true,
 				RedirectStandardOutput = true,
@@ -34,17 +38,17 @@ namespace UnityChess.Application {
 			_engineProcess.Start();
 
 			await foreach (string engineOutputLine in Receive()) {
-				Debug.Log(engineOutputLine);
+				_logger.Info(engineOutputLine);
 			}
 
 			await Send("uci");
 			await foreach (string engineOutputLine in Receive("uciok")) {
-				Debug.Log(engineOutputLine);
+				_logger.Info(engineOutputLine);
 			}
 
 			await Send("isready");
 			await foreach (string engineOutputLine in Receive("readyok")) {
-				Debug.Log(engineOutputLine);
+				_logger.Info(engineOutputLine);
 			}
 			_isReady = true;
 		}
@@ -73,7 +77,7 @@ namespace UnityChess.Application {
 			}
 
 			await foreach (string line in Receive("bestmove")) {
-				Debug.Log(line);
+				_logger.Info(line);
 				if (line.StartsWith("bestmove")) {
 					_isSearchingForBestMove = false;
 					return ParseUCIMove(line.Split(" ")[1], sideToMove);
@@ -84,7 +88,7 @@ namespace UnityChess.Application {
 
 			Movement result = null;
 			await foreach (string line in Receive("bestmove")) {
-				Debug.Log(line);
+				_logger.Info(line);
 				if (line.StartsWith("bestmove")) {
 					_isSearchingForBestMove = false;
 					result = ParseUCIMove(line.Split(" ")[1], sideToMove);
