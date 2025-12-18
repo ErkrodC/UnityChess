@@ -1,5 +1,5 @@
 {
-    "name": "UnityChessLib.Test",
+    "name": "UnityChess.Test",
     "rootNamespace": "UnityChess.Test",
     "references": [
         "GUID:9430a4ae04d98e84fbcc83f20af86bd1",
