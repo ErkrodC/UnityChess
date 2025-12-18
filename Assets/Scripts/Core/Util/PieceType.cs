@@ -1,6 +1,6 @@
 using System;
 
-namespace UnityChess.Util {
+namespace UnityChess.Core.Util {
 	[Serializable]
 	public enum PieceType {
 		None,

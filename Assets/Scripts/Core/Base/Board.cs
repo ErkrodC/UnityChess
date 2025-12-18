@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityChess.Util;
+using UnityChess.Core.Util;
 
 namespace UnityChess.Core {
 	/// <summary>An 8x8 matrix representation of a chessboard.</summary>

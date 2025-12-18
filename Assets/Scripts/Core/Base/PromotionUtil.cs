@@ -1,4 +1,4 @@
-﻿using UnityChess.Util;
+﻿using UnityChess.Core.Util;
 
 namespace UnityChess.Core {
 	public static class PromotionUtil {

@@ -1,5 +1,5 @@
 ﻿using System;
-using UnityChess.Util;
+using UnityChess.Core.Util;
 
 namespace UnityChess.Core {
 	/// <summary>Contains methods for checking legality of moves and board positions.</summary>

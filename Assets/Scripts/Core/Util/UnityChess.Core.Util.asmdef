@@ -1,6 +1,6 @@
 {
-    "name": "UnityChess.Util",
-    "rootNamespace": "UnityChess.Util",
+    "name": "UnityChess.Core.Util",
+    "rootNamespace": "UnityChess.Core.Util",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

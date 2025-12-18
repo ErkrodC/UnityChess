@@ -1,4 +1,4 @@
-namespace UnityChess.Util {
+namespace UnityChess.Core.Util {
 	public static class PieceUtil {
 		public static string GetPieceTextArt(PieceType pieceType, Side owner) {
 			return pieceType switch {

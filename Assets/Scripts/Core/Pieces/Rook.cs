@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using UnityChess.Util;
+using UnityChess.Core.Util;
 
 namespace UnityChess.Core {
 	public class Rook : Piece<Rook> {
