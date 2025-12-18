@@ -15,6 +15,8 @@ namespace UnityChess.Editor {
 		private const string OUTPUT_DIR = "Assets/Scripts/Presentation/Generated";
 		private const string INSTALL_COMPOSITION_PATH = OUTPUT_DIR + "/Bootstrapper.InstallComposition.Generated.cs";
 		private const string DELETED_FILES_KEY = "BootstrapperGenerator_DeletedFiles";
+		private const string MISSING_CONCRETE_TYPES_KEY = "BootstrapperGenerator_MissingConcreteTypes";
+		private const string BUILD_TYPE = "Unity";
 
 		static BootstrapperGenerator() {
 			LogDeletedOrphanedFiles();
@@ -36,6 +38,22 @@ namespace UnityChess.Editor {
 				string[] deletedFiles = deletedFilesStr.Split('|');
 				foreach (string file in deletedFiles) {
 					Debug.LogWarning($"Deleted orphaned generated file: {file}");
+				}
+			}
+		}
+
+		private static void LogMissingConcreteTypes() {
+			if (!EditorPrefs.HasKey(MISSING_CONCRETE_TYPES_KEY)) {
+				return;
+			}
+
+			string interfaceTypesMissingConcrete = EditorPrefs.GetString(MISSING_CONCRETE_TYPES_KEY);
+			EditorPrefs.DeleteKey(MISSING_CONCRETE_TYPES_KEY);
+
+			if (!string.IsNullOrEmpty(interfaceTypesMissingConcrete)) {
+				string[] interfaceTypeNames = interfaceTypesMissingConcrete.Split('|');
+				foreach (string interfaceTypeName in interfaceTypeNames) {
+					Debug.LogError($"No matching concrete type '{GetConcreteNameForInterface(interfaceTypeName)}' found for interface '{interfaceTypeName}'");
 				}
 			}
 		}
@@ -66,12 +84,19 @@ namespace UnityChess.Editor {
 			List<string> compositionNames = compositions.Select(composition => composition.name).ToList();
 			DeleteOrphanedGeneratedFiles(compositionNames);
 
+			List<string> interfaceTypesMissingConcrete = new();
 			foreach (SceneComposition composition in compositions) {
-				GenerateInstallSceneMethod(composition);
+				GenerateInstallSceneMethod(composition, interfaceTypesMissingConcrete);
 			}
 
 			// Generate the installer file with method dictionary
 			GenerateInstallCompositionMethod(compositionNames);
+
+			if (interfaceTypesMissingConcrete.Count > 0) {
+				string missingConcreteTypesStr = string.Join("|", interfaceTypesMissingConcrete);
+				EditorPrefs.SetString(MISSING_CONCRETE_TYPES_KEY, missingConcreteTypesStr);
+				EditorApplication.delayCall += LogMissingConcreteTypes;
+			}
 
 			AssetDatabase.Refresh();
 		}
@@ -91,7 +116,7 @@ namespace UnityChess.Editor {
 				// Extract composition name from file name
 				// Expected format: Bootstrapper.{CompositionName}.Generated.cs
 				string fileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(filePath)); // Remove .cs then .Generated
-				string compositionName = fileName.Substring("Bootstrapper.Install".Length);
+				string compositionName = fileName["Bootstrapper.Install".Length..];
 
 				// Check if this composition still exists
 				if (!validCompositionNames.Contains(compositionName)) {
@@ -113,152 +138,218 @@ namespace UnityChess.Editor {
 			}
 		}
 
-		private static void GenerateInstallSceneMethod(SceneComposition composition) {
+		private static void GenerateInstallSceneMethod(SceneComposition composition, List<string> interfaceTypesMissingConcrete) {
 			string compositionName = composition.name;
 
-			// Discover types
 			List<Type> mediatorTypes = new();
 			List<Type> viewTypes = new();
 			HashSet<Type> managerTypes = new();
 			HashSet<Type> viewModelTypes = new();
+			HashSet<Type> concreteTypes = new();
+			HashSet<Type> interfaceTypes = new();
 
-			// Resolve included mediator GUIDs to types
-			foreach (string guid in composition.includedMediatorGUIDs) {
-				if (!EditorReflectionUtil.TryGetTypeByMonoScriptGuid(guid, out Type type, out string path)) {
-					Debug.LogError($"For {nameof(SceneComposition)} asset \"{composition.name}\", failed to get type for {nameof(IMediator)} script GUID: {guid}, Path: {path}");
-					continue;
-				}
+			{ // Discover types
+				// Resolve included mediator GUIDs to types
+				foreach (string guid in composition.includedMediatorGUIDs) {
+					if (!EditorReflectionUtil.TryGetTypeByMonoScriptGuid(guid, out Type mediatorType, out string path)) {
+						Debug.LogError(
+							$"For {nameof(SceneComposition)} asset \"{composition.name}\", failed to get type for {nameof(IMediator)} script GUID: {guid}, Path: {path}");
+						continue;
+					}
 
-				if (!typeof(IMediator).IsAssignableFrom(type)) {
-					Debug.LogError($"Script at {path} does not implement IMediator");
-					continue;
-				}
+					if (!typeof(IMediator).IsAssignableFrom(mediatorType)) {
+						Debug.LogError($"Script at {path} does not implement IMediator");
+						continue;
+					}
 
-				mediatorTypes.Add(type);
+					mediatorTypes.Add(mediatorType);
 
-				// Inspect constructor to find managers and view models
-				ConstructorInfo ctor = type.GetConstructors().FirstOrDefault();
-				if (ctor != null) {
-					foreach (ParameterInfo param in ctor.GetParameters()) {
-						if (typeof(IManager).IsAssignableFrom(param.ParameterType)) {
-							managerTypes.Add(param.ParameterType);
-						} else if (typeof(IViewModel).IsAssignableFrom(param.ParameterType)) {
-							viewModelTypes.Add(param.ParameterType);
+					// Inspect constructor to find managers and view models
+					ConstructorInfo mediatorCtor = mediatorType.GetConstructors().FirstOrDefault();
+					if (mediatorCtor != null) {
+						foreach (ParameterInfo mediatorParam in mediatorCtor.GetParameters()) {
+							if (typeof(IManager).IsAssignableFrom(mediatorParam.ParameterType)) {
+								managerTypes.Add(mediatorParam.ParameterType);
+
+								ConstructorInfo managerCtor = mediatorParam.ParameterType.GetConstructors().FirstOrDefault();
+								if (managerCtor != null) {
+									foreach (ParameterInfo managerParam in managerCtor.GetParameters()) {
+										if (managerParam.ParameterType.IsInterface) {
+											interfaceTypes.Add(managerParam.ParameterType);
+										} else {
+											concreteTypes.Add(managerParam.ParameterType);
+										}
+									}
+								}
+							} else if (typeof(IViewModel).IsAssignableFrom(mediatorParam.ParameterType)) {
+								viewModelTypes.Add(mediatorParam.ParameterType);
+							} else if (mediatorParam.ParameterType.IsInterface) {
+								interfaceTypes.Add(mediatorParam.ParameterType);
+							} else {
+								concreteTypes.Add(mediatorParam.ParameterType);
+							}
 						}
 					}
 				}
-			}
 
-			// Resolve included view GUIDs to types
-			foreach (string guid in composition.includedViewGUIDs) {
-				if (!EditorReflectionUtil.TryGetTypeByMonoScriptGuid(guid, out Type type, out string path)) {
-					Debug.LogError($"For ${nameof(SceneComposition)} asset \"{composition.name}\", failed to get type for {typeof(IView<>).Name} script GUID: {guid}, Path: {path}");
-					continue;
+				// Resolve included view GUIDs to types
+				foreach (string guid in composition.includedViewGUIDs) {
+					if (!EditorReflectionUtil.TryGetTypeByMonoScriptGuid(guid, out Type type, out string path)) {
+						Debug.LogError(
+							$"For ${nameof(SceneComposition)} asset \"{composition.name}\", failed to get type for {typeof(IView<>).Name} script GUID: {guid}, Path: {path}");
+						continue;
+					}
+
+					Type viewInterface = type.GetInterfaces()
+						.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
+
+					if (viewInterface == null) {
+						Debug.LogError($"Script at {path} does not implement IView<T>");
+						continue;
+					}
+
+					viewTypes.Add(type);
+					viewModelTypes.Add(viewInterface.GetGenericArguments()[0]);
 				}
 
-				Type viewInterface = type.GetInterfaces()
-					.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
+				foreach (Type interfaceType in interfaceTypes) {
+					if (!interfaceType.IsInterface || !interfaceType.Name.StartsWith("I")) {
+						continue;
+					}
 
-				if (viewInterface == null) {
-					Debug.LogError($"Script at {path} does not implement IView<T>");
-					continue;
-				}
+					string concreteName = GetConcreteNameForInterface(interfaceType.Name);
+					Type concreteType = Assembly.Load("UnityChess.Presentation").GetTypes()
+						.FirstOrDefault(t => t.Name == concreteName && !t.IsInterface && !t.IsAbstract);
 
-				viewTypes.Add(type);
-				viewModelTypes.Add(viewInterface.GetGenericArguments()[0]);
-			}
-
-			// Generate code
-			StringBuilder sb = new();
-			sb.AppendLine($"// This file is auto-generated by {nameof(BootstrapperGenerator)}. Do not modify manually.");
-			sb.AppendLine("using UnityChess.DependencyInjection;");
-			sb.AppendLine("using UnityEngine;");
-			sb.AppendLine("using UnityEngine.UIElements;");
-			sb.AppendLine("using UnityChess.Presentation.Util;");
-
-			// Add necessary using statements
-			HashSet<string> namespaces = new();
-			foreach (Type t in managerTypes.Concat(viewModelTypes).Concat(mediatorTypes).Concat(viewTypes)) {
-				if (!string.IsNullOrEmpty(t.Namespace)) {
-					namespaces.Add(t.Namespace);
-				}
-			}
-			foreach (string ns in namespaces.OrderBy(x => x)) {
-				sb.AppendLine($"using {ns};");
-			}
-
-			sb.AppendLine("using static UnityChess.DependencyInjection.ServiceRegistry.Scope;");
-			sb.AppendLine("using static UnityChess.DependencyInjection.ScopedRegistry.InstantiationTime;");
-
-			sb.AppendLine();
-			sb.AppendLine("namespace UnityChess.Presentation {");
-			sb.AppendLine("\tpublic partial class Bootstrapper {");
-			sb.AppendLine($"\t\tprivate void Install{compositionName}(ServiceRegistry registry) {{");
-
-			// Register managers
-			if (managerTypes.Count > 0) {
-				sb.AppendLine("\t\t\t// Register Managers");
-				foreach (Type managerType in managerTypes.OrderBy(x => x.Name)) {
-					sb.AppendLine($"\t\t\tregistry.RegisterSingleton(new {managerType.Name}());");
-				}
-				sb.AppendLine();
-			}
-
-			// Begin scene registry scope
-			sb.AppendLine("\t\t\t// Begin scene registry scope");
-			sb.AppendLine("\t\t\tScopedRegistry sceneRegistry = registry.BeginScope(Scene);");
-
-			// Register view models
-			if (viewModelTypes.Count > 0) {
-				sb.AppendLine();
-				sb.AppendLine("\t\t\t// Register ViewModels");
-				foreach (Type vmType in viewModelTypes.OrderBy(x => x.Name)) {
-					sb.AppendLine($"\t\t\tsceneRegistry.Register(Lazy, () => new {vmType.Name}());");
-				}
-			}
-
-			// Register mediators
-			if (mediatorTypes.Count > 0) {
-				sb.AppendLine();
-				sb.AppendLine("\t\t\t// Register Mediators");
-				foreach (Type mediatorType in mediatorTypes.OrderBy(x => x.Name)) {
-					ConstructorInfo ctor = mediatorType.GetConstructors()[0];
-					ParameterInfo[] parameters = ctor.GetParameters();
-
-					if (parameters.Length == 0) {
-						sb.AppendLine($"\t\t\tsceneRegistry.Register(Eager, () => new {mediatorType.Name}());");
+					if (concreteType != null) {
+						concreteTypes.Add(concreteType);
 					} else {
-						string resolveParams = string.Join(", ", parameters.Select(p => $"registry.Resolve<{p.ParameterType.Name}>()"));
-						sb.AppendLine($"\t\t\tsceneRegistry.Register(Eager, () => new {mediatorType.Name}({resolveParams}));");
+						interfaceTypesMissingConcrete.Add(interfaceType.Name);
 					}
 				}
 			}
 
-			// Initialize views
-			if (viewTypes.Count > 0) {
-				sb.AppendLine();
-				sb.AppendLine("\t\t\t// Initialize Views");
-				foreach (Type viewType in viewTypes.OrderBy(x => x.Name)) {
-					Type viewInterface = viewType.GetInterfaces()
-						.First(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
-					Type vmType = viewInterface.GetGenericArguments()[0];
+			{ // Generate code
+				StringBuilder sb = new();
+				sb.AppendLine($"// This file is auto-generated by {nameof(BootstrapperGenerator)}. Do not modify manually.");
+				sb.AppendLine("using UnityChess.DependencyInjection;");
+				sb.AppendLine("using UnityEngine;");
+				sb.AppendLine("using UnityEngine.UIElements;");
+				sb.AppendLine("using UnityChess.Presentation.Util;");
 
-					sb.AppendLine($"\t\t\tgameObject.GetOrCreateComponent<{viewType.Name}>().Initialize(registry.Resolve<{vmType.Name}>());");
+				// Add necessary using statements
+				HashSet<string> namespaces = new();
+				foreach (Type t in managerTypes.Concat(viewModelTypes).Concat(mediatorTypes).Concat(viewTypes).Concat(concreteTypes)) {
+					if (!string.IsNullOrEmpty(t.Namespace)) {
+						namespaces.Add(t.Namespace);
+					}
 				}
+
+				foreach (string ns in namespaces.OrderBy(x => x)) {
+					sb.AppendLine($"using {ns};");
+				}
+
+				sb.AppendLine("using static UnityChess.DependencyInjection.ServiceRegistry.Scope;");
+				sb.AppendLine("using static UnityChess.DependencyInjection.ScopedRegistry.InstantiationTime;");
+
+				sb.AppendLine();
+				sb.AppendLine("namespace UnityChess.Presentation {");
+				sb.AppendLine("\tpublic partial class Bootstrapper {");
+				sb.AppendLine($"\t\tprivate void Install{compositionName}(ServiceRegistry registry) {{");
+
+				// Register dependencies
+				if (concreteTypes.Count > 0) {
+					sb.AppendLine("\t\t\t// Register Dependencies");
+					foreach (Type concreteType in concreteTypes.OrderBy(x => x.Name)) {
+						sb.AppendLine($"\t\t\tregistry.RegisterSingleton(new {concreteType.Name}());");
+					}
+					sb.AppendLine();
+				}
+
+				// Register managers
+				if (managerTypes.Count > 0) {
+					sb.AppendLine("\t\t\t// Register Managers");
+					foreach (Type managerType in managerTypes.OrderBy(x => x.Name)) {
+						ConstructorInfo ctor = managerType.GetConstructors()[0];
+						ParameterInfo[] parameters = ctor.GetParameters();
+
+						if (parameters.Length == 0) {
+							sb.AppendLine($"\t\t\tregistry.RegisterSingleton(new {managerType.Name}());");
+						} else {
+							string resolveParams = string.Join(
+								", ",
+								parameters.Select(p =>
+									p.ParameterType.IsInterface
+										? $"registry.Resolve<{GetConcreteNameForInterface(p.ParameterType.Name)}>()"
+										: $"registry.Resolve<{p.ParameterType.Name}>()"
+								)
+							);
+							sb.AppendLine($"\t\t\tregistry.RegisterSingleton(new {managerType.Name}({resolveParams}));");
+						}
+					}
+
+					sb.AppendLine();
+				}
+
+				// Begin scene registry scope
+				sb.AppendLine("\t\t\t// Begin scene registry scope");
+				sb.AppendLine("\t\t\tScopedRegistry sceneRegistry = registry.BeginScope(Scene);");
+
+				// Register view models
+				if (viewModelTypes.Count > 0) {
+					sb.AppendLine();
+					sb.AppendLine("\t\t\t// Register ViewModels");
+					foreach (Type vmType in viewModelTypes.OrderBy(x => x.Name)) {
+						sb.AppendLine($"\t\t\tsceneRegistry.Register(Lazy, () => new {vmType.Name}());");
+					}
+				}
+
+				// Register mediators
+				if (mediatorTypes.Count > 0) {
+					sb.AppendLine();
+					sb.AppendLine("\t\t\t// Register Mediators");
+					foreach (Type mediatorType in mediatorTypes.OrderBy(x => x.Name)) {
+						ConstructorInfo ctor = mediatorType.GetConstructors()[0];
+						ParameterInfo[] parameters = ctor.GetParameters();
+
+						if (parameters.Length == 0) {
+							sb.AppendLine($"\t\t\tsceneRegistry.Register(Eager, () => new {mediatorType.Name}());");
+						} else {
+							string resolveParams = string.Join(", ",
+								parameters.Select(p => $"registry.Resolve<{p.ParameterType.Name}>()"));
+							sb.AppendLine(
+								$"\t\t\tsceneRegistry.Register(Eager, () => new {mediatorType.Name}({resolveParams}));");
+						}
+					}
+				}
+
+				// Initialize views
+				if (viewTypes.Count > 0) {
+					sb.AppendLine();
+					sb.AppendLine("\t\t\t// Initialize Views");
+					foreach (Type viewType in viewTypes.OrderBy(x => x.Name)) {
+						Type viewInterface = viewType.GetInterfaces()
+							.First(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IView<>));
+						Type vmType = viewInterface.GetGenericArguments()[0];
+
+						sb.AppendLine(
+							$"\t\t\tgameObject.GetOrCreateComponent<{viewType.Name}>().Initialize(registry.Resolve<{vmType.Name}>());");
+					}
+				}
+
+				sb.AppendLine("\t\t}");
+				sb.AppendLine("\t}");
+				sb.AppendLine("}");
+
+				// Ensure directory exists
+				if (!Directory.Exists(OUTPUT_DIR)) {
+					Directory.CreateDirectory(OUTPUT_DIR);
+				}
+
+				// Write to file
+				string outputPath = $"{OUTPUT_DIR}/Bootstrapper.Install{compositionName}.Generated.cs";
+				File.WriteAllText(outputPath, sb.ToString());
 			}
-
-			sb.AppendLine("\t\t}");
-			sb.AppendLine("\t}");
-			sb.AppendLine("}");
-
-			// Ensure directory exists
-			if (!Directory.Exists(OUTPUT_DIR)) {
-				Directory.CreateDirectory(OUTPUT_DIR);
-			}
-
-			// Write to file
-			string outputPath = $"{OUTPUT_DIR}/Bootstrapper.Install{compositionName}.Generated.cs";
-			File.WriteAllText(outputPath, sb.ToString());
 		}
 
 		private static void GenerateInstallCompositionMethod(List<string> compositionNames) {
@@ -296,6 +387,10 @@ namespace UnityChess.Editor {
 
 			// Write to file
 			File.WriteAllText(INSTALL_COMPOSITION_PATH, sb.ToString());
+		}
+
+		private static string GetConcreteNameForInterface(string interfaceTypeName) {
+			return BUILD_TYPE + interfaceTypeName[1..];
 		}
 	}
 }
