@@ -20,7 +20,9 @@ namespace UnityChess.DependencyInjection {
 
 		public T Resolve<T>() where T : class {
 			// ER NOTE: here is essentially what determines order of resolution
-			if (_scopedRegistries.TryGetValue(Scope.Scene, out ScopedRegistry sceneRegistry) && sceneRegistry.TryResolve(out T instance)) {
+			if (_scopedRegistries.TryGetValue(Scope.Scene, out ScopedRegistry sceneRegistry)
+			    && (sceneRegistry?.TryResolve(out T instance) ?? false)
+			) {
 				return instance;
 			}
 
