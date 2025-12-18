@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 using UnityChess.Presentation.Util;
 using UnityChess.Application;
 using UnityChess.Presentation;
+using UnityChess.Presentation.ResourceAccess;
 using UnityChess.Presentation.View;
 using UnityChess.Presentation.ViewModel;
 using static UnityChess.DependencyInjection.ServiceRegistry.Scope;
@@ -13,8 +14,12 @@ using static UnityChess.DependencyInjection.ScopedRegistry.InstantiationTime;
 namespace UnityChess.Presentation {
 	public partial class Bootstrapper {
 		private void InstallMain(ServiceRegistry registry) {
+			// Register Dependencies
+			registry.RegisterSingleton(new UnityLogger());
+			registry.RegisterSingleton(new UnityResourcePathProvider());
+
 			// Register Managers
-			registry.RegisterSingleton(new GameManager());
+			registry.RegisterSingleton(new GameManager(registry.Resolve<UnityLogger>(), registry.Resolve<UnityResourcePathProvider>()));
 
 			// Begin scene registry scope
 			ScopedRegistry sceneRegistry = registry.BeginScope(Scene);

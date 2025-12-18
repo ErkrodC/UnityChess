@@ -2,7 +2,10 @@
 using UnityChess.DependencyInjection;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityChess.Presentation.Util;
+using UnityChess.Application;
 using UnityChess.Presentation;
+using UnityChess.Presentation.Presentation.View;
 using UnityChess.Presentation.ViewModel;
 using static UnityChess.DependencyInjection.ServiceRegistry.Scope;
 using static UnityChess.DependencyInjection.ScopedRegistry.InstantiationTime;
@@ -10,14 +13,20 @@ using static UnityChess.DependencyInjection.ScopedRegistry.InstantiationTime;
 namespace UnityChess.Presentation {
 	public partial class Bootstrapper {
 		private void InstallTitle(ServiceRegistry registry) {
+			// Register Managers
+			registry.RegisterSingleton(new SessionManager());
+
 			// Begin scene registry scope
 			ScopedRegistry sceneRegistry = registry.BeginScope(Scene);
 
 			// Register ViewModels
-			sceneRegistry.Register(Lazy, () => new FlowVM());
+			sceneRegistry.Register(Lazy, () => new TitleScreenVM());
 
 			// Register Mediators
-			sceneRegistry.Register(Eager, () => new TitleScreenMediator(registry.Resolve<FlowVM>()));
+			sceneRegistry.Register(Eager, () => new TitleScreenMediator(registry.Resolve<SessionManager>(), registry.Resolve<TitleScreenVM>()));
+
+			// Initialize Views
+			gameObject.GetOrCreateComponent<TitleScreenView>().Initialize(registry.Resolve<TitleScreenVM>());
 		}
 	}
 }
