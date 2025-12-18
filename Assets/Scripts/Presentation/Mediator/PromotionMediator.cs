@@ -2,13 +2,13 @@ using UnityChess.Application;
 using UnityChess.Core;
 using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
-using UnityChess.Util;
+using UnityChess.Core.Util;
 
 namespace UnityChess.Presentation {
 	public class PromotionMediator : IMediator {
 		private readonly GameManager _gameManager;
+		private readonly PromotionVM _vm;
 		private PromotionInteraction _interaction;
-		private PromotionVM _vm;
 
 		public PromotionMediator(GameManager gameManager, PromotionVM vm) {
 			_gameManager = gameManager;

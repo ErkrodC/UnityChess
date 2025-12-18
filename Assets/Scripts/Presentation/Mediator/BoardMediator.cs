@@ -3,7 +3,7 @@ using UnityChess.Application;
 using UnityChess.Core;
 using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
-using UnityChess.Util;
+using UnityChess.Core.Util;
 
 namespace UnityChess.Presentation {
 	public class BoardMediator : IMediator {
