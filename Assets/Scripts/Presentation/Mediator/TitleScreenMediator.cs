@@ -1,9 +1,10 @@
+using System;
 using UnityChess.Application;
 using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
 
 namespace UnityChess.Presentation {
-	public class TitleScreenMediator : IMediator {
+	public class TitleScreenMediator : IMediator, IDisposable {
 		private readonly SessionManager _sessionManager;
 		private readonly TitleScreenVM _vm;
 
@@ -15,6 +16,10 @@ namespace UnityChess.Presentation {
 
 			// To Application (assignments to VM commands)
 			_vm.onContinueClicked = OnContinueClicked;
+		}
+
+		public void Dispose() {
+			throw new NotImplementedException();
 		}
 
 		#region To Presentation Layer

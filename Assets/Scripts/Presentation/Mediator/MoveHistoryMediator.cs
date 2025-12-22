@@ -5,7 +5,7 @@ using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
 
 namespace UnityChess.Presentation {
-	public class MoveHistoryMediator : IMediator {
+	public class MoveHistoryMediator : IMediator, IDisposable {
 		private readonly MoveHistoryVM _vm;
 		private readonly GameManager _gameManager;
 
@@ -24,6 +24,17 @@ namespace UnityChess.Presentation {
 			_vm.onForwardClicked = OnForwardClicked;
 			_vm.onToEndClicked = OnToEndClicked;
 			_vm.onMoveClicked = OnMoveClicked;
+		}
+
+		public void Dispose() {
+			_gameManager.newGameStarted -= OnNewGameStarted;
+			_gameManager.moveExecuted -= OnMoveExecuted;
+			_gameManager.gameResetToHalfMove -= OnGameResetToHalfMove;
+			_vm.onToBeginningClicked = null;
+			_vm.onBackClicked = null;
+			_vm.onForwardClicked = null;
+			_vm.onToEndClicked = null;
+			_vm.onMoveClicked = null;
 		}
 
 		#region To Presentation Layer

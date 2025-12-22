@@ -1,51 +1,92 @@
+using System;
 using System.Threading.Tasks;
 using UnityChess.Application;
+using UnityChess.Application.Service;
 using UnityChess.Core;
 using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
 using UnityChess.Core.Util;
 
 namespace UnityChess.Presentation {
-	public class BoardMediator : IMediator {
-		private readonly BoardVM _boardVM;
+	public class BoardMediator : IMediator, IDisposable {
 		private readonly GameManager _gameManager;
+		private readonly HumanPlayerService _player;
+		private readonly BoardVM _vm;
+		private MoveInteraction _moveInteraction;
 
-		public BoardMediator(GameManager gameManager, BoardVM boardVM) {
+		public BoardMediator(GameManager gameManager, HumanPlayerService player, BoardVM vm) {
 			_gameManager = gameManager;
-			_boardVM = boardVM;
+			_player = player;
+			_vm = vm;
 
 			// To Presentation (subscriptions to application events)
 			_gameManager.newGameStarted += OnNewGameStarted;
 			_gameManager.moveExecuted += OnMoveExecuted;
 			_gameManager.gameResetToHalfMove += OnGameResetToHalfMove;
+			_player.moveRequested += OnMoveRequested;
 
 			// To Application (assignments to VM commands)
-			_boardVM.onPieceDropped = OnPieceDroppedAsync;
+			_vm.onPieceDropped = OnPieceDropped;
+		}
+
+		public void Dispose() {
+			_gameManager.newGameStarted -= OnNewGameStarted;
+			_gameManager.moveExecuted -= OnMoveExecuted;
+			_gameManager.gameResetToHalfMove -= OnGameResetToHalfMove;
+			_player.moveRequested -= OnMoveRequested;
+			_vm.onPieceDropped = null;
+			_moveInteraction?.TryCancel();
+			_moveInteraction = null;
 		}
 
 		#region To Presentation Layer
 
 		private void OnNewGameStarted(Board board) {
-			ConvertBoardToPieceTypes(board, _boardVM.currentBoard);
+			ConvertBoardToPieceTypes(board, _vm.currentBoard);
 		}
 
 		private void OnMoveExecuted(Board board, Timeline<HalfMove> _) {
-			ConvertBoardToPieceTypes(board, _boardVM.currentBoard);
+			ConvertBoardToPieceTypes(board, _vm.currentBoard);
 		}
 
 		private void OnGameResetToHalfMove(Board board, Timeline<HalfMove> _) {
-			ConvertBoardToPieceTypes(board, _boardVM.currentBoard);
+			_moveInteraction?.TryCancel();
+			_moveInteraction = null;
+			ConvertBoardToPieceTypes(board, _vm.currentBoard);
+		}
+
+		private void OnMoveRequested(MoveInteraction moveInteraction) {
+			_moveInteraction?.TryCancel();
+			_moveInteraction = moveInteraction;
 		}
 
 		#endregion
 
 		#region To Application Layer
 
-		private async Task<bool> OnPieceDroppedAsync(string fromSquare, string toSquare) {
-			return await _gameManager.TryExecuteMoveAsync(
+		private async Task<bool> OnPieceDropped(string fromSquare, string toSquare) {
+			if (_moveInteraction == null) { return false; }
+
+			MoveInteraction moveInteraction = _moveInteraction;
+			_moveInteraction = null;
+
+			bool received = moveInteraction.TryCompleteGetMove(
 				SquareUtil.StringToSquare(fromSquare),
 				SquareUtil.StringToSquare(toSquare)
 			);
+
+			if (!received) {
+				return false;
+			}
+
+			bool moveIsValid;
+			try {
+				moveIsValid = await moveInteraction._isMoveValidTask;
+			} catch (OperationCanceledException) {
+				moveIsValid = false;
+			}
+
+			return moveIsValid;
 		}
 
 		#endregion

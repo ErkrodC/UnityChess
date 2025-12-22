@@ -1,15 +1,19 @@
+using System;
 using UnityChess.Application;
+using UnityChess.Application.Service;
 using UnityChess.Core;
 using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
 
 namespace UnityChess.Presentation {
-	public class MenuMediator : IMediator {
-		private readonly MenuVM _menuVM;
+	public class MenuMediator : IMediator, IDisposable {
 		private readonly GameManager _gameManager;
+		private readonly MatchService _matchService;
+		private readonly MenuVM _menuVM;
 
-		public MenuMediator(GameManager gameManager, MenuVM menuVM) {
+		public MenuMediator(GameManager gameManager, MatchService matchService, MenuVM menuVM) {
 			_gameManager = gameManager;
+			_matchService = matchService;
 			_menuVM = menuVM;
 
 			// To Presentation (subscriptions to application events)
@@ -19,6 +23,13 @@ namespace UnityChess.Presentation {
 			// To Application (assignments to VM commands)
 			_menuVM.onStartNewGameClicked = OnStartNewGameClicked;
 			_menuVM.onLoadFENClicked = OnLoadFenClicked;
+		}
+
+		public void Dispose() {
+			_gameManager.newGameStarted -= OnNewGameStarted;
+			_gameManager.gameEnded -= OnGameEnded;
+			_menuVM.onStartNewGameClicked = null;
+			_menuVM.onLoadFENClicked = null;
 		}
 
 		#region To Presentation Layer
@@ -40,7 +51,10 @@ namespace UnityChess.Presentation {
 		#region To Application Layer
 
 		private void OnStartNewGameClicked() {
-			_gameManager.StartNewGame();
+			_matchService.StartMatch(new MatchOptions {
+				whitePlayerType = MatchOptions.PlayerType.Human,
+				blackPlayerType = MatchOptions.PlayerType.Human,
+			});
 		}
 
 		private void OnLoadFenClicked(string fen) {

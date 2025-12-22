@@ -1,4 +1,5 @@
 using UnityChess.Application;
+using UnityChess.Application.Service;
 using UnityChess.DependencyInjection;
 using UnityChess.DependencyInjection.Unity;
 using UnityEngine;
@@ -37,13 +38,11 @@ namespace UnityChess.Presentation {
 			InstallComposition(_composition.name, _registry);
 
 			// ER TODO remove
-			_registry.Resolve<GameManager>().StartNewGame();
+			_registry.Resolve<GameManager>().StartNewGame(_registry.Resolve<HumanPlayerService>(), _registry.Resolve<HumanPlayerService>());
 		}
 
 		private void OnSceneUnloaded(Scene unloadedScene) {
 			_registry.EndScope(Scope.Scene);
 		}
-
-		// ER TODO here be a good spot to pass calls application layer from Unity Update, say for timers?
 	}
 }

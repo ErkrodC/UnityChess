@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using UnityChess.Core;
 using UnityChess.Core.Util;
 
-namespace UnityChess.Application {
+namespace UnityChess.Application.Service {
 	public sealed class PromotionInteraction : IDisposable {
 		public Side requestingSide { get; private set; }
 		public Task<ElectedPiece> task => _tcs.Task;
@@ -28,7 +28,7 @@ namespace UnityChess.Application {
 			return _tcs.TrySetCanceled();
 		}
 
-		public void Dispose() {
+		void IDisposable.Dispose() {
 			_cts?.Dispose();
 			_cts = null;
 		}

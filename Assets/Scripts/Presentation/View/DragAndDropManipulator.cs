@@ -76,15 +76,18 @@ namespace UnityChess.Presentation.View {
 			target.ReleasePointer(evt.pointerId);
 		}
 
-		private void PointerCaptureOutHandler(PointerCaptureOutEvent evt) {
+		private async void PointerCaptureOutHandler(PointerCaptureOutEvent evt) {
 			if (!_isDragging) { return; }
 
-			_dragLabel.style.visibility = Visibility.Hidden;
-			target.style.visibility = Visibility.Visible;
-
+			string fromSquare = target.parent.name;
 			VisualElement closestSquare = FindClosestSquare();
-			// ER TODO could read the async return value to update immediately, but might not be necessary?
-			if (closestSquare != null) { _vm.onPieceDropped?.Invoke(target.parent.name, closestSquare.name); }
+
+			bool wasMoveValid = !string.IsNullOrEmpty(fromSquare)
+			                    && closestSquare != null
+			                    && await _vm.onPieceDropped(fromSquare, closestSquare.name);
+
+			_dragLabel.style.visibility = Visibility.Hidden;
+			target.style.visibility = wasMoveValid ? Visibility.Visible : Visibility.Hidden;
 
 			_isDragging = false;
 		}
