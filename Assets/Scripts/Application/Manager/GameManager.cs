@@ -37,7 +37,7 @@ namespace UnityChess.Application {
 		public void Update(float deltaTime) {
 			if (!_isGameRunning) { return; }
 
-			if (!_moveRequestPending) { RequestNextMove(); }
+			if (!_moveRequestPending) { AwaitTurnAsync(); }
 		}
 
 		public void StartNewGame(IPlayerService whitePlayer, IPlayerService blackPlayer) {
@@ -49,19 +49,28 @@ namespace UnityChess.Application {
 			newGameStarted?.Invoke(_game.BoardTimeline.Head);
 		}
 
-		private async void RequestNextMove() {
+		private async void AwaitTurnAsync() {
 			_moveRequestPending = true;
-			bool moveWasValid = false;
-
 			try {
-				(Square start, Square end) = await _currentPlayer.GetMoveAsync(_fenSerializer.Serialize(_game));
-				moveWasValid = await TryExecuteMoveAsync(start, end);
-				if (!moveWasValid) {
-					// ER TODO handle illegal move from player if necessary (e.g. a cheating networked player)
-				}
+				await HandleMoveInteraction();
 			} finally {
-				_currentPlayer.ReportMoveValidity(moveWasValid);
 				_moveRequestPending = false;
+			}
+
+			return;
+
+			async Task HandleMoveInteraction() {
+				bool moveWasValid = false;
+				try {
+					(Square start, Square end) = await _currentPlayer.GetMoveAsync(_fenSerializer.Serialize(_game));
+					moveWasValid = await TryExecuteMoveAsync(start, end);
+					if (!moveWasValid) {
+						// ER TODO handle illegal move from player if necessary (e.g. a cheating networked player)
+					}
+				} catch (OperationCanceledException) {
+				} finally {
+					_currentPlayer.ReportMoveValidity(moveWasValid);
+				}
 			}
 		}
 

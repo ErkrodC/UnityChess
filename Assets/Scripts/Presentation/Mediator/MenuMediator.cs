@@ -2,6 +2,7 @@ using System;
 using UnityChess.Application;
 using UnityChess.Application.Service;
 using UnityChess.Core;
+using UnityChess.Core.Util;
 using UnityChess.DependencyInjection;
 using UnityChess.Presentation.ViewModel;
 
@@ -9,41 +10,41 @@ namespace UnityChess.Presentation {
 	public class MenuMediator : IMediator, IDisposable {
 		private readonly GameManager _gameManager;
 		private readonly MatchService _matchService;
-		private readonly MenuVM _menuVM;
+		private readonly MenuVM _vm;
 
-		public MenuMediator(GameManager gameManager, MatchService matchService, MenuVM menuVM) {
+		public MenuMediator(GameManager gameManager, MatchService matchService, MenuVM vm) {
 			_gameManager = gameManager;
 			_matchService = matchService;
-			_menuVM = menuVM;
+			_vm = vm;
 
 			// To Presentation (subscriptions to application events)
 			_gameManager.newGameStarted += OnNewGameStarted;
 			_gameManager.gameEnded += OnGameEnded;
 
 			// To Application (assignments to VM commands)
-			_menuVM.onStartNewGameClicked = OnStartNewGameClicked;
-			_menuVM.onLoadFENClicked = OnLoadFenClicked;
+			_vm.onStartNewGameClicked = OnStartNewGameClicked;
+			_vm.onLoadFENClicked = OnLoadFenClicked;
 		}
 
 		public void Dispose() {
 			_gameManager.newGameStarted -= OnNewGameStarted;
 			_gameManager.gameEnded -= OnGameEnded;
-			_menuVM.onStartNewGameClicked = null;
-			_menuVM.onLoadFENClicked = null;
+			_vm.onStartNewGameClicked = null;
+			_vm.onLoadFENClicked = null;
 		}
 
 		#region To Presentation Layer
 
 		private void OnNewGameStarted(Board board) {
-			_menuVM.gameResult = string.Empty;
+			_vm.gameResult = string.Empty;
 			// ER TODO: Convert board to FEN string
-			//_menuVM.fenString = currentFEN;
+			//_vm.fenString = currentFEN;
 		}
 
 		private void OnGameEnded(Board board) {
 			// ER TODO: Convert board to FEN string and set game result
-			//_menuVM.fenString = currentFEN;
-			//_menuVM.gameResult = result;
+			//_vm.fenString = currentFEN;
+			//_vm.gameResult = result;
 		}
 
 		#endregion
@@ -51,10 +52,18 @@ namespace UnityChess.Presentation {
 		#region To Application Layer
 
 		private void OnStartNewGameClicked() {
-			_matchService.StartMatch(new MatchOptions {
-				whitePlayerType = MatchOptions.PlayerType.Human,
-				blackPlayerType = MatchOptions.PlayerType.Human,
-			});
+			MatchOptions matchOptions = new();
+
+			ref MatchOptions.PlayerType playerType = ref _vm.playAsSide == Side.White
+				? ref matchOptions.whitePlayerType
+				: ref matchOptions.blackPlayerType;
+			ref MatchOptions.PlayerType opponentType = ref _vm.playAsSide == Side.White
+				? ref matchOptions.blackPlayerType
+				: ref matchOptions.whitePlayerType;
+
+			playerType = MatchOptions.PlayerType.Human;
+			opponentType = _vm.opponentType;
+			_matchService.StartMatch(matchOptions);
 		}
 
 		private void OnLoadFenClicked(string fen) {

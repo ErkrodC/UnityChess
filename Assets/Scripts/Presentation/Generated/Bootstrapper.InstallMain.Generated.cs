@@ -18,7 +18,8 @@ namespace UnityChess.Presentation {
 			// Register Dependencies
 			registry.RegisterSingleton<HumanPlayerService>(() => new HumanPlayerService());
 			registry.RegisterSingleton<GameManager>(() => new GameManager(), typeof(IUpdateable));
-			registry.RegisterSingleton<MatchService>(() => new MatchService(registry.Resolve<GameManager>()));
+			registry.RegisterSingleton<AIPlayerService>(() => new AIPlayerService());
+			registry.RegisterSingleton<MatchService>(() => new MatchService(registry.Resolve<GameManager>(), registry.Resolve<HumanPlayerService>(), registry.Resolve<AIPlayerService>()));
 
 			// Begin scene registry scope
 			ScopedRegistry sceneRegistry = registry.BeginScope(Scene);
@@ -37,6 +38,7 @@ namespace UnityChess.Presentation {
 
 			// Initialize Views
 			gameObject.GetOrCreateComponent<BoardView>().Initialize(registry.Resolve<BoardVM>());
+			gameObject.GetOrCreateComponent<MenuView>().Initialize(registry.Resolve<MenuVM>());
 			gameObject.GetOrCreateComponent<MoveHistoryView>().Initialize(registry.Resolve<MoveHistoryVM>());
 			gameObject.GetOrCreateComponent<PromotionView>().Initialize(registry.Resolve<PromotionVM>());
 

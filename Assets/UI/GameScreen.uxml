@@ -249,7 +249,12 @@
                     </ui:VisualElement>
                     <ui:ListView allow-add="false" allow-remove="false" name="move-entries-list" selection-type="None" fixed-item-height="40" show-bound-collection-size="false" style="flex-grow: 1; flex-basis: 93%;" />
                 </ui:Tab>
-                <ui:Tab label="New Game" name="new-game-tab" />
+                <ui:Tab label="New Game" name="new-game-tab">
+                    <ui:DropdownField label="Play As:" name="play-as-dropdown" />
+                    <ui:DropdownField label="Opponent Type:" name="play-against-dropdown" />
+                    <ui:DropdownField label="Time Control:" name="time-control-dropdown" />
+                    <ui:Button text="Play!" name="play-button" />
+                </ui:Tab>
             </ui:TabView>
         </ui:VisualElement>
     </ui:VisualElement>

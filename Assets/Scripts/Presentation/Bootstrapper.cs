@@ -36,9 +36,6 @@ namespace UnityChess.Presentation {
 
 		private void OnSceneLoaded(Scene loadedScene, LoadSceneMode loadSceneMode) {
 			InstallComposition(_composition.name, _registry);
-
-			// ER TODO remove
-			_registry.Resolve<GameManager>().StartNewGame(_registry.Resolve<HumanPlayerService>(), _registry.Resolve<HumanPlayerService>());
 		}
 
 		private void OnSceneUnloaded(Scene unloadedScene) {
