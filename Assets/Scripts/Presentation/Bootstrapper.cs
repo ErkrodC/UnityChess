@@ -1,5 +1,3 @@
-using UnityChess.Application;
-using UnityChess.Application.Service;
 using UnityChess.DependencyInjection;
 using UnityChess.DependencyInjection.Unity;
 using UnityEngine;
