@@ -3,21 +3,39 @@ using System.Threading.Tasks;
 using UnityChess.Core;
 using UnityChess.Core.Resource;
 using UnityChess.Core.Util;
+using UnityChess.ResourceAccess;
 
 namespace UnityChess.Application.Service {
-	public class AIPlayerService : IPlayerService {
+	public class AIPlayerService : IPlayerService, IDisposable {
+		private readonly GameManager _gameManager;
 		private readonly IUCIEngine _engine;
+
+		public AIPlayerService(GameManager gameManager, ILogger logger, IResourcePathProvider resourcePathProvider) {
+			_gameManager = gameManager;
+			// ER TODO should be selectable
+			_engine = new PigeonUCIEngine(logger, resourcePathProvider);
+
+			_gameManager.newGameStarted += OnNewGameStarted;
+		}
+
+		public void Dispose() {
+			if (_engine is IDisposable disposable) { disposable.Dispose(); }
+
+			_gameManager.newGameStarted -= OnNewGameStarted;
+		}
 
 		public async Task<(Square start, Square end)> GetMoveAsync(string fen) {
 			return await _engine.GetBestMove(fen, 10_000);
 		}
 
 		public Task<ElectedPiece> ElectPieceAsync(Side side) {
-			throw new NotImplementedException();
+			return Task.FromResult(_engine.promotionElection);
 		}
 
-		public void ReportMoveValidity(bool isValid) {
-			throw new NotImplementedException();
+		public void ReportMoveValidity(bool isValid) { /*no-op*/ }
+
+		private void OnNewGameStarted(Board board) {
+			_engine.StartNewGameAsync();
 		}
 	}
 }

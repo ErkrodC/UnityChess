@@ -35,9 +35,9 @@ namespace UnityChess.Application {
 		}
 
 		public void Update(float deltaTime) {
-			if (!_isGameRunning) { return; }
+			if (!_isGameRunning || _moveRequestPending) { return; }
 
-			if (!_moveRequestPending) { AwaitTurnAsync(); }
+			AwaitTurnAsync();
 		}
 
 		public void StartNewGame(IPlayerService whitePlayer, IPlayerService blackPlayer) {
