@@ -8,6 +8,9 @@ using UnityEngine.UIElements;
 namespace UnityChess.Presentation.View {
 	public class MenuView : BaseView<MenuVM> {
 		public override void Initialize(MenuVM vm) {
+			vm.playAsSide = Side.White;
+			vm.opponentType = MatchOptions.PlayerType.Human;
+
 			DropdownField playAsDropDown = _root.Q<DropdownField>("play-as-dropdown");
 			playAsDropDown.choices = Enum.GetNames(typeof(Side)).Where(s => s != nameof(Side.None)).ToList();
 			playAsDropDown.value = nameof(Side.White);

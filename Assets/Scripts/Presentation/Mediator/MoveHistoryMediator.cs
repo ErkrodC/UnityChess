@@ -64,17 +64,17 @@ namespace UnityChess.Presentation {
 		}
 
 		private void OnBackClicked() {
-			int targetIndex = Math.Max(_gameManager.currentHalfMoveIndex - 1, 0);
+			int targetIndex = Math.Max(_gameManager.GetCurrentHalfMoveIndex() - 1, 0);
 			_gameManager.ResetGameToHalfMoveIndex(targetIndex);
 		}
 
 		private void OnForwardClicked() {
-			int targetIndex = Math.Min(_gameManager.currentHalfMoveIndex + 1, _gameManager.halfMoveTimelineCount - 1);
+			int targetIndex = Math.Min(_gameManager.GetCurrentHalfMoveIndex() + 1, _gameManager.GetHalfMoveTimelineCount() - 1);
 			_gameManager.ResetGameToHalfMoveIndex(targetIndex);
 		}
 
 		private void OnToEndClicked() {
-			int targetIndex = Math.Max(_gameManager.halfMoveTimelineCount - 1, 0);
+			int targetIndex = Math.Max(_gameManager.GetHalfMoveTimelineCount() - 1, 0);
 			_gameManager.ResetGameToHalfMoveIndex(targetIndex);
 		}
 

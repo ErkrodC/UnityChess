@@ -87,7 +87,7 @@ namespace UnityChess.Presentation.View {
 			                    && await _vm.onPieceDropped(fromSquare, closestSquare.name);
 
 			_dragLabel.style.visibility = Visibility.Hidden;
-			target.style.visibility = wasMoveValid ? Visibility.Visible : Visibility.Hidden;
+			target.style.visibility = Visibility.Visible;
 
 			_isDragging = false;
 		}

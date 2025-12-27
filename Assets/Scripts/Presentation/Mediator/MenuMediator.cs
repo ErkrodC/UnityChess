@@ -54,15 +54,25 @@ namespace UnityChess.Presentation {
 		private void OnStartNewGameClicked() {
 			MatchOptions matchOptions = new();
 
-			ref MatchOptions.PlayerType playerType = ref _vm.playAsSide == Side.White
-				? ref matchOptions.whitePlayerType
-				: ref matchOptions.blackPlayerType;
-			ref MatchOptions.PlayerType opponentType = ref _vm.playAsSide == Side.White
-				? ref matchOptions.blackPlayerType
-				: ref matchOptions.whitePlayerType;
+			switch (_vm.playAsSide) {
+				case Side.White: {
+					matchOptions.whitePlayerType = MatchOptions.PlayerType.Human;
+					matchOptions.blackPlayerType = _vm.opponentType;
+					break;
+				}
+				case Side.Black: {
+					matchOptions.whitePlayerType = _vm.opponentType;
+					matchOptions.blackPlayerType = MatchOptions.PlayerType.Human;
+					break;
+				}
+				default:
+					throw new ArgumentOutOfRangeException(
+						nameof(_vm.playAsSide),
+						_vm.playAsSide,
+						"Invalid side."
+					);
+			}
 
-			playerType = MatchOptions.PlayerType.Human;
-			opponentType = _vm.opponentType;
 			_matchService.StartMatch(matchOptions);
 		}
 

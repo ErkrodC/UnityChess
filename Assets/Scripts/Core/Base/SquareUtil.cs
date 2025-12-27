@@ -2,15 +2,15 @@
 
 namespace UnityChess.Core {
 	public static class SquareUtil {
-		public static readonly Dictionary<string, int> FileCharToIndexMap = new() {
-			{"a", 0},
-			{"b", 1},
-			{"c", 2},
-			{"d", 3},
-			{"e", 4},
-			{"f", 5},
-			{"g", 6},
-			{"h", 7}
+		public static readonly Dictionary<char, int> FileCharToIndexMap = new() {
+			{'a', 0},
+			{'b', 1},
+			{'c', 2},
+			{'d', 3},
+			{'e', 4},
+			{'f', 5},
+			{'g', 6},
+			{'h', 7}
 		};
 
 		public static readonly Dictionary<int, string> FileIndexToCharMap = new() {
@@ -74,7 +74,7 @@ namespace UnityChess.Core {
 		public static Square StringToSquare(string squareText) {
 			char fileChar = squareText[0];
 			char rankChar = squareText[1];
-			int file = FileCharToIndexMap[fileChar.ToString()];
+			int file = FileCharToIndexMap[fileChar];
 			int rank = int.Parse(rankChar.ToString()) - 1;
 
 			return new Square(file, rank);

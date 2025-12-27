@@ -81,7 +81,7 @@ namespace UnityChess.Presentation {
 
 			bool moveIsValid;
 			try {
-				moveIsValid = await moveInteraction._isMoveValidTask;
+				moveIsValid = await moveInteraction.isMoveValidTask;
 			} catch (OperationCanceledException) {
 				moveIsValid = false;
 			}

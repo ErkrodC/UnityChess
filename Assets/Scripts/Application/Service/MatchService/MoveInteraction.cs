@@ -6,7 +6,7 @@ using UnityChess.Core;
 namespace UnityChess.Application.Service {
 	public sealed class MoveInteraction : IDisposable {
 		public Task<(Square start, Square end)> getMoveTask => _getMoveTcs.Task;
-		public Task<bool> _isMoveValidTask => _isMoveValidTcs.Task;
+		public Task<bool> isMoveValidTask => _isMoveValidTcs.Task;
 
 		private readonly TaskCompletionSource<(Square start, Square end)> _getMoveTcs = new (TaskCreationOptions.RunContinuationsAsynchronously);
 		private readonly TaskCompletionSource<bool> _isMoveValidTcs = new (TaskCreationOptions.RunContinuationsAsynchronously);

@@ -50,7 +50,7 @@ namespace UnityChess.Core {
 			ref Dictionary<(Square, Square), Movement> movesByStartEndSquare
 		) {
 			foreach (Square offset in SquareUtil.SurroundingOffsets) {
-				Movement testMove = new Movement(position, position + offset);
+				Movement testMove = new(position, position + offset);
 
 				if (Rules.MoveObeysRules(board, testMove, Owner)) {
 					if (movesByStartEndSquare == null) {
@@ -76,9 +76,9 @@ namespace UnityChess.Core {
 			int castlingRank = Owner.CastlingRank();
 
 			foreach (int rookFile in rookFiles) {
-				bool checkingQueenside = rookFile == 1;
+				bool checkingQueenside = rookFile == 0;
 
-				Square rookSquare = new Square(rookFile, castlingRank);
+				Square rookSquare = new(rookFile, castlingRank);
 				if (board[rookSquare] is not Rook rook
 				    || rook.Owner != Owner
 				    || checkingQueenside && !canCastleQueenside
@@ -87,14 +87,14 @@ namespace UnityChess.Core {
 					continue;
 				}
 
-				Square inBetweenSquare0 = new Square(checkingQueenside ? 3 : 5, castlingRank);
-				Square inBetweenSquare1 = new Square(checkingQueenside ? 2 : 6, castlingRank);
-				Square inBetweenSquare2 = new Square(1, castlingRank);
+				Square inBetweenSquare0 = new(checkingQueenside ? 3 : 5, castlingRank);
+				Square inBetweenSquare1 = new(checkingQueenside ? 2 : 6, castlingRank);
+				Square inBetweenSquare2 = new(1, castlingRank);
 				Movement castlingMove = new CastlingMove(position, inBetweenSquare1, rookSquare);
 
-				if (!board.IsOccupiedAt(inBetweenSquare0)
+				if ((!checkingQueenside || !board.IsOccupiedAt(inBetweenSquare2))
+				    && !board.IsOccupiedAt(inBetweenSquare0)
 				    && !board.IsOccupiedAt(inBetweenSquare1)
-				    && (!board.IsOccupiedAt(inBetweenSquare2) || !checkingQueenside)
 				    && !Rules.IsSquareAttacked(inBetweenSquare0, board, Owner)
 				    && !Rules.IsSquareAttacked(inBetweenSquare1, board, Owner)
 				    && Rules.MoveObeysRules(board, castlingMove, Owner)

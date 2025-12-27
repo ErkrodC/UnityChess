@@ -12,11 +12,7 @@ namespace UnityChess.Application {
 		public event Action<Board> gameEnded;
 		public event Action<Board, Timeline<HalfMove>> gameResetToHalfMove;
 		public event Action<Board, Timeline<HalfMove>> moveExecuted;
-		public int currentHalfMoveIndex => _game.HalfMoveTimeline.HeadIndex;
-		public int halfMoveTimelineCount => _game.HalfMoveTimeline.Count;
 
-		private Side _sideToMove => _game.ConditionsTimeline.Head.SideToMove;
-		private IPlayerService _currentPlayer => _sideToMove == Side.White ? _whitePlayer : _blackPlayer;
 		private IPlayerService _whitePlayer;
 		private IPlayerService _blackPlayer;
 		private readonly Dictionary<GameSerializationType, IGameSerializer> _serializersByType;
@@ -33,6 +29,11 @@ namespace UnityChess.Application {
 				[GameSerializationType.PGN] = new PGNSerializer()
 			};
 		}
+
+		public int GetCurrentHalfMoveIndex() => _game.HalfMoveTimeline.HeadIndex;
+		public int GetHalfMoveTimelineCount() => _game.HalfMoveTimeline.Count;
+		private Side GetCurrentSideToMove() => _game.ConditionsTimeline.Head.SideToMove;
+		private IPlayerService GetCurrentPlayer() => GetCurrentSideToMove() == Side.White ? _whitePlayer : _blackPlayer;
 
 		public void Update(float deltaTime) {
 			if (!_isGameRunning || _moveRequestPending) { return; }
@@ -61,15 +62,16 @@ namespace UnityChess.Application {
 
 			async Task HandleMoveInteraction() {
 				bool moveWasValid = false;
+				IPlayerService currentPlayer = GetCurrentPlayer();
 				try {
-					(Square start, Square end) = await _currentPlayer.GetMoveAsync(_fenSerializer.Serialize(_game));
+					(Square start, Square end) = await currentPlayer.GetMoveAsync(_fenSerializer.Serialize(_game));
 					moveWasValid = await TryExecuteMoveAsync(start, end);
 					if (!moveWasValid) {
 						// ER TODO handle illegal move from player if necessary (e.g. a cheating networked player)
 					}
 				} catch (OperationCanceledException) {
 				} finally {
-					_currentPlayer.ReportMoveValidity(moveWasValid);
+					currentPlayer.ReportMoveValidity(moveWasValid);
 				}
 			}
 		}
@@ -97,7 +99,7 @@ namespace UnityChess.Application {
 			}
 
 			if (move is PromotionMove promotionMove) {
-				bool promotionReady = await ElectPieceAsync(_sideToMove, promotionMove);
+				bool promotionReady = await ElectPieceAsync(GetCurrentSideToMove(), promotionMove);
 				if (!promotionReady) { return false; }
 			}
 
@@ -116,8 +118,8 @@ namespace UnityChess.Application {
 
 		private async Task<bool> ElectPieceAsync(Side requestingSide, PromotionMove moveNeedingPiece) {
 			try {
-				ElectedPiece choice = await _currentPlayer.ElectPieceAsync(requestingSide);
-				moveNeedingPiece.SetPromotionPiece(PromotionUtil.GeneratePromotionPiece(choice, _sideToMove));
+				ElectedPiece choice = await GetCurrentPlayer().ElectPieceAsync(requestingSide);
+				moveNeedingPiece.SetPromotionPiece(PromotionUtil.GeneratePromotionPiece(choice, GetCurrentSideToMove()));
 				return true;
 			} catch (OperationCanceledException) {
 				return false;
