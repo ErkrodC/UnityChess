@@ -1,0 +1,21 @@
+{
+    "name": "UnityChess.Presentation",
+    "rootNamespace": "UnityChess.Presentation",
+    "references": [
+        "GUID:fdd565aca06bca74abe06b6c3af16180",
+        "GUID:9430a4ae04d98e84fbcc83f20af86bd1",
+        "GUID:1d7804ef8c5cca548a3f51457e0ea08d",
+        "GUID:769a62037a9c48a458f6dd76ffb797b2",
+        "GUID:ea1ff100f323097499865562f9a4a898",
+        "GUID:d2fad16bc48b9214c9d1611ae0b10825"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

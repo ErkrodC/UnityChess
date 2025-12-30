@@ -1,0 +1,134 @@
+:root {
+}
+
+#background {
+    background-color: rgb(67, 62, 60);
+}
+
+.coord-label {
+    font-size: 36px;
+}
+
+.ranks {
+    flex-direction: row;
+    -unity-text-align: middle-center;
+    width: 100%;
+}
+
+.files {
+    flex-direction: column;
+    -unity-text-align: middle-center;
+    height: 100%;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+}
+
+#files-spacer {
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: 3%;
+}
+
+#rank-labels-container {
+    flex-grow: 0;
+    flex-shrink: 1;
+    justify-content: space-between;
+    flex-direction: column-reverse;
+    flex-basis: 3%;
+    margin-top: 3%;
+    margin-bottom: 3%;
+}
+
+#file-labels-container {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 90%;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.dark-square {
+    background-color: rgb(78, 75, 71);
+}
+
+.light-square {
+    background-color: rgb(196, 186, 165);
+}
+
+.board-square {
+    width: 12.5%;
+    flex-basis: 12.5%;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.tab-label {
+}
+
+.square-label {
+    font-size: 90px;
+    -unity-text-align: middle-center;
+    position: absolute;
+}
+
+TabView {
+    flex-grow: 1;
+}
+
+.unity-tab-view__content-container {
+    flex-grow: 1;
+}
+
+Tab {
+    flex-grow: 1;
+}
+
+.unity-tab__content-container {
+    flex-grow: 1;
+}
+
+#info-container TabView .unity-tab ScrollView {
+    flex-grow: 1;
+}
+
+.unity-collection-view {
+}
+
+.unity-list-view {
+}
+
+.unity-list-view__empty-label {
+    display: none;
+}
+
+.move-history-navigation-button {
+    flex-grow: 1;
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    font-size: 40px;
+    letter-spacing: -20px;
+    -unity-font-style: bold;
+    background-color: rgb(76, 75, 73);
+    color: rgb(204, 203, 203);
+}

@@ -1,0 +1,14 @@
+{
+    "name": "UnityChess.Core",
+    "rootNamespace": "UnityChess.Core",
+    "references": ["GUID:1d7804ef8c5cca548a3f51457e0ea08d"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
