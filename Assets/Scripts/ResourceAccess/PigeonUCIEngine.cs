@@ -1,22 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using UnityChess.Core;
 using UnityChess.Core.Resource;
 
 namespace UnityChess.ResourceAccess {
 	public class PigeonUCIEngine : IUCIEngine, IDisposable {
 		public ElectedPiece promotionElection { get; private set; }
-		private const string EXE_PATH = "/UCIEngines/pigeon-1.5.1/pigeon-1.5.1.exe";
+
+		private const int _DEFAULT_INIT_TIMEOUT_MS = 10_000;
+		private const int _DEFAULT_MOVE_TIMEOUT_MS = 15_000;
+		private const int _GET_BEST_MOVE_GRACE_PERIOD = 1000;
+		private const string _EXE_PATH = "UCIEngines/pigeon-1.5.1/pigeon-1.5.1.exe";
 		private readonly ILogger _logger;
 		private readonly IResourcePathProvider _resourcePathProvider;
+		private readonly SemaphoreSlim _commandLock = new(1, 1);
+		private readonly SemaphoreSlim _engineInitLock = new(1, 1);
+		private CancellationTokenSource _engineCancellationSource;
 		private Process _engineProcess;
-		private bool _isReady;
-		private Timer _timer;
-		private float _timeMS;
-		private bool _isSearchingForBestMove;
 
 		public PigeonUCIEngine(ILogger logger, IResourcePathProvider resourcePathProvider) {
 			_logger = logger;
@@ -24,61 +27,89 @@ namespace UnityChess.ResourceAccess {
 		}
 
 		public void Dispose() {
-			_engineProcess.Close();
+			CleanupProcess();
+			_engineInitLock.Dispose();
+			_commandLock.Dispose();
 		}
 
 		public async Task StartNewGameAsync() {
-			if (!_isReady) {
-				_timer = new Timer(100);
-				_timer.Elapsed += (_, _) => _timeMS += 100;
-
-				_engineProcess = new Process();
-				_engineProcess.StartInfo = new ProcessStartInfo(_resourcePathProvider.streamingAssetsPath + EXE_PATH) {
-					UseShellExecute = false,
-					RedirectStandardInput = true,
-					RedirectStandardOutput = true,
-					CreateNoWindow = true
-				};
-				_engineProcess.Start();
-
-				await foreach (string engineOutputLine in Receive()) {
-					_logger.Info(engineOutputLine);
-				}
-
-				await Send("uci");
-				await foreach (string engineOutputLine in Receive("uciok")) {
-					_logger.Info(engineOutputLine);
-				}
-
-				await Send("isready");
-				await foreach (string engineOutputLine in Receive("readyok")) {
-					_logger.Info(engineOutputLine);
-				}
-				_isReady = true;
-			}
-
-			await Send("ucinewgame");
+			await EnsureEngineReadyAsync();
+			await SendAsync("ucinewgame");
 		}
 
 		public async Task<(Square start, Square end)> GetBestMove(string fen, int timeoutMS = -1) {
-			await Send($"position fen {fen}");
+			await EnsureEngineReadyAsync();
+			await _commandLock.WaitAsync();
+			bool hasTimeout = timeoutMS > 0;
+			int effectiveTimeout = hasTimeout ? timeoutMS : _DEFAULT_MOVE_TIMEOUT_MS;
+			int waitForTimeoutMS = hasTimeout ? effectiveTimeout + _GET_BEST_MOVE_GRACE_PERIOD : -1;
+			string goCommand = hasTimeout ? $"go movetime {timeoutMS}" : "go";
 
-			if (!_isSearchingForBestMove) {
-				_isSearchingForBestMove = true;
-				await Send($"go movetime {timeoutMS}");
-			}
+			try {
+				await SendAsync($"position fen {fen}");
+				await SendAsync(goCommand);
 
-			await foreach (string line in Receive("bestmove")) {
-				_logger.Info(line);
-				if (line.StartsWith("bestmove")) {
-					_isSearchingForBestMove = false;
-					return ParseUCIMove(line.Split(" ")[1]);
+				string bestMoveLine = await WaitForResponseAsync("bestmove", waitForTimeoutMS);
+				string[] tokens = bestMoveLine.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+				if (tokens.Length < 2) {
+					throw new InvalidOperationException($"Engine returned an unexpected bestmove payload: '{bestMoveLine}'");
 				}
+
+				return ParseUCIMove(tokens[1]);
+			} catch (TimeoutException) {
+				_logger.Warn($"Timed out waiting for bestmove after {effectiveTimeout} ms");
+				await SendSafeAsync("stop");
+				throw;
+			} finally {
+				_commandLock.Release();
 			}
+		}
 
-			await Send("stop");
+		private async Task EnsureEngineReadyAsync() {
+			if (_engineProcess is { HasExited: false }) { return; }
 
-			return default;
+			await _engineInitLock.WaitAsync();
+			try {
+				if (_engineProcess is { HasExited: false }) { return; }
+
+				CleanupProcess();
+
+				string exeFullPath = Path.Combine(_resourcePathProvider.streamingAssetsPath, _EXE_PATH);
+				if (!File.Exists(exeFullPath)) {
+					throw new FileNotFoundException($"Could not find engine executable at '{exeFullPath}'.");
+				}
+
+				_engineCancellationSource = new CancellationTokenSource();
+				_engineProcess = new Process {
+					StartInfo = new ProcessStartInfo {
+						FileName = exeFullPath,
+						UseShellExecute = false,
+						RedirectStandardInput = true,
+						RedirectStandardOutput = true,
+						RedirectStandardError = true,
+						CreateNoWindow = true
+					},
+					EnableRaisingEvents = true
+				};
+
+				_engineProcess.ErrorDataReceived += (_, args) => {
+					if (!string.IsNullOrWhiteSpace(args.Data)) {
+						_logger.Error($"[{nameof(PigeonUCIEngine)} stderr]: {args.Data}");
+					}
+				};
+				_engineProcess.Exited += (_, _) => _logger.Warn("UCI engine process exited unexpectedly.");
+
+				_engineProcess.Start();
+				_engineProcess.BeginErrorReadLine();
+
+				await SendAsync("uci");
+				await WaitForResponseAsync("uciok", _DEFAULT_INIT_TIMEOUT_MS);
+
+				await SendAsync("isready");
+				await WaitForResponseAsync("readyok", _DEFAULT_INIT_TIMEOUT_MS);
+			} finally {
+				_engineInitLock.Release();
+			}
 		}
 
 		private (Square start, Square end) ParseUCIMove(string uciMove) {
@@ -98,25 +129,87 @@ namespace UnityChess.ResourceAccess {
 			);
 		}
 
-		private async Task Send(string data) {
-			await _engineProcess.StandardInput.WriteLineAsync($"{data}\n");
-		}
-
-		private async IAsyncEnumerable<string> Receive(string responseBreak = null, int timeoutMS = -1) {
-			string line = null;
-			float startTime = _timeMS;
-
-			while (!IsResponseFinished() && (timeoutMS < 0 || _timeMS - startTime < timeoutMS)) {
-				line = await _engineProcess.StandardOutput.ReadLineAsync();
-				yield return line;
+		private async Task SendAsync(string data) {
+			if (_engineProcess?.HasExited ?? true) {
+				throw new InvalidOperationException("Engine process has exited.");
 			}
 
-			yield break;
+			await _engineProcess.StandardInput.WriteLineAsync(data);
+			await _engineProcess.StandardInput.FlushAsync();
+		}
 
-			bool IsResponseFinished() => responseBreak switch {
-				null => _engineProcess.StandardOutput.Peek() == -1,
-				_ => line?.StartsWith(responseBreak) ?? false
-			};
+		private Task SendSafeAsync(string data) {
+			try { return SendAsync(data); }
+			catch { return Task.CompletedTask; }
+		}
+
+		private async Task<string> WaitForResponseAsync(string expectedPrefix, int timeoutMs) {
+			Stopwatch stopwatch = Stopwatch.StartNew();
+			while (true) {
+				int remaining = timeoutMs > 0
+					? Math.Max(1, timeoutMs - (int)stopwatch.ElapsedMilliseconds)
+					: Timeout.Infinite;
+				string line = await ReadLineAsync(remaining);
+				if (line == null) {
+					_logger.Error($"UCI engine output stream closed while waiting for '{expectedPrefix}'.");
+					throw new InvalidOperationException("UCI engine closed its output stream unexpectedly.");
+				}
+
+				_logger.Info(line);
+				if (line.StartsWith(expectedPrefix, StringComparison.Ordinal)) {
+					return line;
+				}
+			}
+		}
+
+		private async Task<string> ReadLineAsync(int timeoutMs) {
+			if (_engineProcess == null) { throw new InvalidOperationException("UCI engine process is not available."); }
+
+			Task<string> readTask = _engineProcess.StandardOutput.ReadLineAsync();
+			if (timeoutMs == Timeout.Infinite) {
+				return await readTask;
+			}
+
+			Task completed = await Task.WhenAny(
+				readTask,
+				Task.Delay(timeoutMs, _engineCancellationSource?.Token ?? CancellationToken.None)
+			);
+			if (completed == readTask) { return await readTask; }
+
+			ResetEngineCancellationSource();
+			throw new TimeoutException($"UCI engine did not reply within {timeoutMs} ms");
+		}
+
+		private void CleanupProcess() {
+			try {
+				if (_engineProcess == null) { return; }
+
+				_engineCancellationSource?.Cancel();
+				if (!_engineProcess.HasExited) {
+					_engineProcess.Kill();
+					_engineProcess.WaitForExit();
+				}
+				_engineProcess.Dispose();
+			} finally {
+				_engineProcess = null;
+				_engineCancellationSource?.Dispose();
+				_engineCancellationSource = null;
+			}
+		}
+
+		private void ResetEngineCancellationSource() {
+			if (_engineCancellationSource == null) { return; }
+
+			try {
+				if (!_engineCancellationSource.IsCancellationRequested) {
+					_engineCancellationSource.Cancel();
+				}
+			} catch (ObjectDisposedException) {
+				// already disposed elsewhere
+			} finally {
+				_engineCancellationSource.Dispose();
+				_engineCancellationSource = new CancellationTokenSource();
+			}
 		}
 	}
 }

@@ -34,8 +34,8 @@ namespace UnityChess.Application.Service {
 
 		public void ReportMoveValidity(bool isValid) { /*no-op*/ }
 
-		private void OnNewGameStarted(Board board) {
-			_engine.StartNewGameAsync();
+		private async void OnNewGameStarted(Board board) {
+			await _engine.StartNewGameAsync();
 		}
 	}
 }

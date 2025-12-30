@@ -20,8 +20,9 @@ namespace UnityChess.Presentation {
 			// Register Dependencies
 			registry.RegisterSingleton<AIPlayerService>(() => new AIPlayerService(registry.Resolve<GameManager>(), registry.Resolve<UnityLogger>(), registry.Resolve<UnityResourcePathProvider>()), typeof(IDisposable), typeof(IPlayerService));
 			registry.RegisterSingleton<GameManager>(() => new GameManager(), typeof(IUpdateable), typeof(IManager));
+			registry.RegisterSingleton<GameSerializationService>(() => new GameSerializationService());
 			registry.RegisterSingleton<HumanPlayerService>(() => new HumanPlayerService(), typeof(IPlayerService));
-			registry.RegisterSingleton<MatchService>(() => new MatchService(registry.Resolve<GameManager>(), registry.Resolve<HumanPlayerService>(), registry.Resolve<AIPlayerService>()));
+			registry.RegisterSingleton<MatchService>(() => new MatchService(registry.Resolve<GameManager>(), registry.Resolve<HumanPlayerService>(), registry.Resolve<AIPlayerService>(), registry.Resolve<GameSerializationService>()));
 			registry.RegisterSingleton<UnityLogger>(() => new UnityLogger(), typeof(ILogger));
 			registry.RegisterSingleton<UnityResourcePathProvider>(() => new UnityResourcePathProvider(), typeof(IResourcePathProvider));
 
