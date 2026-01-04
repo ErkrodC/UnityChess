@@ -1,14 +1,16 @@
 {
   "dependencies": {
     "com.unity.2d.sprite": "1.0.0",
+    "com.unity.addressables": "2.7.6",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.ide.rider": "3.0.38",
     "com.unity.inputsystem": "1.14.2",
     "com.unity.multiplayer.center": "1.0.0",
+    "com.unity.nuget.newtonsoft-json": "3.2.2",
     "com.unity.render-pipelines.universal": "17.2.0",
     "com.unity.test-framework": "1.6.0",
     "com.unity.ugui": "2.0.0",
-    "nuget.moq": "2.0.0",
+    "nuget.moq": "2.0.1",
     "com.unity.modules.accessibility": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
