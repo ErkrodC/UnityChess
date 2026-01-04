@@ -1,6 +1,6 @@
 using System;
 
-namespace UnityChess.Core.Resource {
+namespace UnityChess.Resource {
 	public interface ILogger {
 		void Info(string message);
 		void Warn(string message);

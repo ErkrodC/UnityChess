@@ -1,5 +1,6 @@
-namespace UnityChess.Core.Resource {
+namespace UnityChess.Resource {
 	public interface IResourcePathProvider {
 		string streamingAssetsPath { get; }
+		string persistentDataPath { get; }
 	}
 }

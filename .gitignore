@@ -93,3 +93,4 @@ UnityChess\.Test/UnityChessLib/obj/
 UnityChess\.Test/UnityChessLib/bin/Debug/
 UnityChess\.Test/UnityChessLib/bin/
 *.DotSettings
+.aiassistant/

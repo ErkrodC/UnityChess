@@ -17,10 +17,10 @@ namespace UnityChess.Presentation {
 			_vm.isRequesting = false;
 			_player = player;
 
-			// To Presentation (subscriptions to application events)
+			// Subscriptions to application events
 			_player.electionRequested += OnElectionRequested;
 
-			// To Application (assignments to VM commands)
+			// Assignments of VM commands
 			_vm.onPieceElected = OnPieceElected;
 			_vm.onCancelled = OnCancelled;
 		}
@@ -33,7 +33,7 @@ namespace UnityChess.Presentation {
 			_interaction = null;
 		}
 
-		#region To Presentation Layer
+		#region Called From Application Layer
 
 		private void OnElectionRequested(PromotionInteraction interaction) {
 			_interaction?.TryCancel();
@@ -44,7 +44,7 @@ namespace UnityChess.Presentation {
 
 		#endregion
 
-		#region To Application Layer
+		#region Called From View Layer
 
 		private void OnPieceElected(ElectedPiece electedPiece) {
 			if (_interaction == null) { return; }

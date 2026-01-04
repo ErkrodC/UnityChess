@@ -12,9 +12,9 @@ namespace UnityChess.Presentation {
 			_sessionManager = sessionManager;
 			_vm = vm;
 
-			// To Presentation (subscriptions to application events)
+			// Subscriptions to application events
 
-			// To Application (assignments to VM commands)
+			// Assignments of VM commands
 			_vm.onContinueClicked = OnContinueClicked;
 		}
 
@@ -22,11 +22,11 @@ namespace UnityChess.Presentation {
 			throw new NotImplementedException();
 		}
 
-		#region To Presentation Layer
+		#region Called From Application Layer
 
 		#endregion
 
-		#region To Application Layer
+		#region Called From View Layer
 
 		private void OnContinueClicked() {
 			_sessionManager.OpenScene();

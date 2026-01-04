@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using UnityChess.Core;
-using UnityChess.Core.Resource;
 using UnityChess.Core.Util;
+using UnityChess.Resource;
 using UnityChess.ResourceAccess;
 
 namespace UnityChess.Application.Service {

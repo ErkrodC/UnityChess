@@ -2,12 +2,16 @@
     "name": "UnityChess.Presentation",
     "rootNamespace": "UnityChess.Presentation",
     "references": [
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
+        "GUID:84651a3751eca9349aac36a66bba901b",
         "GUID:fdd565aca06bca74abe06b6c3af16180",
         "GUID:9430a4ae04d98e84fbcc83f20af86bd1",
         "GUID:1d7804ef8c5cca548a3f51457e0ea08d",
         "GUID:769a62037a9c48a458f6dd76ffb797b2",
         "GUID:ea1ff100f323097499865562f9a4a898",
-        "GUID:d2fad16bc48b9214c9d1611ae0b10825"
+        "GUID:d2fad16bc48b9214c9d1611ae0b10825",
+        "GUID:2d231b9c081cfcb4bbc0fffa28bd0ad7",
+        "GUID:acfc7ad9be3fe81479ceca921c7f4364"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

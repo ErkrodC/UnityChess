@@ -1,5 +1,5 @@
 using System;
-using UnityChess.Core.Resource;
+using UnityChess.Resource;
 
 namespace Server.ResourceAccess {
 	public class ServerLogger : ILogger {

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
+using UnityChess.Core;
 
-namespace UnityChess.Core.Resource {
+namespace UnityChess.Resource {
 	public interface IUCIEngine {
 		ElectedPiece promotionElection { get; }
 		Task StartNewGameAsync();

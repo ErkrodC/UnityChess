@@ -3,13 +3,16 @@
     "rootNamespace": "UnityChess.ResourceAccess",
     "references": [
         "GUID:9430a4ae04d98e84fbcc83f20af86bd1",
-        "GUID:1d7804ef8c5cca548a3f51457e0ea08d"
+        "GUID:1d7804ef8c5cca548a3f51457e0ea08d",
+        "GUID:2d231b9c081cfcb4bbc0fffa28bd0ad7"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Newtonsoft.Json.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],

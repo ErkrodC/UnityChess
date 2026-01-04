@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using ILogger = UnityChess.Core.Resource.ILogger;
+using ILogger = UnityChess.Resource.ILogger;
 
 namespace UnityChess.Presentation.ResourceAccess {
 	public class UnityLogger : ILogger {

@@ -19,13 +19,13 @@ namespace UnityChess.Presentation {
 			_player = player;
 			_vm = vm;
 
-			// To Presentation (subscriptions to application events)
+			// Subscriptions to application events
 			_gameManager.newGameStarted += OnNewGameStarted;
 			_gameManager.moveExecuted += OnMoveExecuted;
 			_gameManager.gameResetToHalfMove += OnGameResetToHalfMove;
 			_player.moveRequested += OnMoveRequested;
 
-			// To Application (assignments to VM commands)
+			// Assignments of VM commands
 			_vm.onPieceDropped = OnPieceDropped;
 		}
 
@@ -39,7 +39,7 @@ namespace UnityChess.Presentation {
 			_moveInteraction = null;
 		}
 
-		#region To Presentation Layer
+		#region Called From Application Layer
 
 		private void OnNewGameStarted(Board board) {
 			ConvertBoardToPieceTypes(board, _vm.currentBoard);
@@ -62,7 +62,7 @@ namespace UnityChess.Presentation {
 
 		#endregion
 
-		#region To Application Layer
+		#region Called From View Layer
 
 		private async Task<bool> OnPieceDropped(string fromSquare, string toSquare) {
 			if (_moveInteraction == null) { return false; }

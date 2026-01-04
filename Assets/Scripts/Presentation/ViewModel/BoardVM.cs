@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityChess.Core;
 using UnityChess.Core.Util;
 using UnityChess.DependencyInjection;
+using UnityChess.Presentation.View;
 
 namespace UnityChess.Presentation.ViewModel {
 	public class BoardVM : IViewModel {
@@ -13,6 +14,7 @@ namespace UnityChess.Presentation.ViewModel {
 		public Side currentSideToMove;
 		public float whiteTimeRemaining;
 		public float blackTimeRemaining;
+		public PieceSetDefinition activePieceSet;
 
 		public Func<string, string, Task<bool>> onPieceDropped;
 

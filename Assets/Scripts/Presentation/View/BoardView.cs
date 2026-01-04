@@ -18,10 +18,10 @@ namespace UnityChess.Presentation.View {
 
 		private void BindSquare(BoardVM vm, int file, int rank) {
 			string squareName = SquareUtil.SquareToString(file, rank); // e.g., "a1", "e4", etc.
-			Label squareLabel = _root.Q<VisualElement>(squareName).Q<Label>();
-			_dragAndDropManipulators.Add(new DragAndDropManipulator(squareLabel, _root, vm));
+			Image squareImage = _root.Q<VisualElement>(squareName).Q<Image>();
+			_dragAndDropManipulators.Add(new DragAndDropManipulator(squareImage, _root, vm));
 
-			if (squareLabel == null) { return; }
+			if (squareImage == null) { return; }
 
 			DataBinding binding = new() {
 				dataSource = vm.currentBoard[file, rank],
@@ -31,10 +31,11 @@ namespace UnityChess.Presentation.View {
 			// Create converter that extracts the piece at this specific square
 			ConverterGroup converters = new($"{nameof(BoardView)}-{squareName}");
 
-			converters.AddConverter<PieceVM, string>(Converters.PieceVMToTextArt);
+			//converters.AddConverter<PieceVM, string>(Converters.PieceVMToTextArt);
+			converters.AddConverter((ref PieceVM piece) => vm.activePieceSet.GetSprite(piece.type, piece.side));
 			binding.ApplyConverterGroupToUI(converters);
 
-			squareLabel.SetBinding(nameof(Label.text), binding);
+			squareImage.SetBinding(nameof(Image.sprite), binding);
 		}
 	}
 }

@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityChess.Core;
-using UnityChess.Core.Resource;
+using UnityChess.Resource;
 
 namespace UnityChess.ResourceAccess {
 	public class PigeonUCIEngine : IUCIEngine, IDisposable {

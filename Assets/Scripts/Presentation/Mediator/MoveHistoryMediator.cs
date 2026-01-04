@@ -13,12 +13,12 @@ namespace UnityChess.Presentation {
 			_gameManager = gameManager;
 			_vm = vm;
 
-			// To Presentation (subscriptions to application events)
+			// Subscriptions to application events
 			_gameManager.newGameStarted += OnNewGameStarted;
 			_gameManager.moveExecuted += OnMoveExecuted;
 			_gameManager.gameResetToHalfMove += OnGameResetToHalfMove;
 
-			// To Application (assignments to VM commands)
+			// Assignments of VM commands
 			_vm.onToBeginningClicked = OnToBeginningClicked;
 			_vm.onBackClicked = OnBackClicked;
 			_vm.onForwardClicked = OnForwardClicked;
@@ -37,7 +37,7 @@ namespace UnityChess.Presentation {
 			_vm.onMoveClicked = null;
 		}
 
-		#region To Presentation Layer
+		#region Called From Application Layer
 
 		private void OnNewGameStarted(Board board) {
 			_vm.moveEntries.Clear();
@@ -57,7 +57,7 @@ namespace UnityChess.Presentation {
 
 		#endregion
 
-		#region To Application Layer
+		#region Called From View Layer
 
 		private void OnToBeginningClicked() {
 			_gameManager.ResetGameToHalfMoveIndex(0);
