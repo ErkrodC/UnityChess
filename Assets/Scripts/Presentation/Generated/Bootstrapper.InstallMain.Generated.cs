@@ -20,13 +20,13 @@ namespace UnityChess.Presentation {
 		private void InstallMain(ServiceRegistry registry) {
 			// Register Dependencies
 			registry.RegisterSingleton<AIPlayerService>(() => new AIPlayerService(registry.Resolve<GameManager>(), registry.Resolve<UnityLogger>(), registry.Resolve<UnityResourcePathProvider>()), typeof(IDisposable), typeof(IPlayerService));
-			registry.RegisterSingleton<DLCManager>(() => new DLCManager(registry.Resolve<UnityAssetLoader>()), typeof(IManager));
+			registry.RegisterSingleton<AssetManager>(() => new AssetManager(registry.Resolve<UnityAssetLoader>()), typeof(IManager));
 			registry.RegisterSingleton<GameManager>(() => new GameManager(), typeof(IUpdateable), typeof(IManager));
 			registry.RegisterSingleton<GameSerializationService>(() => new GameSerializationService());
 			registry.RegisterSingleton<HumanPlayerService>(() => new HumanPlayerService(), typeof(IPlayerService));
-			registry.RegisterSingleton<JsonKeyStorage>(() => new JsonKeyStorage(registry.Resolve<UnityResourcePathProvider>(), registry.Resolve<UnityLogger>()), typeof(IKeyStorage));
+			registry.RegisterSingleton<JsonStorage>(() => new JsonStorage(registry.Resolve<UnityResourcePathProvider>(), registry.Resolve<UnityLogger>()), typeof(IStorage));
 			registry.RegisterSingleton<MatchService>(() => new MatchService(registry.Resolve<GameManager>(), registry.Resolve<HumanPlayerService>(), registry.Resolve<AIPlayerService>(), registry.Resolve<GameSerializationService>()));
-			registry.RegisterSingleton<PersistenceManager>(() => new PersistenceManager(registry.Resolve<JsonKeyStorage>()), typeof(IManager));
+			registry.RegisterSingleton<PersistenceManager>(() => new PersistenceManager(registry.Resolve<JsonStorage>()), typeof(IManager));
 			registry.RegisterSingleton<UnityAssetLoader>(() => new UnityAssetLoader(), typeof(IAssetLoader));
 			registry.RegisterSingleton<UnityLogger>(() => new UnityLogger(), typeof(ILogger));
 			registry.RegisterSingleton<UnityResourcePathProvider>(() => new UnityResourcePathProvider(), typeof(IResourcePathProvider));
@@ -42,7 +42,7 @@ namespace UnityChess.Presentation {
 
 			// Register Mediators
 			sceneRegistry.Register(Eager, () => new BoardMediator(registry.Resolve<GameManager>(), registry.Resolve<HumanPlayerService>(), registry.Resolve<BoardVM>()));
-			sceneRegistry.Register(Eager, () => new MenuMediator(registry.Resolve<GameManager>(), registry.Resolve<PersistenceManager>(), registry.Resolve<DLCManager>(), registry.Resolve<MatchService>(), registry.Resolve<MenuVM>(), registry.Resolve<BoardVM>()));
+			sceneRegistry.Register(Eager, () => new MenuMediator(registry.Resolve<GameManager>(), registry.Resolve<PersistenceManager>(), registry.Resolve<AssetManager>(), registry.Resolve<MatchService>(), registry.Resolve<MenuVM>(), registry.Resolve<BoardVM>()));
 			sceneRegistry.Register(Eager, () => new MoveHistoryMediator(registry.Resolve<GameManager>(), registry.Resolve<MoveHistoryVM>()));
 			sceneRegistry.Register(Eager, () => new PromotionMediator(registry.Resolve<HumanPlayerService>(), registry.Resolve<PromotionVM>()));
 

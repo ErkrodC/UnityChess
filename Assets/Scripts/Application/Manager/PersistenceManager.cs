@@ -4,15 +4,15 @@ using UnityChess.ResourceAccess;
 
 namespace UnityChess.Application {
 	public class PersistenceManager : IManager {
-		private readonly IKeyStorage _keyStorage;
+		private readonly IStorage _storage;
 
-		public PersistenceManager(JsonKeyStorage keyStorage) {
-			_keyStorage = keyStorage;
+		public PersistenceManager(JsonStorage storage) {
+			_storage = storage;
 		}
 
-		public bool TryGet<T>(string key, out T value)	=> _keyStorage.TryGet(key, out value);
-		public void Set<T>(string key, T value)			=> _keyStorage.Set(key, value);
-		public void Delete(string key)					=> _keyStorage.Delete(key);
-		public void Save()								=> _keyStorage.Save();
+		public bool TryLoad<T>(out T value, string fileName = null)	=> _storage.TryLoad(out value, fileName);
+		public void Save<T>(T value, string fileName = null)		=> _storage.Save(value, fileName);
+		public void Delete<T>()										=> _storage.Delete<T>();
+		public void Delete(string fileName)							=> _storage.Delete(fileName);
 	}
 }

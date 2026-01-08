@@ -8,13 +8,22 @@ using UnityChess.Presentation.View;
 
 namespace UnityChess.Presentation.ViewModel {
 	public class BoardVM : IViewModel {
+		public event Action<PieceSetDefinition> pieceSetChanged;
+
 		public readonly PieceVM[,] currentBoard = CreateEmptyPieceVMArray();
 		public Square? selectedSquare;
 		public List<Square> highlightedSquares = new();
 		public Side currentSideToMove;
 		public float whiteTimeRemaining;
 		public float blackTimeRemaining;
-		public PieceSetDefinition activePieceSet;
+
+		public PieceSetDefinition activePieceSet {
+			get => _activePieceSet;
+			set {
+				_activePieceSet = value;
+				pieceSetChanged?.Invoke(value);
+			}
+		} private PieceSetDefinition _activePieceSet;
 
 		public Func<string, string, Task<bool>> onPieceDropped;
 

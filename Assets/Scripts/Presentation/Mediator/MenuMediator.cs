@@ -6,31 +6,36 @@ using UnityChess.Core.Util;
 using UnityChess.DependencyInjection;
 using UnityChess.Presentation.View;
 using UnityChess.Presentation.ViewModel;
+using UnityChess.Resource;
 
 namespace UnityChess.Presentation {
 	public class MenuMediator : IMediator, IDisposable {
-		private const string _ACTIVE_PIECE_SET_KEY_KEY = "activePieceSetKey";
+		private const string _PIECE_SET_MANIFEST_KEY = "PieceSetManifest";
 		private readonly GameManager _gameManager;
 		private readonly PersistenceManager _persistenceManager;
-		private readonly DLCManager _dlcManager;
+		private readonly AssetManager _assetManager;
 		private readonly MatchService _matchService;
 		private readonly MenuVM _menuVM;
 		private readonly BoardVM _boardVM;
+		private IAssetRef<PieceSetDefinition> _activePieceSetRef;
+		private IAssetRef<PieceSetManifest> _manifestRef;
+		private MenuPreferences _menuPreferences;
 
 		public MenuMediator(
 			GameManager gameManager,
 			PersistenceManager persistenceManager,
-			DLCManager dlcManager,
+			AssetManager assetManager,
 			MatchService matchService,
 			MenuVM menuVM,
 			BoardVM boardVM
 		) {
 			_gameManager = gameManager;
 			_persistenceManager = persistenceManager;
-			_dlcManager = dlcManager;
+			_assetManager = assetManager;
 			_matchService = matchService;
 			_menuVM = menuVM;
 			_boardVM = boardVM;
+			LoadPieceSetManifest();
 			LoadPieceSetPreference();
 
 			// Subscriptions to application events
@@ -48,6 +53,8 @@ namespace UnityChess.Presentation {
 			_gameManager.gameEnded -= OnGameEnded;
 			_menuVM.onStartNewGameClicked = null;
 			_menuVM.onLoadFENClicked = null;
+			_activePieceSetRef?.Dispose();
+			_manifestRef?.Dispose();
 		}
 
 		#region Called From Application Layer
@@ -97,16 +104,19 @@ namespace UnityChess.Presentation {
 			// ER TODO: Load FEN string
 		}
 
-		private async void OnActivePieceSetKeyChanged(string pieceSetAddressablesKey) {
-			if (_boardVM.activePieceSet.key == pieceSetAddressablesKey) { return; }
+		private async void OnActivePieceSetKeyChanged(string pieceSetKey) {
+			if (_boardVM.activePieceSet?.key == pieceSetKey) { return; }
 
 			try {
-				_boardVM.activePieceSet = await _dlcManager.LoadAsync<PieceSetDefinition>(pieceSetAddressablesKey);
-				_persistenceManager.Set(_ACTIVE_PIECE_SET_KEY_KEY, pieceSetAddressablesKey);
-				_persistenceManager.Save();
+				_activePieceSetRef?.Dispose();
+				_activePieceSetRef = await _assetManager.LoadAsync<PieceSetDefinition>(pieceSetKey);
+				_boardVM.activePieceSet = _activePieceSetRef.asset;
+
+				_menuPreferences.activePieceSetKey = pieceSetKey;
+				_persistenceManager.Save(_menuPreferences);
 			} catch {
-				_persistenceManager.Set<string>(_ACTIVE_PIECE_SET_KEY_KEY, null);
-				_persistenceManager.Save();
+				_menuPreferences.activePieceSetKey = null;
+				_persistenceManager.Save(_menuPreferences);
 				throw;
 			}
 		}
@@ -115,13 +125,33 @@ namespace UnityChess.Presentation {
 
 		#region Helpers
 
-		private async void LoadPieceSetPreference() {
-			if (!_persistenceManager.TryGet(_ACTIVE_PIECE_SET_KEY_KEY, out string pieceSetKey)) { return; }
+		private async void LoadPieceSetManifest() {
+			try {
+				_manifestRef?.Dispose();
+				_manifestRef = await _assetManager.LoadAsync<PieceSetManifest>(_PIECE_SET_MANIFEST_KEY);
+				_menuVM.pieceSetManifest = _manifestRef.asset;
+			} catch {
+				_menuVM.pieceSetManifest = null;
+			} finally {
+				_menuVM.NotifyPieceSetManifestReady();
+			}
+		}
 
-			try	  { _boardVM.activePieceSet = await _dlcManager.LoadAsync<PieceSetDefinition>(pieceSetKey); }
+		private async void LoadPieceSetPreference() {
+			if (!_persistenceManager.TryLoad(out _menuPreferences)) { return; }
+
+			try {
+				_activePieceSetRef?.Dispose();
+				_activePieceSetRef = await _assetManager.LoadAsync<PieceSetDefinition>(_menuPreferences.activePieceSetKey);
+				_boardVM.activePieceSet = _activePieceSetRef.asset;
+			}
 			catch { _boardVM.activePieceSet = null; }
 		}
 
 		#endregion
+
+		private struct MenuPreferences {
+			public string activePieceSetKey;
+		}
 	}
 }

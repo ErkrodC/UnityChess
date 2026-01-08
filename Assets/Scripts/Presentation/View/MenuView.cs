@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityChess.Application.Service;
 using UnityChess.Core.Util;
@@ -35,17 +36,42 @@ namespace UnityChess.Presentation.View {
 
 			{ // piece set dropdown
 				DropdownField pieceSetDropdown = _root.Q<DropdownField>("piece-set-dropdown");
-				pieceSetDropdown.choices = vm.pieceSetManifest.entries
-					.Select(entry => entry.displayName)
-					.ToList();
-				pieceSetDropdown.value = pieceSetDropdown.choices.FirstOrDefault();
+
+				if (vm.pieceSetManifest == null) {
+					pieceSetDropdown.SetEnabled(false);
+					vm.manifestReady += OnManifestReady;
+				} else {
+					PopulateDropdownChoices(vm.pieceSetManifest);
+				}
+
 				pieceSetDropdown.RegisterValueChangedCallback(evt => {
+					if (vm.pieceSetManifest == null) { return; }
+
 					PieceSetManifest.Entry entry = vm.pieceSetManifest.entries
 						.FirstOrDefault(e => e.displayName == evt.newValue);
 					if (entry != null) {
-						vm.onActivePieceSetKeyChanged?.Invoke(entry.addressablesKey);
+						vm.onActivePieceSetKeyChanged?.Invoke(entry.key);
 					}
 				});
+
+				void OnManifestReady(PieceSetManifest manifest) {
+					PopulateDropdownChoices(vm.pieceSetManifest);
+					vm.manifestReady -= OnManifestReady;
+				}
+
+				void PopulateDropdownChoices(PieceSetManifest manifest) {
+					if (manifest?.entries == null || manifest.entries.Count == 0) {
+						pieceSetDropdown.choices = new List<string>();
+						pieceSetDropdown.value = string.Empty;
+						pieceSetDropdown.SetEnabled(false);
+					} else {
+						pieceSetDropdown.choices = manifest.entries
+							.Select(entry => entry.displayName)
+							.ToList();
+						pieceSetDropdown.value = pieceSetDropdown.choices.FirstOrDefault();
+						pieceSetDropdown.SetEnabled(true);
+					}
+				}
 			}
 		}
 	}

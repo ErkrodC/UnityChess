@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace UnityChess.Presentation.View {
 	public class TurnView : BaseView<BoardVM> {
-		public override void Initialize(BoardVM vm) {
+		public override void Initialize(BoardVM _vm) {
 			SetupBindings();
 		}
 
