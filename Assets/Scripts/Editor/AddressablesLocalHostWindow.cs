@@ -8,14 +8,11 @@ using UnityEngine;
 namespace UnityChess.Editor {
 	public class AddressablesLocalHostWindow : EditorWindow {
 		private const string _PORT_PREFERENCE_KEY = "AddressablesHostPort";
-		private const string _PATH_PREFERENCE_KEY = "AddressablesHostPath";
-
 		private HttpListener _listener;
 		private Thread _listenerThread;
 		private bool _isRunning;
-
 		private int _port;
-		private string _servedPath;
+		private bool _resartAfterReload;
 
 		[MenuItem("Tools/Addressables/ Local Host...")]
 		private static void Open() {
@@ -26,13 +23,28 @@ namespace UnityChess.Editor {
 
 		private void OnEnable() {
 			_port = EditorPrefs.GetInt(_PORT_PREFERENCE_KEY, 3000);
-			string platform = EditorUserBuildSettings.activeBuildTarget.ToString();
-			string defaultFolder = Path.Combine("ServerData", platform);
-			_servedPath = EditorPrefs.GetString(_PATH_PREFERENCE_KEY, defaultFolder);
+
+			AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
+			AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
+			EditorApplication.quitting += StopServer;
 		}
 
 		private void OnDisable() {
+			AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
+			AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
+			EditorApplication.quitting -= StopServer;
+		}
+
+		private void OnBeforeAssemblyReload() {
+			_resartAfterReload = _isRunning;
 			StopServer();
+		}
+
+		private void OnAfterAssemblyReload() {
+			if (_resartAfterReload) {
+				_resartAfterReload = false;
+				StartServer();
+			}
 		}
 
 		private void OnGUI() {
@@ -41,7 +53,6 @@ namespace UnityChess.Editor {
 				MessageType.Info);
 
 			using (new EditorGUI.DisabledScope(_isRunning)) {
-				_servedPath = EditorGUILayout.TextField("Server Folder", _servedPath);
 				_port = EditorGUILayout.IntField("Port", _port);
 				if (GUILayout.Button("Start Server")) {
 					StartServer();
@@ -64,23 +75,20 @@ namespace UnityChess.Editor {
 		private void StartServer() {
 			if (_isRunning) { return; }
 
-			if (!Directory.Exists(_servedPath)) {
-				EditorUtility.DisplayDialog("Invalid Path", $"Folder not found:\n{_servedPath}", "OK");
-				return;
-			}
-
 			try {
 				_listener = new HttpListener();
 				_listener.Prefixes.Add($"http://*:{_port}/");
 				_listener.Start();
 				_isRunning = true;
 
-				_listenerThread = new Thread(() => ServeLoop(_servedPath));
+				_listenerThread = new Thread(ServeLoop) {
+					IsBackground = true
+				};
 				_listenerThread.Start();
 
 				EditorPrefs.SetInt(_PORT_PREFERENCE_KEY, _port);
-				EditorPrefs.SetString(_PATH_PREFERENCE_KEY, _servedPath);
 			} catch (Exception e) {
+				Debug.LogException(e);
 				Debug.LogError($"Failed to start HTTP server: {e.Message}");
 				StopServer();
 			}
@@ -96,16 +104,21 @@ namespace UnityChess.Editor {
 			} catch { /*ignore*/ }
 
 			if (_listenerThread?.IsAlive == true) {
-				_listenerThread.Abort();
-				_listenerThread = null;
+				try {
+					_listenerThread.Join(1_000);
+				} catch (ThreadStateException) {
+					// Thread might already be stopping; ignore.
+				} finally {
+					_listenerThread = null;
+				}
 			}
 		}
 
-		private void ServeLoop(string root) {
+		private void ServeLoop() {
 			while (_isRunning && _listener?.IsListening == true) {
 				try {
 					HttpListenerContext context = _listener.GetContext();
-					ThreadPool.QueueUserWorkItem(_ => ProcessRequest(context, root));
+					ThreadPool.QueueUserWorkItem(_ => ProcessRequest(context));
 				} catch (HttpListenerException) {
 					// Listener close; exit loop
 					break;
@@ -115,9 +128,9 @@ namespace UnityChess.Editor {
 			}
 		}
 
-		private static void ProcessRequest(HttpListenerContext context, string root) {
+		private static void ProcessRequest(HttpListenerContext context) {
 			string relativePath = context.Request.Url.AbsolutePath.TrimStart('/');
-			string fullPath = Path.Combine(root, relativePath);
+			string fullPath = Path.Combine(Directory.GetCurrentDirectory(), relativePath);
 
 			if (Directory.Exists(fullPath)) {
 				fullPath = Path.Combine(fullPath, "index.html");
